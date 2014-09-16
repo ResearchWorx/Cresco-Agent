@@ -1,12 +1,12 @@
 package channels;
 
-public class logEvent {
+public class LogEvent {
 
   private String eventType;
   private String eventMsg;
   private String eventSource;
   
-  public logEvent(String eventType, String eventMsg)
+  public LogEvent(String eventType, String eventMsg)
   {
 	  this.eventType = eventType;
 	  this.eventMsg = eventMsg;

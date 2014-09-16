@@ -6,11 +6,11 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.Channel;
 
-import core.agentEngine;
+import core.AgentEngine;
 
 public class LogProducer implements Runnable {
 
-    private final Queue<logEvent> log;
+    private final Queue<LogEvent> log;
     private static Channel channel_log;
     private static Connection connection;
     private static ConnectionFactory factory;
@@ -18,18 +18,18 @@ public class LogProducer implements Runnable {
     private String EXCHANGE_NAME_LOG;
     
     
-    public LogProducer(Queue<logEvent> log) {
+    public LogProducer(Queue<LogEvent> log) {
     	this.log = log;
-        this.EXCHANGE_NAME_LOG = agentEngine.config.getAMPQLogExchange();
+        this.EXCHANGE_NAME_LOG = AgentEngine.config.getAMPQLogExchange();
     }
     
     public void run() {
     	
     	try{
     	factory = new ConnectionFactory();
-	    factory.setHost(agentEngine.config.getAMPQHost());
-	    factory.setUsername(agentEngine.config.getAMPQUser());
-	    factory.setPassword(agentEngine.config.getAMPQPassword());
+	    factory.setHost(AgentEngine.config.getAMPQHost());
+	    factory.setUsername(AgentEngine.config.getAMPQUser());
+	    factory.setPassword(AgentEngine.config.getAMPQPassword());
 	    
 	    connection = factory.newConnection();
 	    channel_log = connection.createChannel();
@@ -44,13 +44,13 @@ public class LogProducer implements Runnable {
     		System.exit(1);
     	}
     
-    	agentEngine.logProducerActive = true;
-    	logEvent le = new logEvent("INFO","LogProducer Started");
+    	AgentEngine.logProducerActive = true;
+    	LogEvent le = new LogEvent("INFO","LogProducer Started");
     	log.offer(le);
     	
-    	while (agentEngine.logProducerEnabled) {
+    	while (AgentEngine.logProducerEnabled) {
         	try {
-        		if(agentEngine.logProducerActive)
+        		if(AgentEngine.logProducerActive)
         		{
         			log();
         		}
@@ -63,7 +63,7 @@ public class LogProducer implements Runnable {
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				//e.printStackTrace();
-				le = new logEvent("INFO","LogProducer Stopped");
+				le = new LogEvent("INFO","LogProducer Stopped");
 		    	log.offer(le);
 		    	try{
 		    	if(channel_log.isOpen())
@@ -77,13 +77,13 @@ public class LogProducer implements Runnable {
 		    	}
 		    	catch(Exception ex)
 		    	{
-		    		le = new logEvent("ERROR","LogProducer Interupted" + ex.toString());
+		    		le = new LogEvent("ERROR","LogProducer Interupted" + ex.toString());
 			    	log.offer(le);
 		    	}		    	
 			}
         	
         }
-    	le = new logEvent("INFO","LogProducer Interupted ");
+    	le = new LogEvent("INFO","LogProducer Interupted ");
     	log.offer(le);
     	Thread.currentThread().interrupt();
     	return;
@@ -112,7 +112,7 @@ public class LogProducer implements Runnable {
     	synchronized(log) {
     		while ((!log.isEmpty())) {
     			
-    			logEvent le = log.poll();
+    			LogEvent le = log.poll();
     			channel_log.basicPublish(EXCHANGE_NAME_LOG, "", null, le.toString().getBytes());
     		}
     	}

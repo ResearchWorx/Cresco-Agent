@@ -4,21 +4,21 @@ import java.util.Queue;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import channels.logEvent;
+import channels.LogEvent;
 
 
 public class WatchDog {
 
 	  private Timer timer;
-	  public Queue<logEvent> log;
+	  public Queue<LogEvent> log;
 	  
-	  public WatchDog(Queue<logEvent> log) {
+	  public WatchDog(Queue<LogEvent> log) {
 		  this.log = log;
 		  timer = new Timer();
-	      timer.scheduleAtFixedRate(new WatchDogTask(), 500, agentEngine.config.getWatchDogTimer());
+	      timer.scheduleAtFixedRate(new WatchDogTask(), 500, AgentEngine.config.getWatchDogTimer());
 	      
-	      agentEngine.watchDogActive = true;
-	      logEvent le = new logEvent("INFO","WatchDog timer set to " + agentEngine.config.getWatchDogTimer() + " milliseconds");
+	      AgentEngine.watchDogActive = true;
+	      LogEvent le = new LogEvent("INFO","WatchDog timer set to " + AgentEngine.config.getWatchDogTimer() + " milliseconds");
 		  log.offer(le);
 	  }
 
@@ -26,10 +26,10 @@ public class WatchDog {
 	class WatchDogTask extends TimerTask {
 	    public void run() {
 	    	
-	    if(agentEngine.watchDogActive)
+	    if(AgentEngine.watchDogActive)
 	    {
-	    	 long runTime = System.currentTimeMillis() - agentEngine.startTS;
-			 logEvent le = new logEvent("WATCHDOG","Agent Core Uptime " + String.valueOf(runTime) + "ms");
+	    	 long runTime = System.currentTimeMillis() - AgentEngine.startTS;
+			 LogEvent le = new LogEvent("WATCHDOG","Agent Core Uptime " + String.valueOf(runTime) + "ms");
 			 log.offer(le);
 	      //timer.cancel(); //Not necessary because we call System.exit
 	      //System.exit(0); //Stops the AWT thread (and everything else)

@@ -42,6 +42,11 @@ public class ConfigPlugins {
 		SubnodeConfiguration sObj = iniConfObj.getSection("plugin" + pluginID);
 		return sObj.getInt("watchdogtimer");
 	}
+	public String getPluginJar(String pluginID)
+	{
+		SubnodeConfiguration sObj = iniConfObj.getSection(pluginID);
+		return sObj.getString("jarfile");
+	}
 	public String getAMPQDataExchange(String pluginID)
 	{
 		SubnodeConfiguration sObj = iniConfObj.getSection("plugin" + pluginID);

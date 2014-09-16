@@ -10,10 +10,10 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import plugins.ConfigPlugins;
 import plugins.PluginLoader;
 import channels.LogProducer;
-import channels.logEvent;
+import channels.LogEvent;
 
 
-public class agentEngine {
+public class AgentEngine {
     
 	public static boolean isActive = false;
 	public static boolean logProducerActive = false;
@@ -21,7 +21,7 @@ public class agentEngine {
 	public static boolean watchDogActive = false;
 	public static long startTS = System.currentTimeMillis();
 	
-	public static Map<String, ConcurrentLinkedQueue<logEvent>> channelMap;
+	public static Map<String, ConcurrentLinkedQueue<LogEvent>> channelMap;
 	public static Config config;
 	public static ConfigPlugins pluginsconfig;
 	
@@ -31,9 +31,9 @@ public class agentEngine {
     	{
     		
     		//Establish a named map of concurrent queues as defined in the config
-    		channelMap = new ConcurrentHashMap<String,ConcurrentLinkedQueue<logEvent>>(); 
+    		channelMap = new ConcurrentHashMap<String,ConcurrentLinkedQueue<LogEvent>>(); 
     		//Create log Queue
-    		ConcurrentLinkedQueue<logEvent> logQueue = new ConcurrentLinkedQueue<logEvent>();
+    		ConcurrentLinkedQueue<LogEvent> logQueue = new ConcurrentLinkedQueue<LogEvent>();
     		channelMap.put("log", logQueue);
     		
     		//Make sure initial input is sane.	
@@ -43,10 +43,7 @@ public class agentEngine {
         	//Make sure config file
         	config = new Config(configFile);
     		
-    	    //Create Core Threads
-        	processPlugins(config);
-    		
-    		//log producer is bound to log queue and ampq_log_exchange
+    	    //log producer is bound to log queue and ampq_log_exchange
     		LogProducer v = new LogProducer(channelMap.get("log"));
 	    	Thread logProducerThread = new Thread(v);
 	    	logProducerThread.start();
@@ -54,9 +51,14 @@ public class agentEngine {
 	    	//start core watchdog
 	    	WatchDog wd = new WatchDog(channelMap.get("log"));
 	    	
-	    	
 	    	//Notify agent start
-	    	channelMap.get("log").offer(new logEvent("INFO","Agent Core Started"));
+	    	String msg = "Agent Core (" + new Version().getVersion() + ") Started";
+	    	channelMap.get("log").offer(new LogEvent("INFO",msg));
+	    	System.out.println(msg);
+	    	
+	    	//Process Plugins
+        	processPlugins(config);
+    		
 	    	
     	   //isActive = true;
     	   //wait until shutdown occures
@@ -133,7 +135,15 @@ public class agentEngine {
     		
     		for(String pluginName : enabledPlugins)
     		{
-    			System.out.println("Plugin: " + pluginName);
+    			System.out.println("Plugin Name: " + pluginName);
+    			System.out.println("Plugin Location: " + pluginsconfig.getPluginJar(pluginName));
+    			PluginLoader pl = new PluginLoader(pluginsconfig.getPluginJar(pluginName));
+    	    	
+    			System.out.println(pl.getPluginName());
+    			
+    			//String str = "/Users/vcbumg2/Documents/Mesh/Work/Development/Cresco/Cresco-Agent/plugins/cresco-agent-dummy-plugin.jar";
+    	    	//PluginLoader pl = new PluginLoader(str);
+    	    	//System.out.println(pl.getPluginVersion());	    	
     		}
     		
     	}
@@ -142,11 +152,6 @@ public class agentEngine {
     		System.err.println("Failed to Process Plugins: " + ex.toString());
     	}
     	
-    	System.out.println(new Version().getVersion());
-    	
-    	String str = "/Users/vcbumg2/Documents/Mesh/Work/Development/Cresco/Cresco-Agent/plugins/cresco-agent-dummy-plugin.jar";
-    	PluginLoader pl = new PluginLoader(str);
-    	System.out.println(pl.getPluginVersion());
     	
     	  	
 		/*

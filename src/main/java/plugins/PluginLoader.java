@@ -9,6 +9,8 @@ import java.util.Iterator;
 import java.util.ServiceLoader;
 import java.util.jar.JarFile;
 
+import org.apache.commons.configuration.SubnodeConfiguration;
+
 public class PluginLoader {
 
 	private static URLClassLoader cl;
@@ -31,8 +33,9 @@ public class PluginLoader {
 		
 		sl = ServiceLoader.load(PluginInterface.class, cl);
 		
+		
+		
 	}
-	
 	
 	public String getPluginName() 
 	{

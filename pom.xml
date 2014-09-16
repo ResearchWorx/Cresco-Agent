@@ -46,7 +46,7 @@
   <configuration>
     <archive>
       <manifest>
-        <mainClass>core.agentEngine</mainClass>
+        <mainClass>core.AgentEngine</mainClass>
         <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
         <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>	
       </manifest>
