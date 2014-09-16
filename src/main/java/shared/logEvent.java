@@ -1,29 +1,34 @@
-package channels;
-
-import core.agentEngine;
+package shared;
 
 public class logEvent {
 
   private String eventType;
   private String eventMsg;
-  private String agentName;
-
+  private String eventSource;
+  
   public logEvent(String eventType, String eventMsg)
   {
 	  this.eventType = eventType;
 	  this.eventMsg = eventMsg;
-	  this.agentName = agentEngine.config.getAgentName();
   }
     
   public String getEventType()
   {
 	  return eventType;
   }
+  public void setEventSource(String eventSource)
+  {
+	  this.eventSource = eventSource;
+  }
+  public String getEventSource()
+  {
+	  return eventSource;
+  }
   public void setEventType(String eventType)
   {
 	  this.eventType = eventType;
   }
-  
+
   public String getEventMsg()
   {
 	  return eventMsg;
@@ -39,7 +44,7 @@ public class logEvent {
   @Override
   public String toString()
   {
-	  return eventType + "," + agentName + "," + eventMsg;
+	  return eventType + "," + eventSource + "," + eventMsg;
   }
   
   

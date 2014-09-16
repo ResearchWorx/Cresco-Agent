@@ -48,8 +48,7 @@
       <manifest>
         <mainClass>core.agentEngine</mainClass>
         <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-        <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-      	
+        <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>	
       </manifest>
       <manifestEntries>
               <Implementation-Version>${project.version}.${buildNumber}.${maven.build.timestamp}</Implementation-Version>

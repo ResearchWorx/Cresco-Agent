@@ -5,7 +5,6 @@ public class Version {
 
 	public Version() 
 	{
-		
 	}
 	
 	public String getVersion()
@@ -22,7 +21,7 @@ public class Version {
     	//Package p = getClass().getPackage();
     	//Package p = this.getClass().getPackage();
     	//String version = p.getImplementationVersion();
-		return version;
+		return "agentEngine" + "." + version;
 		
     }
 	

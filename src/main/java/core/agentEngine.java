@@ -7,8 +7,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import plugins.PluginLoader;
+import shared.Config;
+import shared.logEvent;
 import channels.LogProducer;
-import channels.logEvent;
 
 
 public class agentEngine {
@@ -25,8 +26,8 @@ public class agentEngine {
     
     	//Create Core Threads
     	//testing plugins
-    	//processPlugins(config);
-		//System.exit(1);
+    	processPlugins(config);
+		System.exit(1);
     	try 
     	{
     		
@@ -113,16 +114,13 @@ public class agentEngine {
    
     public static void processPlugins(Config conf) throws ClassNotFoundException, IOException
     {
-    	/*
-    	String str = "/Users/vcbumg2/Desktop/cresco/Cresco-Agent/plugins/cresco-agent-dummy-plugin.jar";
+    	
+    	String str = "/Users/vcbumg2/Documents/Mesh/Work/Development/Cresco/Cresco-Agent/plugins/cresco-agent-dummy-plugin.jar";
     	PluginLoader pl = new PluginLoader(str);
     	
-    	System.out.println(pl.getPluginName());
+    	System.out.println(new Version().getVersion());
     	System.out.println(pl.getPluginVersion());
-    	Version vr = new Version();
-    	System.out.println(vr.getVersion());
-    	System.out.println(pl.getPluginCommandSet());
-    	*/
+    	
     	  	
 		/*
     	PluginLoader pl = new PluginLoader("location to jar);
