@@ -142,13 +142,12 @@ public class agentEngine {
     		System.err.println("Failed to Process Plugins: " + ex.toString());
     	}
     	
-    	/*
+    	System.out.println(new Version().getVersion());
+    	
     	String str = "/Users/vcbumg2/Documents/Mesh/Work/Development/Cresco/Cresco-Agent/plugins/cresco-agent-dummy-plugin.jar";
     	PluginLoader pl = new PluginLoader(str);
-    	
-    	System.out.println(new Version().getVersion());
     	System.out.println(pl.getPluginVersion());
-    	*/
+    	
     	  	
 		/*
     	PluginLoader pl = new PluginLoader("location to jar);
