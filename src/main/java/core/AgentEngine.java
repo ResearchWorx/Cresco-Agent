@@ -2,6 +2,7 @@ package core;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -62,10 +63,10 @@ public class AgentEngine {
 	    	//Process Plugins
         	processPlugins(config);
     		
-	    	
+        	//printMap(pluginMap);
     	   //isActive = true;
     	   //wait until shutdown occures
-	       while(isActive) 
+           while(isActive) 
     	   {
     		//just sleep until isActive=false
     		Thread.sleep(1000);           	
@@ -133,7 +134,6 @@ public class AgentEngine {
     	
     		//pull in plugin configuration
     		pluginsconfig = new ConfigPlugins(plugin_config_file);
-    		//System.out.println(pluginsconfig.getModuleInstances())
     		List<String> enabledPlugins = pluginsconfig.getEnabledPluginList();
     		
     		for(String pluginName : enabledPlugins)
@@ -144,7 +144,8 @@ public class AgentEngine {
     	    	PluginInterface pi = pl.getPluginInterface();
     	    	if(pi.initialize(pluginsconfig.getPluginConfig(pluginName)))
     	    	{
-    	    		System.out.println("Plugin Initialized: " + pi.getVersion());
+    	    		System.out.println("Plugin Configuration: [" + pluginName + "] Initialized: (" + pi.getVersion() + ")");
+    	    		pluginMap.put(pluginName, pi);
     	    	}
     	    	else
     	    	{
@@ -159,21 +160,19 @@ public class AgentEngine {
     		System.err.println("Failed to Process Plugins: " + ex.toString());
     	}
     	
-    	
-    	  	
-		/*
-    	PluginLoader pl = new PluginLoader("location to jar);
-    	System.out.println(pl.getPluginName());
-    	PluginLoader pl2 = new PluginLoader("location to jar");
-    	System.out.println(pl2.getPluginName());
-    	*/
-		
-		/*
-		if(config.getInstances() > 0)
-		{
-			
-		}
-		*/
+    }
+    
+    //to check plugin modules
+    public static void printMap(Map mp) {
+        Iterator it = mp.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pairs = (Map.Entry)it.next();
+            //System.out.println(pairs.getKey() + " = " + pairs.getValue());
+            String pluginName = pairs.getKey().toString();
+            PluginInterface pi = (PluginInterface)pairs.getValue();
+            System.out.println("Plugin Configuration: [" + pluginName + "] Initialized: " + pi.getVersion());
+    		it.remove(); // avoids a ConcurrentModificationException
+        }
     }
     
 }
