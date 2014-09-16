@@ -37,6 +37,13 @@ public class ConfigPlugins {
 		return enabledPlugins;
 		
 	}
+	
+	public SubnodeConfiguration getPluginConfig(String pluginID)
+	{
+		SubnodeConfiguration sObj = iniConfObj.getSection(pluginID);
+		return sObj;
+	}
+	
 	public int getWatchDogTimer(String pluginID)
 	{
 		SubnodeConfiguration sObj = iniConfObj.getSection("plugin" + pluginID);

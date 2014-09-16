@@ -9,8 +9,6 @@ import java.util.Iterator;
 import java.util.ServiceLoader;
 import java.util.jar.JarFile;
 
-import org.apache.commons.configuration.SubnodeConfiguration;
-
 public class PluginLoader {
 
 	private static URLClassLoader cl;
@@ -22,7 +20,6 @@ public class PluginLoader {
 		File dir = new File(pluginPath);
 		URL loadPath = dir.toURI().toURL();
 		URL[] classUrl = new URL[]{loadPath};
-		//cl = new URLClassLoader(classUrl);
 		
 		JarFile jarFile = new JarFile(pluginPath);
 		Enumeration e = jarFile.entries();
@@ -30,47 +27,19 @@ public class PluginLoader {
 		URL[] urls = { new URL("jar:file:" + pluginPath+"!/") };
 		cl = URLClassLoader.newInstance(urls);
 		
-		
 		sl = ServiceLoader.load(PluginInterface.class, cl);
-		
-		
-		
+			
 	}
 	
-	public String getPluginName() 
+	public PluginInterface getPluginInterface()
 	{
-		String str = null;
 		Iterator<PluginInterface> apit = sl.iterator();
         while (apit.hasNext())
         {
-        	str = apit.next().getName();
+        	//this simply returns the first one found
+        	return (PluginInterface)apit.next();
         }
-        return str;
-		    
-	}
-	
-	public String getPluginVersion() 
-	{
-		String str = null;
-		Iterator<PluginInterface> apit = sl.iterator();
-        while (apit.hasNext())
-        {
-        	str = apit.next().getVersion();
-        }
-        return str;
-		    
-	}
-	
-	public String getPluginCommandSet() 
-	{
-		String str = null;
-		Iterator<PluginInterface> apit = sl.iterator();
-        while (apit.hasNext())
-        {
-        	str = apit.next().getCommandSet();
-        }
-        return str;
-		    
+        return null;
 	}
 	
 	public static <T> T loadService(Class<T> api) {

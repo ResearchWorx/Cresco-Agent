@@ -11,8 +11,11 @@ public class WatchDog {
 
 	  private Timer timer;
 	  public Queue<LogEvent> log;
+	  private long startTS;
+		
 	  
 	  public WatchDog(Queue<LogEvent> log) {
+		  startTS = System.currentTimeMillis();
 		  this.log = log;
 		  timer = new Timer();
 	      timer.scheduleAtFixedRate(new WatchDogTask(), 500, AgentEngine.config.getWatchDogTimer());
@@ -28,7 +31,7 @@ public class WatchDog {
 	    	
 	    if(AgentEngine.watchDogActive)
 	    {
-	    	 long runTime = System.currentTimeMillis() - AgentEngine.startTS;
+	    	 long runTime = System.currentTimeMillis() - startTS;
 			 LogEvent le = new LogEvent("WATCHDOG","Agent Core Uptime " + String.valueOf(runTime) + "ms");
 			 log.offer(le);
 	      //timer.cancel(); //Not necessary because we call System.exit

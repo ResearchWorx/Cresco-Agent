@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import plugins.ConfigPlugins;
+import plugins.PluginInterface;
 import plugins.PluginLoader;
 import channels.LogProducer;
 import channels.LogEvent;
@@ -15,12 +16,12 @@ import channels.LogEvent;
 
 public class AgentEngine {
     
-	public static boolean isActive = false;
-	public static boolean logProducerActive = false;
-	public static boolean logProducerEnabled = false;
-	public static boolean watchDogActive = false;
-	public static long startTS = System.currentTimeMillis();
+	public static boolean isActive = false; //agent on/off
+	public static boolean logProducerActive = false;  //thread on/off
+	public static boolean logProducerEnabled = false; //log service on/off 
+	public static boolean watchDogActive = false; //agent watchdog on/off
 	
+	public static Map<String, PluginInterface> pluginMap;
 	public static Map<String, ConcurrentLinkedQueue<LogEvent>> channelMap;
 	public static Config config;
 	public static ConfigPlugins pluginsconfig;
@@ -29,6 +30,8 @@ public class AgentEngine {
     
     	try 
     	{
+    		//Establish  a named map of plugin interfaces
+    		pluginMap = new ConcurrentHashMap<String,PluginInterface>();
     		
     		//Establish a named map of concurrent queues as defined in the config
     		channelMap = new ConcurrentHashMap<String,ConcurrentLinkedQueue<LogEvent>>(); 
@@ -135,15 +138,19 @@ public class AgentEngine {
     		
     		for(String pluginName : enabledPlugins)
     		{
-    			System.out.println("Plugin Name: " + pluginName);
+    			System.out.println("Plugin Configuration: " + pluginName);
     			System.out.println("Plugin Location: " + pluginsconfig.getPluginJar(pluginName));
     			PluginLoader pl = new PluginLoader(pluginsconfig.getPluginJar(pluginName));
-    	    	
-    			System.out.println(pl.getPluginName());
+    	    	PluginInterface pi = pl.getPluginInterface();
+    	    	if(pi.initialize(pluginsconfig.getPluginConfig(pluginName)))
+    	    	{
+    	    		System.out.println("Plugin Initialized: " + pi.getVersion());
+    	    	}
+    	    	else
+    	    	{
+    	    		System.out.println(pluginName + " Failed Initialization");
+    	    	}
     			
-    			//String str = "/Users/vcbumg2/Documents/Mesh/Work/Development/Cresco/Cresco-Agent/plugins/cresco-agent-dummy-plugin.jar";
-    	    	//PluginLoader pl = new PluginLoader(str);
-    	    	//System.out.println(pl.getPluginVersion());	    	
     		}
     		
     	}
