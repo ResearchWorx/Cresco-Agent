@@ -1,4 +1,4 @@
-package shared;
+package core;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalINIConfiguration;

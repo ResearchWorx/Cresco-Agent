@@ -4,7 +4,7 @@ import java.util.Queue;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import shared.logEvent;
+import channels.logEvent;
 
 
 public class WatchDog {

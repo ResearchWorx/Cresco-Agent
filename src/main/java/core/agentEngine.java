@@ -7,9 +7,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import plugins.PluginLoader;
-import shared.Config;
-import shared.logEvent;
 import channels.LogProducer;
+import channels.logEvent;
 
 
 public class agentEngine {
