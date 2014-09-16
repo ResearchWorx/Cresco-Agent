@@ -34,73 +34,22 @@ public class ConfigPlugins {
 				enabledPlugins.add(key.toString());
 			}
 		}
-		return enabledPlugins;
-		
+		return enabledPlugins;	
 	}
-	
-	public SubnodeConfiguration getPluginConfig(String pluginID)
+	public String getPluginName(String pluginID)
 	{
 		SubnodeConfiguration sObj = iniConfObj.getSection(pluginID);
-		return sObj;
-	}
-	
-	public int getWatchDogTimer(String pluginID)
-	{
-		SubnodeConfiguration sObj = iniConfObj.getSection("plugin" + pluginID);
-		return sObj.getInt("watchdogtimer");
+		return sObj.getString("pluginname");
 	}
 	public String getPluginJar(String pluginID)
 	{
 		SubnodeConfiguration sObj = iniConfObj.getSection(pluginID);
 		return sObj.getString("jarfile");
 	}
-	public String getAMPQDataExchange(String pluginID)
+	public SubnodeConfiguration getPluginConfig(String pluginID)
 	{
-		SubnodeConfiguration sObj = iniConfObj.getSection("plugin" + pluginID);
-		return sObj.getString("ampq_data_exchange");
+		SubnodeConfiguration sObj = iniConfObj.getSection(pluginID);
+		return sObj;
 	}
-	public boolean setAMPQLogExchange(String pluginID,String dataExchange) throws ConfigurationException
-	{
-		SubnodeConfiguration sObj = iniConfObj.getSection("plugin" + pluginID);
-	    sObj.setProperty("ampq_data_exchange", dataExchange);
-	    iniConfObj.save();
-	    return true;
-	}
-	public String getAMPQHost(String pluginID)
-	{
-		SubnodeConfiguration sObj = iniConfObj.getSection("plugin" + pluginID);
-		return sObj.getString("ampq_host");
-	}
-	public boolean setAMPQHost(String pluginID,String host) throws ConfigurationException
-	{
-		SubnodeConfiguration sObj = iniConfObj.getSection("plugin" + pluginID);
-	    sObj.setProperty("ampq_host", host);
-	    iniConfObj.save();
-	    return true;
-	}
-	public String getAMPQUser(String pluginID)
-	{
-		SubnodeConfiguration sObj = iniConfObj.getSection("plugin" + pluginID);
-		return sObj.getString("ampq_username");	    
-	}
-	public boolean setAMPQUser(String pluginID,String userName) throws ConfigurationException
-	{
-		SubnodeConfiguration sObj = iniConfObj.getSection("plugin" + pluginID);
-	    sObj.setProperty("ampq_username", userName);
-	    iniConfObj.save();
-	    return true;
-	}
-	public String getAMPQPassword(String pluginID)
-	{
-		SubnodeConfiguration sObj = iniConfObj.getSection("plugin" + pluginID);
-		return sObj.getString("ampq_password");	    
-	}
-	public boolean setAMPQPassword(String pluginID,String password) throws ConfigurationException
-	{
-		SubnodeConfiguration sObj = iniConfObj.getSection("plugin" + pluginID);
-	    sObj.setProperty("ampq_password", password);
-	    iniConfObj.save();
-	    return true;
-	}
-	
+		
 }
