@@ -144,14 +144,14 @@ public class AgentEngine {
     	    	PluginInterface pi = pl.getPluginInterface();
     	    	if(pi.initialize(pluginsconfig.getPluginConfig(pluginName)))
     	    	{
-    	    		if(pluginName.equals(pi.getName()))
+    	    		if(pluginsconfig.getPluginName(pluginName).equals(pi.getName()))
     	    		{
     	    			System.out.println("Plugin Configuration: [" + pluginName + "] Initialized: (" + pi.getVersion() + ")");
     	    			pluginMap.put(pluginName, pi);
     	    		}
     	    		else
     	    		{
-    	    			System.err.println("ERROR: Plugin Configuration: [" + pluginName + "] does not match Plugin Jar: (" + pi.getVersion() + ")");
+    	    			System.err.println("ERROR: Plugin Configuration: pluginname=" + pluginsconfig.getPluginName(pluginName) + " does not match Plugin Jar: " + pi.getVersion() + ")");
     	    			pl = null;
     	    			pi = null;
     	    		}
