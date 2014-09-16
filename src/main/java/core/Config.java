@@ -37,6 +37,11 @@ public class Config {
 		SubnodeConfiguration sObj = iniConfObj.getSection("general");
 		return sObj.getInt("watchdogtimer");
 	}
+	public String getPluginConfigFile()
+	{
+		SubnodeConfiguration sObj = iniConfObj.getSection("general");
+		return sObj.getString("plugin_config_file");
+	}
 	public String getAMPQLogExchange()
 	{
 		SubnodeConfiguration sObj = iniConfObj.getSection("general");

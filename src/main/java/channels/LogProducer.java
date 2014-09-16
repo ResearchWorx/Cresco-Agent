@@ -22,7 +22,7 @@ public class LogProducer implements Runnable {
     	this.log = log;
         this.EXCHANGE_NAME_LOG = agentEngine.config.getAMPQLogExchange();
     }
-   
+    
     public void run() {
     	
     	try{
@@ -43,17 +43,16 @@ public class LogProducer implements Runnable {
     		System.err.println(ex);
     		System.exit(1);
     	}
-    	
+    
     	agentEngine.logProducerActive = true;
     	logEvent le = new logEvent("INFO","LogProducer Started");
     	log.offer(le);
     	
-    	while (!Thread.currentThread().isInterrupted()) {
-        	
+    	while (agentEngine.logProducerEnabled) {
         	try {
         		if(agentEngine.logProducerActive)
         		{
-				log();
+        			log();
         		}
         		
 				Thread.sleep(100);
@@ -80,14 +79,14 @@ public class LogProducer implements Runnable {
 		    	{
 		    		le = new logEvent("ERROR","LogProducer Interupted" + ex.toString());
 			    	log.offer(le);
-		    	}
-				Thread.currentThread().interrupt();
+		    	}		    	
 			}
         	
         }
     	le = new logEvent("INFO","LogProducer Interupted ");
     	log.offer(le);
-    	
+    	Thread.currentThread().interrupt();
+    	return;
     }
 
     private void log() throws IOException {
@@ -101,13 +100,7 @@ public class LogProducer implements Runnable {
 		{
 			System.out.println("Reconnecting Channel");
 			channel_log = connection.createChannel();
-		    //channel.queueDeclare(QUEUE_NAME_LOG, false, false, false, null);
 		    channel_log.exchangeDeclare(EXCHANGE_NAME_LOG, "fanout");
-		    
-		    if(channel_log.isOpen())
-		    {
-		    	//System.out.println("Channel is Open");	
-		    }
 		}
     	}
     	catch(Exception ex)
@@ -120,7 +113,7 @@ public class LogProducer implements Runnable {
     		while ((!log.isEmpty())) {
     			
     			logEvent le = log.poll();
-    			channel_log.basicPublish(EXCHANGE_NAME_LOG, "", null, le.toString().getBytes()); 		    
+    			channel_log.basicPublish(EXCHANGE_NAME_LOG, "", null, le.toString().getBytes());
     		}
     	}
     	}
@@ -139,6 +132,5 @@ public class LogProducer implements Runnable {
          			
          			
     	}
-   
     
 }

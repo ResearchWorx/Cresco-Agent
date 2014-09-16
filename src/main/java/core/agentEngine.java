@@ -2,10 +2,12 @@ package core;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import plugins.ConfigPlugins;
 import plugins.PluginLoader;
 import channels.LogProducer;
 import channels.logEvent;
@@ -15,18 +17,16 @@ public class agentEngine {
     
 	public static boolean isActive = false;
 	public static boolean logProducerActive = false;
+	public static boolean logProducerEnabled = false;
 	public static boolean watchDogActive = false;
 	public static long startTS = System.currentTimeMillis();
 	
 	public static Map<String, ConcurrentLinkedQueue<logEvent>> channelMap;
 	public static Config config;
+	public static ConfigPlugins pluginsconfig;
 	
     public static void main(String[] args) throws Exception {
     
-    	//Create Core Threads
-    	//testing plugins
-    	processPlugins(config);
-		System.exit(1);
     	try 
     	{
     		
@@ -58,16 +58,19 @@ public class agentEngine {
 	    	//Notify agent start
 	    	channelMap.get("log").offer(new logEvent("INFO","Agent Core Started"));
 	    	
-    	   isActive = true;
+    	   //isActive = true;
     	   //wait until shutdown occures
-    	   while(isActive) 
+	       while(isActive) 
     	   {
     		//just sleep until isActive=false
     		Thread.sleep(1000);           	
     	   }
     	   //stop other threads
-    	   logProducerThread.interrupt();
-   	    
+    	   
+    	   logProducerActive = false;
+    	   logProducerEnabled = false;
+    	   
+    	   System.exit(0);
     	}
     	catch (Exception e)
     	{
@@ -113,13 +116,39 @@ public class agentEngine {
    
     public static void processPlugins(Config conf) throws ClassNotFoundException, IOException
     {
+    	try
+    	{
+    		String plugin_config_file = conf.getPluginConfigFile();
+    		File f = new File(plugin_config_file);
+    		if(!f.exists())
+    		{
+    			System.err.println("The specified configuration file: " + plugin_config_file + " is invalid");
+    			System.exit(1);	
+    		}
     	
+    		//pull in plugin configuration
+    		pluginsconfig = new ConfigPlugins(plugin_config_file);
+    		//System.out.println(pluginsconfig.getModuleInstances())
+    		List<String> enabledPlugins = pluginsconfig.getEnabledPluginList();
+    		
+    		for(String pluginName : enabledPlugins)
+    		{
+    			System.out.println("Plugin: " + pluginName);
+    		}
+    		
+    	}
+    	catch(Exception ex)
+    	{
+    		System.err.println("Failed to Process Plugins: " + ex.toString());
+    	}
+    	
+    	/*
     	String str = "/Users/vcbumg2/Documents/Mesh/Work/Development/Cresco/Cresco-Agent/plugins/cresco-agent-dummy-plugin.jar";
     	PluginLoader pl = new PluginLoader(str);
     	
     	System.out.println(new Version().getVersion());
     	System.out.println(pl.getPluginVersion());
-    	
+    	*/
     	  	
 		/*
     	PluginLoader pl = new PluginLoader("location to jar);

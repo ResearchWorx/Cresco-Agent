@@ -1,0 +1,5 @@
+[plugins]
+plugin_0=<disable=0,enable=1>
+
+[plugin0]
+jarfile=<plugin jar path>
