@@ -18,12 +18,13 @@ import channels.LogEvent;
 public class AgentEngine {
     
 	public static boolean isActive = false; //agent on/off
-	public static boolean logProducerActive = false;  //thread on/off
-	public static boolean logProducerEnabled = false; //log service on/off 
+	public static boolean logProducerActive = false;  //log service on/off 
+	public static boolean logProducerEnabled = false; //thread on/off
 	public static boolean watchDogActive = false; //agent watchdog on/off
 	
 	public static Map<String, PluginInterface> pluginMap;
-	public static Map<String, ConcurrentLinkedQueue<LogEvent>> channelMap;
+	//public static Map<String, ConcurrentLinkedQueue<LogEvent>> channelMap;
+	public static ConcurrentLinkedQueue<LogEvent> logQueue;
 	public static Config config;
 	public static ConfigPlugins pluginsconfig;
 	
@@ -34,30 +35,29 @@ public class AgentEngine {
     		//Establish  a named map of plugin interfaces
     		pluginMap = new ConcurrentHashMap<String,PluginInterface>();
     		
-    		//Establish a named map of concurrent queues as defined in the config
-    		channelMap = new ConcurrentHashMap<String,ConcurrentLinkedQueue<LogEvent>>(); 
-    		//Create log Queue
-    		ConcurrentLinkedQueue<LogEvent> logQueue = new ConcurrentLinkedQueue<LogEvent>();
-    		channelMap.put("log", logQueue);
-    		
     		//Make sure initial input is sane.	
         	String configFile = checkConfig(args);
-        	//String configFile = "Cresco-Agent.ini";
-    		
+        	
         	//Make sure config file
         	config = new Config(configFile);
     		
-    	    //log producer is bound to log queue and ampq_log_exchange
-    		LogProducer v = new LogProducer(channelMap.get("log"));
+        	//Create log Queue wait to start
+    		logQueue = new ConcurrentLinkedQueue<LogEvent>();
+    		LogProducer v = new LogProducer(logQueue);
 	    	Thread logProducerThread = new Thread(v);
 	    	logProducerThread.start();
+	    	while(!logProducerEnabled)
+	    	{
+	    		Thread.sleep(1000);
+	    		System.out.println("Waiting for logProducer Initialization");
+	    	}
 	    	
 	    	//start core watchdog
-	    	WatchDog wd = new WatchDog(channelMap.get("log"));
+	    	WatchDog wd = new WatchDog(logQueue);
 	    	
 	    	//Notify agent start
 	    	String msg = "Agent Core (" + new Version().getVersion() + ") Started";
-	    	channelMap.get("log").offer(new LogEvent("INFO",msg));
+	    	logQueue.offer(new LogEvent("INFO",msg));
 	    	System.out.println(msg);
 	    	
 	    	//Process Plugins
@@ -71,6 +71,8 @@ public class AgentEngine {
     		//just sleep until isActive=false
     		Thread.sleep(1000);           	
     	   }
+   		   Thread.sleep(20000);           	
+   	    
     	   //stop other threads
     	   
     	   logProducerActive = false;
@@ -142,7 +144,8 @@ public class AgentEngine {
     			System.out.println("Plugin Location: " + pluginsconfig.getPluginJar(pluginName));
     			PluginLoader pl = new PluginLoader(pluginsconfig.getPluginJar(pluginName));
     	    	PluginInterface pi = pl.getPluginInterface();
-    	    	if(pi.initialize(pluginsconfig.getPluginConfig(pluginName)))
+    	    		   
+    	    	if(pi.initialize(logQueue,pluginsconfig.getPluginConfig(pluginName)))
     	    	{
     	    		if(pluginsconfig.getPluginName(pluginName).equals(pi.getName()))
     	    		{
@@ -160,7 +163,7 @@ public class AgentEngine {
     	    	{
     	    		System.out.println(pluginName + " Failed Initialization");
     	    	}
-    			
+    	    	
     		}
     		
     	}

@@ -10,46 +10,51 @@ import core.AgentEngine;
 
 public class LogProducer implements Runnable {
 
-    private final Queue<LogEvent> log;
-    private static Channel channel_log;
-    private static Connection connection;
-    private static ConnectionFactory factory;
+    private final Queue<LogEvent> logQueue;
+    private Channel channel_log;
+    private Connection connection;
+    private ConnectionFactory factory;
     
     private String EXCHANGE_NAME_LOG;
     
     
-    public LogProducer(Queue<LogEvent> log) {
-    	this.log = log;
+    public LogProducer(Queue<LogEvent> logQueue) {
+    	this.logQueue = logQueue;
         this.EXCHANGE_NAME_LOG = AgentEngine.config.getAMPQLogExchange();
     }
     
     public void run() {
-    	
+        
     	try{
-    	factory = new ConnectionFactory();
-	    factory.setHost(AgentEngine.config.getAMPQHost());
-	    factory.setUsername(AgentEngine.config.getAMPQUser());
-	    factory.setPassword(AgentEngine.config.getAMPQPassword());
-	    
-	    connection = factory.newConnection();
-	    channel_log = connection.createChannel();
-	    
-	    channel_log.exchangeDeclare(EXCHANGE_NAME_LOG, "fanout");
+    	
+    		factory = new ConnectionFactory();
+
+        	factory.setHost(AgentEngine.config.getAMPQLogHost());
+    	    factory.setUsername(AgentEngine.config.getAMPQLogUser());
+    	    factory.setPassword(AgentEngine.config.getAMPQLogPassword());
+    	    factory.setConnectionTimeout(10000);
+    	    connection = factory.newConnection();
+    		channel_log = connection.createChannel();
+    		channel_log.exchangeDeclare(EXCHANGE_NAME_LOG, "fanout");
 	    
     	}
     	catch(Exception ex)
     	{
-    		System.err.println("LogProducer Init Failed:  Exiting");
+    		System.err.println("LogProducer Initialization Failed:  Exiting");
     		System.err.println(ex);
     		System.exit(1);
     	}
     
     	AgentEngine.logProducerActive = true;
+    	AgentEngine.logProducerEnabled = true;
+    	
+    	System.out.println("*LogProducer Started*");
     	LogEvent le = new LogEvent("INFO","LogProducer Started");
-    	log.offer(le);
+    	logQueue.offer(le);
     	
     	while (AgentEngine.logProducerEnabled) {
         	try {
+        		
         		if(AgentEngine.logProducerActive)
         		{
         			log();
@@ -64,7 +69,7 @@ public class LogProducer implements Runnable {
 				// TODO Auto-generated catch block
 				//e.printStackTrace();
 				le = new LogEvent("INFO","LogProducer Stopped");
-		    	log.offer(le);
+		    	logQueue.offer(le);
 		    	try{
 		    	if(channel_log.isOpen())
 	 			{
@@ -77,14 +82,16 @@ public class LogProducer implements Runnable {
 		    	}
 		    	catch(Exception ex)
 		    	{
+		    		System.out.println("LogProducer Interupted" + ex.toString());	        	
 		    		le = new LogEvent("ERROR","LogProducer Interupted" + ex.toString());
-			    	log.offer(le);
+			    	logQueue.offer(le);
 		    	}		    	
 			}
         	
         }
-    	le = new LogEvent("INFO","LogProducer Interupted ");
-    	log.offer(le);
+    	System.out.println("LogProducer Disabled");   	
+    	le = new LogEvent("INFO","LogProducer Disabled");
+    	logQueue.offer(le);
     	Thread.currentThread().interrupt();
     	return;
     }
@@ -109,10 +116,10 @@ public class LogProducer implements Runnable {
     	}
     	try{
     		
-    	synchronized(log) {
-    		while ((!log.isEmpty())) {
-    			
-    			LogEvent le = log.poll();
+    	synchronized(logQueue) {
+    		while ((!logQueue.isEmpty())) {
+    			LogEvent le = logQueue.poll();
+    			System.out.println(le.toString());
     			channel_log.basicPublish(EXCHANGE_NAME_LOG, "", null, le.toString().getBytes());
     		}
     	}

@@ -10,9 +10,7 @@ public class Config {
 	
 	public Config(String configFile) throws ConfigurationException
 	{
-	    //String iniFile = "Cresco-Agent-Netflow.ini";
-	    
-		iniConfObj = new HierarchicalINIConfiguration(configFile);
+	    iniConfObj = new HierarchicalINIConfiguration(configFile);
 	}
 	
 	public String getAgentName()
@@ -27,11 +25,6 @@ public class Config {
 	    iniConfObj.save();
 	    return true;
 	}
-	public int getInstances()
-	{
-		SubnodeConfiguration sObj = iniConfObj.getSection("general");
-		return sObj.getInt("instances");
-	}
 	public int getWatchDogTimer()
 	{
 		SubnodeConfiguration sObj = iniConfObj.getSection("general");
@@ -42,6 +35,8 @@ public class Config {
 		SubnodeConfiguration sObj = iniConfObj.getSection("general");
 		return sObj.getString("plugin_config_file");
 	}
+	
+	
 	public String getAMPQLogExchange()
 	{
 		SubnodeConfiguration sObj = iniConfObj.getSection("general");
@@ -54,6 +49,45 @@ public class Config {
 	    iniConfObj.save();
 	    return true;
 	}
+	public String getAMPQLogHost()
+	{
+		SubnodeConfiguration sObj = iniConfObj.getSection("general");
+		return sObj.getString("ampq_log_host");
+	}
+	public boolean setAMPQLogHost(String host) throws ConfigurationException
+	{
+		SubnodeConfiguration sObj = iniConfObj.getSection("general");
+	    sObj.setProperty("ampq_log_host", host);
+	    iniConfObj.save();
+	    return true;
+	}
+	public String getAMPQLogUser()
+	{
+		SubnodeConfiguration sObj = iniConfObj.getSection("general");
+		return sObj.getString("ampq_log_username");	    
+	}
+	public boolean setAMPQLogUser(String userName) throws ConfigurationException
+	{
+		SubnodeConfiguration sObj = iniConfObj.getSection("general");
+	    sObj.setProperty("ampq_log_username", userName);
+	    iniConfObj.save();
+	    return true;
+	}
+	public String getAMPQLogPassword()
+	{
+		SubnodeConfiguration sObj = iniConfObj.getSection("general");
+		return sObj.getString("ampq_log_password");	    
+	}
+	public boolean setAMPQLogPassword(String password) throws ConfigurationException
+	{
+		SubnodeConfiguration sObj = iniConfObj.getSection("general");
+	    sObj.setProperty("ampq_log_password", password);
+	    iniConfObj.save();
+	    return true;
+	}
+	
+	
+	
 	public String getAMPQControlExchange()
 	{
 		SubnodeConfiguration sObj = iniConfObj.getSection("general");
@@ -66,39 +100,39 @@ public class Config {
 	    iniConfObj.save();
 	    return true;
 	}
-	public String getAMPQHost()
+	public String getAMPQControlHost(String type)
 	{
 		SubnodeConfiguration sObj = iniConfObj.getSection("general");
-		return sObj.getString("ampq_host");
+		return sObj.getString("ampq_control_host");
 	}
-	public boolean setAMPQHost(String host) throws ConfigurationException
+	public boolean setAMPQControlHost(String host) throws ConfigurationException
 	{
 		SubnodeConfiguration sObj = iniConfObj.getSection("general");
-	    sObj.setProperty("ampq_host", host);
+	    sObj.setProperty("ampq_control_host", host);
 	    iniConfObj.save();
 	    return true;
 	}
-	public String getAMPQUser()
+	public String getAMPQControlUser()
 	{
 		SubnodeConfiguration sObj = iniConfObj.getSection("general");
-		return sObj.getString("ampq_username");	    
+		return sObj.getString("ampq_control_username");	    
 	}
-	public boolean setAMPQUser(String userName) throws ConfigurationException
+	public boolean setAMPQControlUser(String userName) throws ConfigurationException
 	{
 		SubnodeConfiguration sObj = iniConfObj.getSection("general");
-	    sObj.setProperty("ampq_username", userName);
+	    sObj.setProperty("ampq_control_username", userName);
 	    iniConfObj.save();
 	    return true;
 	}
-	public String getAMPQPassword()
+	public String getAMPQControlPassword()
 	{
 		SubnodeConfiguration sObj = iniConfObj.getSection("general");
-		return sObj.getString("ampq_password");	    
+		return sObj.getString("ampq_control_password");	    
 	}
-	public boolean setAMPQPassword(String password) throws ConfigurationException
+	public boolean setAMPQControlPassword(String password) throws ConfigurationException
 	{
 		SubnodeConfiguration sObj = iniConfObj.getSection("general");
-	    sObj.setProperty("ampq_password", password);
+	    sObj.setProperty("ampq_control_password", password);
 	    iniConfObj.save();
 	    return true;
 	}
