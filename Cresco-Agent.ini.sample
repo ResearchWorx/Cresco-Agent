@@ -1,9 +1,0 @@
-[general]
-agentname=flowAgent
-ampq_log_exchange=<exchange_name_log>
-ampq_control_exchange=<exchange_name_control>
-ampq_host=<rabbitmq_server>
-ampq_username=guest
-ampq_password=<rabbitmq_password>
-watchdogtimer=5000
-plugin_config_file=<some file>
