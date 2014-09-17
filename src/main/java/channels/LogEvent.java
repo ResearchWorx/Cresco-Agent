@@ -6,15 +6,20 @@ public class LogEvent {
   private String eventMsg;
   private String eventSource;
   
-  public LogEvent(String eventType, String eventMsg)
+  public LogEvent(String eventType, String eventSource, String eventMsg)
   {
 	  this.eventType = eventType;
+	  this.eventSource = eventSource;
 	  this.eventMsg = eventMsg;
   }
     
   public String getEventType()
   {
 	  return eventType;
+  }
+  public void setEventType(String eventType)
+  {
+	  this.eventType = eventType;
   }
   public void setEventSource(String eventSource)
   {
@@ -24,11 +29,6 @@ public class LogEvent {
   {
 	  return eventSource;
   }
-  public void setEventType(String eventType)
-  {
-	  this.eventType = eventType;
-  }
-
   public String getEventMsg()
   {
 	  return eventMsg;
@@ -46,6 +46,5 @@ public class LogEvent {
   {
 	  return eventType + "," + eventSource + "," + eventMsg;
   }
-  
-  
+ 
 }

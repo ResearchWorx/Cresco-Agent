@@ -8,7 +8,7 @@ import channels.LogEvent;
 
 public interface PluginInterface {
 
-	   public boolean initialize(ConcurrentLinkedQueue<LogEvent> logQueue, SubnodeConfiguration config);
+	   public boolean initialize(ConcurrentLinkedQueue<LogEvent> logQueue, SubnodeConfiguration configObj);
 	   public String getName();
 	   public String getVersion();
 	   public String getCommandSet();

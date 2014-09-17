@@ -48,8 +48,7 @@ public class LogProducer implements Runnable {
     	AgentEngine.logProducerActive = true;
     	AgentEngine.logProducerEnabled = true;
     	
-    	System.out.println("*LogProducer Started*");
-    	LogEvent le = new LogEvent("INFO","LogProducer Started");
+    	LogEvent le = new LogEvent("INFO",AgentEngine.config.getAgentName(),"LogProducer Started");
     	logQueue.offer(le);
     	
     	while (AgentEngine.logProducerEnabled) {
@@ -68,7 +67,7 @@ public class LogProducer implements Runnable {
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				//e.printStackTrace();
-				le = new LogEvent("INFO","LogProducer Stopped");
+				le = new LogEvent("INFO",AgentEngine.config.getAgentName(),"LogProducer Stopped");
 		    	logQueue.offer(le);
 		    	try{
 		    	if(channel_log.isOpen())
@@ -83,14 +82,14 @@ public class LogProducer implements Runnable {
 		    	catch(Exception ex)
 		    	{
 		    		System.out.println("LogProducer Interupted" + ex.toString());	        	
-		    		le = new LogEvent("ERROR","LogProducer Interupted" + ex.toString());
+		    		le = new LogEvent("ERROR",AgentEngine.config.getAgentName(),"LogProducer Interupted" + ex.toString());
 			    	logQueue.offer(le);
 		    	}		    	
 			}
         	
         }
     	System.out.println("LogProducer Disabled");   	
-    	le = new LogEvent("INFO","LogProducer Disabled");
+    	le = new LogEvent("INFO",AgentEngine.config.getAgentName(),"LogProducer Disabled");
     	logQueue.offer(le);
     	Thread.currentThread().interrupt();
     	return;

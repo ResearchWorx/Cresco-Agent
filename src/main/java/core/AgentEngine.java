@@ -49,7 +49,9 @@ public class AgentEngine {
 	    	while(!logProducerEnabled)
 	    	{
 	    		Thread.sleep(1000);
-	    		System.out.println("Waiting for logProducer Initialization");
+	    		String msg = "Waiting for logProducer Initialization";
+	    		logQueue.offer(new LogEvent("INFO",config.getAgentName(),msg));
+		    	System.out.println(msg);
 	    	}
 	    	
 	    	//start core watchdog
@@ -57,7 +59,7 @@ public class AgentEngine {
 	    	
 	    	//Notify agent start
 	    	String msg = "Agent Core (" + new Version().getVersion() + ") Started";
-	    	logQueue.offer(new LogEvent("INFO",msg));
+	    	logQueue.offer(new LogEvent("INFO",config.getAgentName(),msg));
 	    	System.out.println(msg);
 	    	
 	    	//Process Plugins
@@ -130,7 +132,9 @@ public class AgentEngine {
     		File f = new File(plugin_config_file);
     		if(!f.exists())
     		{
-    			System.err.println("The specified configuration file: " + plugin_config_file + " is invalid");
+    			String msg = "The specified configuration file: " + plugin_config_file + " is invalid";
+    			System.err.println(msg);
+    	 		logQueue.offer(new LogEvent("ERROR",config.getAgentName(),msg));	    	
     			System.exit(1);	
     		}
     	
@@ -149,19 +153,26 @@ public class AgentEngine {
     	    	{
     	    		if(pluginsconfig.getPluginName(pluginName).equals(pi.getName()))
     	    		{
-    	    			System.out.println("Plugin Configuration: [" + pluginName + "] Initialized: (" + pi.getVersion() + ")");
+    	    			String msg = "Plugin Configuration: [" + pluginName + "] Initialized: (" + pi.getVersion() + ")";
+    	    			System.out.println(msg);
+    	    			logQueue.offer(new LogEvent("INFO",config.getAgentName(),msg));	    	   	    			
     	    			pluginMap.put(pluginName, pi);
     	    		}
     	    		else
     	    		{
-    	    			System.err.println("ERROR: Plugin Configuration: pluginname=" + pluginsconfig.getPluginName(pluginName) + " does not match Plugin Jar: " + pi.getVersion() + ")");
-    	    			pl = null;
+    	    			String msg = "Plugin Configuration: pluginname=" + pluginsconfig.getPluginName(pluginName) + " does not match Plugin Jar: " + pi.getVersion() + ")";
+    	    			System.err.println(msg);
+    	    	 		logQueue.offer(new LogEvent("ERROR",config.getAgentName(),msg));
+    	    	 		pl = null;
     	    			pi = null;
+    	    			
     	    		}
     	    	}
     	    	else
     	    	{
-    	    		System.out.println(pluginName + " Failed Initialization");
+    	    		String msg = pluginName + " Failed Initialization";
+    	    		System.err.println(msg);
+	    	 		logQueue.offer(new LogEvent("ERROR",config.getAgentName(),msg));
     	    	}
     	    	
     		}

@@ -21,7 +21,7 @@ public class WatchDog {
 	      timer.scheduleAtFixedRate(new WatchDogTask(), 500, AgentEngine.config.getWatchDogTimer());
 	      
 	      AgentEngine.watchDogActive = true;
-	      LogEvent le = new LogEvent("INFO","WatchDog timer set to " + AgentEngine.config.getWatchDogTimer() + " milliseconds");
+	      LogEvent le = new LogEvent("INFO",AgentEngine.config.getAgentName(),"WatchDog timer set to " + AgentEngine.config.getWatchDogTimer() + " milliseconds");
 		  log.offer(le);
 	  }
 
@@ -32,7 +32,7 @@ public class WatchDog {
 	    if(AgentEngine.watchDogActive)
 	    {
 	    	 long runTime = System.currentTimeMillis() - startTS;
-			 LogEvent le = new LogEvent("WATCHDOG","Agent Core Uptime " + String.valueOf(runTime) + "ms");
+			 LogEvent le = new LogEvent("WATCHDOG",AgentEngine.config.getAgentName(),"Agent Core Uptime " + String.valueOf(runTime) + "ms");
 			 log.offer(le);
 	      //timer.cancel(); //Not necessary because we call System.exit
 	      //System.exit(0); //Stops the AWT thread (and everything else)
