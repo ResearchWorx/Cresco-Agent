@@ -13,13 +13,15 @@ import plugins.PluginInterface;
 import plugins.PluginLoader;
 import shared.CmdEvent;
 import shared.LogEvent;
+import channels.ControlChannel;
 import channels.LogProducer;
 
 
 public class AgentEngine {
     
 	public static boolean isActive = false; //agent on/off
-	public static boolean logProducerActive = false;  //log service on/off 
+	public static boolean logProducerActive = false;  //log service on/off
+	public static boolean ControlChannelEnabled = false; //control service on/off
 	public static boolean logProducerEnabled = false; //thread on/off
 	public static boolean watchDogActive = false; //agent watchdog on/off
 	
@@ -55,6 +57,17 @@ public class AgentEngine {
 		    	System.out.println(msg);
 	    	}
 	    	
+	    	ControlChannel c = new ControlChannel(logQueue);
+	    	Thread ControlChannelThread = new Thread(c);
+	    	ControlChannelThread.start();
+	    	while(!ControlChannelEnabled)
+	    	{
+	    		Thread.sleep(1000);
+	    		String msg = "Waiting for Control Channel Initialization...";
+	    		logQueue.offer(new LogEvent("INFO","CORE",msg));
+		    	System.out.println(msg);
+	    	}    	
+	    	
 	    	//start core watchdog
 	    	WatchDog wd = new WatchDog(logQueue);
 	    	
@@ -67,9 +80,11 @@ public class AgentEngine {
         	processPlugins(config);
     		
            //printMap(pluginMap);
-    	   //isActive = true;
+    	   isActive = true;
     	   //wait until shutdown occures
-           System.out.println(pluginMap.get("plugin_0").getCommandSet());
+           
+        	
+        	System.out.println(pluginMap.get("plugin_0").getCommandSet());
      	   CmdEvent ce = new CmdEvent("echo","booyaa");
      	   ce = pluginMap.get("plugin_0").executeCommand(ce);
            System.out.println(ce.getCmdResult());
@@ -81,7 +96,7 @@ public class AgentEngine {
     		Thread.sleep(1000);
     		
     	   }
-   		   Thread.sleep(20000);           	
+   		   //Thread.sleep(20000);           	
    	    
     	   //stop other threads
     	   

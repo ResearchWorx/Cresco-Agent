@@ -100,7 +100,7 @@ public class Config {
 	    iniConfObj.save();
 	    return true;
 	}
-	public String getAMPQControlHost(String type)
+	public String getAMPQControlHost()
 	{
 		SubnodeConfiguration sObj = iniConfObj.getSection("general");
 		return sObj.getString("ampq_control_host");
