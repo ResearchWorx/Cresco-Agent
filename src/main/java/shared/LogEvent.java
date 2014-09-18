@@ -5,14 +5,18 @@ public class LogEvent {
   private String eventType;
   private String eventMsg;
   private String eventSource;
+  private String eventAgent;
   
+  public LogEvent() //created for XML
+  {
+	  
+  }
   public LogEvent(String eventType, String eventSource, String eventMsg)
   {
 	  this.eventType = eventType;
 	  this.eventSource = eventSource;
 	  this.eventMsg = eventMsg;
-  }
-    
+  }  
   public String getEventType()
   {
 	  return eventType;
@@ -20,14 +24,6 @@ public class LogEvent {
   public void setEventType(String eventType)
   {
 	  this.eventType = eventType;
-  }
-  public void setEventSource(String eventSource)
-  {
-	  this.eventSource = eventSource;
-  }
-  public String getEventSource()
-  {
-	  return eventSource;
   }
   public String getEventMsg()
   {
@@ -37,10 +33,21 @@ public class LogEvent {
   {
 	  this.eventMsg = eventMsg;
   }
-  @Override
-  public String toString()
+  public String getEventSource()
   {
-	  return eventType + "," + eventSource + "," + eventMsg;
+	  return eventSource;
+  }
+  public void setEventSource(String eventSource)
+  {
+	  this.eventSource = eventSource;
+  }
+  public String getEventAgent()
+  {
+	  return eventAgent;
+  }
+  public void setEventAgent(String eventAgent)
+  {
+	  this.eventAgent = eventAgent;
   }
  
 }

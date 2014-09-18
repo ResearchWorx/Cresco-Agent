@@ -1,6 +1,13 @@
 package channels;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.Queue;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.Marshaller;
+import javax.xml.namespace.QName;
+import javax.xml.transform.Result;
 
 import shared.LogEvent;
 
@@ -15,22 +22,23 @@ public class LogProducer implements Runnable {
     private final Queue<LogEvent> logQueue;
     private Channel channel_log;
     private Connection connection;
-    private ConnectionFactory factory;
-    
+    private ConnectionFactory factory;    
     private String EXCHANGE_NAME_LOG;
-    
+    private Marshaller LogEventMarshaller;
+    private String agentName;
     
     public LogProducer(Queue<LogEvent> logQueue) {
     	this.logQueue = logQueue;
         this.EXCHANGE_NAME_LOG = AgentEngine.config.getAMPQLogExchange();
+        agentName = AgentEngine.config.getAgentName();
     }
     
     public void run() {
         
     	try{
     	
+    		//Queue AMPQ Output
     		factory = new ConnectionFactory();
-
         	factory.setHost(AgentEngine.config.getAMPQLogHost());
     	    factory.setUsername(AgentEngine.config.getAMPQLogUser());
     	    factory.setPassword(AgentEngine.config.getAMPQLogPassword());
@@ -38,7 +46,12 @@ public class LogProducer implements Runnable {
     	    connection = factory.newConnection();
     		channel_log = connection.createChannel();
     		channel_log.exchangeDeclare(EXCHANGE_NAME_LOG, "fanout");
-	    
+    		
+    		//XML Output
+    		JAXBContext context = JAXBContext.newInstance(LogEvent.class); 
+    		LogEventMarshaller = context.createMarshaller();
+    		LogEventMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+    		
     	}
     	catch(Exception ex)
     	{
@@ -119,10 +132,20 @@ public class LogProducer implements Runnable {
     		
     	synchronized(logQueue) {
     		while ((!logQueue.isEmpty())) {
-    			LogEvent le = logQueue.poll();
-    			String msg = le.getEventType() + "," + AgentEngine.config.getAgentName() + "," + le.getEventSource() + "," + le.getEventMsg(); 
-    			System.out.println(msg);
-    			channel_log.basicPublish(EXCHANGE_NAME_LOG, "", null, msg.getBytes());
+    			
+    			LogEvent le = logQueue.poll(); //get logevent
+    			le.setEventAgent(agentName); //set agent name
+    			
+    			//create rootXML for marshaler & create XML output
+    			StringWriter LogEventXMLString = new StringWriter();
+    	        QName qName = new QName("com.researchworx.cresco.shared", "LogEvent");
+    	        JAXBElement<LogEvent> root = new JAXBElement<LogEvent>(qName, LogEvent.class, le);
+    	        LogEventMarshaller.marshal(root, LogEventXMLString);
+    	        
+    			//System.out.println(LogEventXMLString.toString());
+    	        
+    	        //put XML on queue
+    			channel_log.basicPublish(EXCHANGE_NAME_LOG, "", null, LogEventXMLString.toString().getBytes());
     		}
     	}
     	}

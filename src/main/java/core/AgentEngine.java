@@ -2,7 +2,6 @@ package core;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,7 +25,6 @@ public class AgentEngine {
 	public static boolean watchDogActive = false; //agent watchdog on/off
 	
 	public static Map<String, PluginInterface> pluginMap;
-	//public static Map<String, ConcurrentLinkedQueue<LogEvent>> channelMap;
 	public static ConcurrentLinkedQueue<LogEvent> logQueue;
 	public static Config config;
 	public static ConfigPlugins pluginsconfig;
@@ -79,12 +77,11 @@ public class AgentEngine {
 	    	//Process Plugins
         	processPlugins(config);
     		
-           //printMap(pluginMap);
-    	   isActive = true;
-    	   //wait until shutdown occures
-           
+           //wait until shutdown occures
+        	isActive = true;
+     	   
         	
-        	System.out.println(pluginMap.get("plugin_0").getCommandSet());
+           System.out.println(pluginMap.get("plugin_0").getCommandSet());
      	   CmdEvent ce = new CmdEvent("echo","booyaa");
      	   ce = pluginMap.get("plugin_0").executeCommand(ce);
            System.out.println(ce.getCmdResult());
@@ -93,13 +90,12 @@ public class AgentEngine {
     	   {
         	   
     		//just sleep until isActive=false
+        	//need to add ability to control other threads here.
     		Thread.sleep(1000);
     		
     	   }
-   		   //Thread.sleep(20000);           	
-   	    
+   		   
     	   //stop other threads
-    	   
     	   logProducerActive = false;
     	   logProducerEnabled = false;
     	   
@@ -203,24 +199,13 @@ public class AgentEngine {
     	}
     	catch(Exception ex)
     	{
-    		System.err.println("Failed to Process Plugins: " + ex.toString());
+    		String msg = "Failed to Process Plugins: " + ex.toString();
+			System.err.println(msg);
+	 		logQueue.offer(new LogEvent("ERROR","CORE",msg));
     	}
     	
     }
-    
-    //to check plugin modules
-    public static void printMap(Map mp) {
-        Iterator it = mp.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pairs = (Map.Entry)it.next();
-            //System.out.println(pairs.getKey() + " = " + pairs.getValue());
-            String pluginName = pairs.getKey().toString();
-            PluginInterface pi = (PluginInterface)pairs.getValue();
-            System.out.println("Plugin Configuration: [" + pluginName + "] Initialized: " + pi.getVersion());
-    		it.remove(); // avoids a ConcurrentModificationException
-        }
-    }
-    
+     
 }
 
 
