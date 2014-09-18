@@ -11,8 +11,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import plugins.ConfigPlugins;
 import plugins.PluginInterface;
 import plugins.PluginLoader;
+import shared.LogEvent;
 import channels.LogProducer;
-import channels.LogEvent;
 
 
 public class AgentEngine {
@@ -49,8 +49,8 @@ public class AgentEngine {
 	    	while(!logProducerEnabled)
 	    	{
 	    		Thread.sleep(1000);
-	    		String msg = "Waiting for logProducer Initialization";
-	    		logQueue.offer(new LogEvent("INFO",config.getAgentName(),msg));
+	    		String msg = "Waiting for logProducer Initialization...";
+	    		logQueue.offer(new LogEvent("INFO","CORE",msg));
 		    	System.out.println(msg);
 	    	}
 	    	
@@ -59,7 +59,7 @@ public class AgentEngine {
 	    	
 	    	//Notify agent start
 	    	String msg = "Agent Core (" + new Version().getVersion() + ") Started";
-	    	logQueue.offer(new LogEvent("INFO",config.getAgentName(),msg));
+	    	logQueue.offer(new LogEvent("INFO","CORE",msg));
 	    	System.out.println(msg);
 	    	
 	    	//Process Plugins
@@ -68,10 +68,15 @@ public class AgentEngine {
         	//printMap(pluginMap);
     	   //isActive = true;
     	   //wait until shutdown occures
-           while(isActive) 
+        	System.out.println(pluginMap.get("plugin_0").getCommandSet());
+     	   System.out.println(pluginMap.get("plugin_0").executeCommand("command-ls-la"));
+     	   
+        	while(isActive) 
     	   {
+        	   
     		//just sleep until isActive=false
-    		Thread.sleep(1000);           	
+    		Thread.sleep(1000);
+    		
     	   }
    		   Thread.sleep(20000);           	
    	    
@@ -134,7 +139,7 @@ public class AgentEngine {
     		{
     			String msg = "The specified configuration file: " + plugin_config_file + " is invalid";
     			System.err.println(msg);
-    	 		logQueue.offer(new LogEvent("ERROR",config.getAgentName(),msg));	    	
+    	 		logQueue.offer(new LogEvent("ERROR","CORE",msg));	    	
     			System.exit(1);	
     		}
     	
@@ -155,14 +160,14 @@ public class AgentEngine {
     	    		{
     	    			String msg = "Plugin Configuration: [" + pluginName + "] Initialized: (" + pi.getVersion() + ")";
     	    			System.out.println(msg);
-    	    			logQueue.offer(new LogEvent("INFO",config.getAgentName(),msg));	    	   	    			
+    	    			logQueue.offer(new LogEvent("INFO","CORE",msg));	    	   	    			
     	    			pluginMap.put(pluginName, pi);
     	    		}
     	    		else
     	    		{
     	    			String msg = "Plugin Configuration: pluginname=" + pluginsconfig.getPluginName(pluginName) + " does not match Plugin Jar: " + pi.getVersion() + ")";
     	    			System.err.println(msg);
-    	    	 		logQueue.offer(new LogEvent("ERROR",config.getAgentName(),msg));
+    	    	 		logQueue.offer(new LogEvent("ERROR","CORE",msg));
     	    	 		pl = null;
     	    			pi = null;
     	    			
@@ -172,7 +177,7 @@ public class AgentEngine {
     	    	{
     	    		String msg = pluginName + " Failed Initialization";
     	    		System.err.println(msg);
-	    	 		logQueue.offer(new LogEvent("ERROR",config.getAgentName(),msg));
+	    	 		logQueue.offer(new LogEvent("ERROR","CORE",msg));
     	    	}
     	    	
     		}

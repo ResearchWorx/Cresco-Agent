@@ -1,4 +1,4 @@
-package channels;
+package shared;
 
 public class LogEvent {
 
@@ -36,10 +36,6 @@ public class LogEvent {
   public void setEventMsg(String eventMsg)
   {
 	  this.eventMsg = eventMsg;
-  }
-  public String getAgentName()
-  {
-	  return eventMsg;
   }
   @Override
   public String toString()

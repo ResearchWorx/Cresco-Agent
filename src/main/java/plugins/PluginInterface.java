@@ -4,7 +4,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.commons.configuration.SubnodeConfiguration;
 
-import channels.LogEvent;
+import shared.LogEvent;
 
 public interface PluginInterface {
 
@@ -12,6 +12,8 @@ public interface PluginInterface {
 	   public String getName();
 	   public String getVersion();
 	   public String getCommandSet();
+	   public String executeCommand(String command);
+	   
 	}
 
 

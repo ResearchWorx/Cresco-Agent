@@ -2,6 +2,8 @@ package channels;
 import java.io.IOException;
 import java.util.Queue;
 
+import shared.LogEvent;
+
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.Channel;
@@ -48,7 +50,7 @@ public class LogProducer implements Runnable {
     	AgentEngine.logProducerActive = true;
     	AgentEngine.logProducerEnabled = true;
     	
-    	LogEvent le = new LogEvent("INFO",AgentEngine.config.getAgentName(),"LogProducer Started");
+    	LogEvent le = new LogEvent("INFO","CORE","LogProducer Started");
     	logQueue.offer(le);
     	
     	while (AgentEngine.logProducerEnabled) {
@@ -67,7 +69,7 @@ public class LogProducer implements Runnable {
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				//e.printStackTrace();
-				le = new LogEvent("INFO",AgentEngine.config.getAgentName(),"LogProducer Stopped");
+				le = new LogEvent("INFO","CORE","LogProducer Stopped");
 		    	logQueue.offer(le);
 		    	try{
 		    	if(channel_log.isOpen())
@@ -82,14 +84,14 @@ public class LogProducer implements Runnable {
 		    	catch(Exception ex)
 		    	{
 		    		System.out.println("LogProducer Interupted" + ex.toString());	        	
-		    		le = new LogEvent("ERROR",AgentEngine.config.getAgentName(),"LogProducer Interupted" + ex.toString());
+		    		le = new LogEvent("ERROR","CORE","LogProducer Interupted" + ex.toString());
 			    	logQueue.offer(le);
 		    	}		    	
 			}
         	
         }
     	System.out.println("LogProducer Disabled");   	
-    	le = new LogEvent("INFO",AgentEngine.config.getAgentName(),"LogProducer Disabled");
+    	le = new LogEvent("INFO","CORE","LogProducer Disabled");
     	logQueue.offer(le);
     	Thread.currentThread().interrupt();
     	return;
@@ -118,8 +120,9 @@ public class LogProducer implements Runnable {
     	synchronized(logQueue) {
     		while ((!logQueue.isEmpty())) {
     			LogEvent le = logQueue.poll();
-    			System.out.println(le.toString());
-    			channel_log.basicPublish(EXCHANGE_NAME_LOG, "", null, le.toString().getBytes());
+    			String msg = le.getEventType() + "," + AgentEngine.config.getAgentName() + "," + le.getEventSource() + "," + le.getEventMsg(); 
+    			System.out.println(msg);
+    			channel_log.basicPublish(EXCHANGE_NAME_LOG, "", null, msg.getBytes());
     		}
     	}
     	}
