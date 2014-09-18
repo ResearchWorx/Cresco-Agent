@@ -11,6 +11,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import plugins.ConfigPlugins;
 import plugins.PluginInterface;
 import plugins.PluginLoader;
+import shared.CmdEvent;
 import shared.LogEvent;
 import channels.LogProducer;
 
@@ -65,11 +66,13 @@ public class AgentEngine {
 	    	//Process Plugins
         	processPlugins(config);
     		
-        	//printMap(pluginMap);
+           //printMap(pluginMap);
     	   //isActive = true;
     	   //wait until shutdown occures
-        	System.out.println(pluginMap.get("plugin_0").getCommandSet());
-     	   System.out.println(pluginMap.get("plugin_0").executeCommand("command-ls-la"));
+           System.out.println(pluginMap.get("plugin_0").getCommandSet());
+     	   CmdEvent ce = new CmdEvent("echo","booyaa");
+     	   ce = pluginMap.get("plugin_0").executeCommand(ce);
+           System.out.println(ce.getCmdResult());
      	   
         	while(isActive) 
     	   {
