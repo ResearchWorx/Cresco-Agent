@@ -6,6 +6,10 @@ public class CmdEvent {
   private String cmdArg;
   private String cmdResult;
   
+  public CmdEvent()
+  {
+	  
+  }
   public CmdEvent(String cmdType, String cmdArg)
   {
 	  this.cmdType = cmdType;

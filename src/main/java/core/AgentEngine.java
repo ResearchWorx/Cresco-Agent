@@ -55,6 +55,10 @@ public class AgentEngine {
 		    	System.out.println(msg);
 	    	}
 	    	
+	    	//Process Plugins
+        	processPlugins(config);
+    		
+	    	//create control channel after everything else has been loaded.
 	    	ControlChannel c = new ControlChannel(logQueue);
 	    	Thread ControlChannelThread = new Thread(c);
 	    	ControlChannelThread.start();
@@ -74,17 +78,8 @@ public class AgentEngine {
 	    	logQueue.offer(new LogEvent("INFO","CORE",msg));
 	    	System.out.println(msg);
 	    	
-	    	//Process Plugins
-        	processPlugins(config);
-    		
            //wait until shutdown occures
         	isActive = true;
-     	   
-        	
-           System.out.println(pluginMap.get("plugin_0").getCommandSet());
-     	   CmdEvent ce = new CmdEvent("echo","booyaa");
-     	   ce = pluginMap.get("plugin_0").executeCommand(ce);
-           System.out.println(ce.getCmdResult());
      	   
         	while(isActive) 
     	   {
@@ -114,9 +109,9 @@ public class AgentEngine {
     
    public static String checkConfig(String[] args)
 	{
-		String errorMgs = "Cresco-Agent-Netflow\n" +
+		String errorMgs = "Cresco-Agent\n" +
     			"Version: " + new Version().getVersion() + "\n" +
-    			"Usage: java -jar Cresco-Agent-Netflow.jar" +
+    			"Usage: java -jar Cresco-Agent.jar" +
     			" -f <configuration_file>\n";
     			
     	if (args.length != 2)

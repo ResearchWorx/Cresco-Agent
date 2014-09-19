@@ -1,10 +1,18 @@
 package channels;
 
-import java.util.Iterator;
-import java.util.Map;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.Queue;
 
-import plugins.PluginInterface;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.namespace.QName;
+import javax.xml.transform.stream.StreamSource;
+
+import shared.CmdEvent;
 import shared.LogEvent;
 
 import com.rabbitmq.client.AMQP.BasicProperties;
@@ -20,11 +28,16 @@ public class ControlChannel implements Runnable {
 
 	private String RPC_QUEUE_NAME;
 	private final Queue<LogEvent> logQueue;
+	private Marshaller CmdEventMarshaller;
+	private Unmarshaller CmdEventUnmarshaller;
+	private CommandExec commandExec;
+    
     
 	
 		 public ControlChannel(Queue<LogEvent> log) {
 	        this.logQueue = log;
 	    	this.RPC_QUEUE_NAME = AgentEngine.config.getAMPQControlExchange();
+	    	commandExec = new CommandExec();
 	    }
 
 	
@@ -47,6 +60,14 @@ public class ControlChannel implements Runnable {
 		QueueingConsumer consumer = new QueueingConsumer(channel);
 		channel.basicConsume(RPC_QUEUE_NAME, false, consumer);
 
+		
+		//XML Output
+		JAXBContext jaxbContext = JAXBContext.newInstance(CmdEvent.class);
+	    CmdEventUnmarshaller = jaxbContext.createUnmarshaller();
+	    CmdEventMarshaller = jaxbContext.createMarshaller();
+	    CmdEventMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+		
+		
 		//System.out.println(" [x] Awaiting RPC requests");
 		LogEvent le = new LogEvent("INFO","CORE","Controller Started");
 		logQueue.offer(le);
@@ -63,34 +84,29 @@ public class ControlChannel implements Runnable {
 		                                     .build();
 			
 		    String message = new String(delivery.getBody());
-		    //int n = Integer.parseInt(message);
-
-		    //System.out.println("Server: " + message);
-		    //String response = message + " pong";
 		    
-		    LogEvent le2 = new LogEvent("INFO","CORE","Controller Action Request: " + message);
+		    //create CmdEvent 
+		    InputStream stream = new ByteArrayInputStream(message.getBytes());		        
+		    JAXBElement<CmdEvent> rootUm = CmdEventUnmarshaller.unmarshal(new StreamSource(stream), CmdEvent.class);		        
+		    //CmdEvent rce = rootUm.getValue();
+		    
+		    CmdEvent ce = commandExec.cmdExec(rootUm.getValue());
+		    
+		    
+		    String msg = "Control Channel Command:" + ce.getCmdType() + " Arguement(s):" + ce.getCmdArg() + " result:" + ce.getCmdResult();
+		    System.out.println(msg);
+		    LogEvent le2 = new LogEvent("INFO","CORE",msg);
 		    logQueue.offer(le2);
 		    
-		    LogEvent ae = controlAction(message);
-		    String response = null;
 		    
-		    if(ae.getEventType().equals("ERROR"))
-		    {
-		    	response = "1";
-		    }
-		    else if(ae.getEventType().equals("CONFIG"))
-		    {
-		    	response = "\nSettings:\n" + ae.getEventMsg(); 
-		    }
-		    else
-		    {
-		    	response = "0";
-		    }
-		    
-		    logQueue.offer(ae);
-	    	
-		    channel.basicPublish( "", props.getReplyTo(), replyProps, response.getBytes());
-
+		  //create rootXML for marshaler & create XML output
+			StringWriter CmdEventXMLString = new StringWriter();
+	        QName qName = new QName("com.researchworx.cresco.shared", "CmdEvent");
+	        JAXBElement<CmdEvent> root = new JAXBElement<CmdEvent>(qName, CmdEvent.class, ce);
+	        CmdEventMarshaller.marshal(root, CmdEventXMLString);
+	        
+			//put responce on queue
+		    channel.basicPublish( "", props.getReplyTo(), replyProps, CmdEventXMLString.toString().getBytes());
 		    channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
 		}
 		}
@@ -102,62 +118,4 @@ public class ControlChannel implements Runnable {
 			
 		}
 	}
-	
-	private LogEvent controlAction(String message)
-	{
-		LogEvent le = new LogEvent("INFO","CORE","Controller Action Request: " + message);
-		
-		try{
-			String actionLog = null;
-			int action = Integer.parseInt(message);
-			
-				switch (action) {
-				case 0:  {le.setEventType("CONFIG"); le.setEventMsg(getSettings()); return le;}
-				case 1:  {le.setEventType("PLUGINCONFIG"); le.setEventMsg(getPlugins()); return le;}
-				case 2:  {AgentEngine.logProducerActive = false; actionLog="logProducerActive=false";}
-				break;
-				case 3:  {AgentEngine.logProducerActive = true; actionLog="logProducerActive=true";}
-				break;
-				case 4:  {AgentEngine.watchDogActive = false; actionLog="watchDogActive=false";}
-				break;
-				case 5:  {AgentEngine.watchDogActive = true; actionLog="watchDogActive=true";}
-				break;
-							
-			}
-			le.setEventMsg(le.getEventMsg() + " Action Result: " + actionLog);
-		return le;
-		}
-		catch(Exception ex)
-		{
-			System.out.println(ex);
-			
-			LogEvent le2 = new LogEvent("ERROR","CORE","Controller action: " + message + " ERROR: " + ex.toString());
-			return le2;
-		}
-	}
-	
-	private String getSettings()
-	{
-		String settings = "logProducerActive=" + AgentEngine.logProducerActive + "\n";
-		settings = settings + "watchDogActive=" + AgentEngine.watchDogActive + "\n";
-		return settings;
-	}
-	public static String getPlugins() 
-	{
-		Map mp = AgentEngine.pluginMap;
-		String str = null;
-        Iterator it = mp.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pairs = (Map.Entry)it.next();
-            //System.out.println(pairs.getKey() + " = " + pairs.getValue());
-            String pluginName = pairs.getKey().toString();
-            PluginInterface pi = (PluginInterface)pairs.getValue();
-            str = str + "Plugin Configuration: [" + pluginName + "] Initialized: " + pi.getVersion();
-            		
-            //System.out.println("Plugin Configuration: [" + pluginName + "] Initialized: " + pi.getVersion());
-    		it.remove(); // avoids a ConcurrentModificationException
-        }
-        return str;
-    }
-	
 }
