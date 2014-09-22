@@ -88,10 +88,9 @@ public class ControlChannel implements Runnable {
 		    //create CmdEvent 
 		    InputStream stream = new ByteArrayInputStream(message.getBytes());		        
 		    JAXBElement<CmdEvent> rootUm = CmdEventUnmarshaller.unmarshal(new StreamSource(stream), CmdEvent.class);		        
-		    //CmdEvent rce = rootUm.getValue();
 		    
+		    //exec command
 		    CmdEvent ce = commandExec.cmdExec(rootUm.getValue());
-		    
 		    
 		    String msg = "Control Channel Command:" + ce.getCmdType() + " Arguement(s):" + ce.getCmdArg() + " result:" + ce.getCmdResult();
 		    System.out.println(msg);

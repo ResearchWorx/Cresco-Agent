@@ -56,8 +56,9 @@ public class AgentEngine {
 	    	}
 	    	
 	    	//Process Plugins
-        	processPlugins(config);
+            processPlugins(config);
     		
+	    	
 	    	//create control channel after everything else has been loaded.
 	    	ControlChannel c = new ControlChannel(logQueue);
 	    	Thread ControlChannelThread = new Thread(c);
@@ -68,10 +69,7 @@ public class AgentEngine {
 	    		String msg = "Waiting for Control Channel Initialization...";
 	    		logQueue.offer(new LogEvent("INFO","CORE",msg));
 		    	System.out.println(msg);
-	    	}    	
-	    	
-	    	//start core watchdog
-	    	WatchDog wd = new WatchDog(logQueue);
+	    	}
 	    	
 	    	//Notify agent start
 	    	String msg = "Agent Core (" + new Version().getVersion() + ") Started";
@@ -81,6 +79,10 @@ public class AgentEngine {
            //wait until shutdown occures
         	isActive = true;
      	   
+        	//start core watchdog
+	    	//WatchDog wd = new WatchDog(logQueue);
+	    	
+        	
         	while(isActive) 
     	   {
         	   
@@ -163,7 +165,7 @@ public class AgentEngine {
     			PluginLoader pl = new PluginLoader(pluginsconfig.getPluginJar(pluginName));
     	    	PluginInterface pi = pl.getPluginInterface();
     	    		   
-    	    	if(pi.initialize(logQueue,pluginsconfig.getPluginConfig(pluginName)))
+    	    	if(pi.initialize(logQueue,pluginsconfig.getPluginConfig(pluginName),pluginName))
     	    	{
     	    		if(pluginsconfig.getPluginName(pluginName).equals(pi.getName()))
     	    		{

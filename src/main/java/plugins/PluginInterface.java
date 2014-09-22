@@ -9,10 +9,9 @@ import shared.LogEvent;
 
 public interface PluginInterface {
 
-	   public boolean initialize(ConcurrentLinkedQueue<LogEvent> logQueue, SubnodeConfiguration configObj);
+	   public boolean initialize(ConcurrentLinkedQueue<LogEvent> logQueue, SubnodeConfiguration configObj,String pluginSlot);
 	   public String getName();
 	   public String getVersion();
-	   public String getCommandSet();
 	   public CmdEvent executeCommand(CmdEvent command);
 	   
 	}

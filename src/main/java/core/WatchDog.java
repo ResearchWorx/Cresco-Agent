@@ -32,7 +32,7 @@ public class WatchDog {
 	    if(AgentEngine.watchDogActive)
 	    {
 	    	 long runTime = System.currentTimeMillis() - startTS;
-			 LogEvent le = new LogEvent("WATCHDOG",AgentEngine.config.getAgentName(),"Agent Core Uptime " + String.valueOf(runTime) + "ms");
+			 LogEvent le = new LogEvent("WATCHDOG",AgentEngine.config.getAgentName(),"Agent Uptime " + String.valueOf(runTime) + "ms");
 			 log.offer(le);
 	      //timer.cancel(); //Not necessary because we call System.exit
 	      //System.exit(0); //Stops the AWT thread (and everything else)

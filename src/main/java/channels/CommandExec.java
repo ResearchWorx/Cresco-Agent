@@ -3,6 +3,7 @@ package channels;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -22,8 +23,8 @@ public class CommandExec {
 	{
 		if(ce.getCmdType().equals("discover"))
 		{
-			//System.out.println(ce.getCmdType() + " " + ce.getCmdArg() + " " + ce.getCmdResult());
 			StringBuilder sb = new StringBuilder();
+			sb.append("help\n");
 			sb.append("show\n");
 			sb.append("show_agent\n");
 			sb.append("show_plugins\n");
@@ -51,29 +52,37 @@ public class CommandExec {
 			
 			return ce;		
 		}
-		else if(ce.getCmdType().toLowerCase().startsWith("plugin"))
+		else if(ce.getCmdArg().toLowerCase().startsWith("plugin"))
 		{
+			
 			List<String> pluginList = AgentEngine.pluginsconfig.getEnabledPluginList();
+			
+			String arg = ce.getCmdArg().substring(ce.getCmdArg().indexOf("_") + 1);
+			String plugin = ce.getCmdArg().substring(0,ce.getCmdArg().indexOf("_"));
+        	
 			for(String pluginName : pluginList)
 			{
-				if((AgentEngine.pluginMap.containsKey(pluginName)) && (pluginName.equals(ce.getCmdType())))
+				
+	        	if((AgentEngine.pluginMap.containsKey(pluginName)) && (pluginName.equals(plugin)))
 				{
 					PluginInterface pi = AgentEngine.pluginMap.get(pluginName);
-					String tmpstr = ce.getCmdArg();
-					tmpstr = tmpstr.substring(tmpstr.indexOf("_") + 1);
-				    ce.setCmdArg(tmpstr);
-				    ce = pi.executeCommand(ce);				
+					ce.setCmdArg(arg);
+				    ce = pi.executeCommand(ce);
+				    break;
 				}
 			}
+			
 		
 		}
-		else if(ce.getCmdArg().equals("show"))
+		else if(ce.getCmdArg().equals("show") || ce.getCmdArg().equals("?") || ce.getCmdArg().equals("help"))
 		{
+			
 			StringBuilder sb = new StringBuilder();
-			sb.append("Help Show\n");
-			sb.append("show agent\t\t Shows Agent Info\n");
-			sb.append("show plugins\t\t Shows Plugins Info");
-			sb.append("plugin/[number of plugin]\t\t Enter Plugin Mode");
+			sb.append("\nAgent " + AgentEngine.config.getAgentName() + " Help\n");
+			sb.append("-\n");
+			sb.append("show agent\t\t\t\t Shows Agent Info\n");
+			sb.append("show plugins\t\t\t\t Shows Plugins Info\n");
+			sb.append("plugin/[number of plugin]\t\t To access Plugin Info");
 			
 			ce.setCmdResult(sb.toString());
 		}
@@ -85,19 +94,7 @@ public class CommandExec {
 		{
 			ce.setCmdResult(plugins());
 		}
-		else if(ce.getCmdType().startsWith("plugin_")) 
-		{
-			//go to specific plugin
-			if(AgentEngine.pluginMap.containsKey(ce.getCmdType()))
-			{
-				System.out.println(ce.getCmdType() + " " + ce.getCmdArg() + " " + ce.getCmdResult());
-				ce = AgentEngine.pluginMap.get(ce.getCmdType()).executeCommand(ce);
-			}
-			else
-			{
-				ce.setCmdResult("Plugin Not found");	
-			}
-		}
+		
 		else
 		{
 			ce.setCmdResult("Agent Command [" + ce.getCmdType() + "] unknown");
