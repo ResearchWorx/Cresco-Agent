@@ -80,7 +80,7 @@ public class AgentEngine {
         	isActive = true;
      	   
         	//start core watchdog
-	    	//WatchDog wd = new WatchDog(logQueue);
+	    	WatchDog wd = new WatchDog(logQueue);
 	    	
         	
         	while(isActive) 

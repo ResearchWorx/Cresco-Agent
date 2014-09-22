@@ -24,31 +24,42 @@ public class CommandExec {
 		if(ce.getCmdType().equals("discover"))
 		{
 			StringBuilder sb = new StringBuilder();
-			sb.append("help\n");
-			sb.append("show\n");
-			sb.append("show_agent\n");
-			sb.append("show_plugins\n");
 			
-			List<String> pluginList = AgentEngine.pluginsconfig.getEnabledPluginList();
-			
-			for(String pluginName : pluginList)
+			if(ce.getCmdArg().toLowerCase().startsWith("plugin"))
 			{
-				if(AgentEngine.pluginMap.containsKey(pluginName))
+				List<String> pluginList = AgentEngine.pluginsconfig.getEnabledPluginList();
+				
+				for(String pluginName : pluginList)
 				{
-					PluginInterface pi = AgentEngine.pluginMap.get(pluginName);
-					CmdEvent tmpCe = pi.executeCommand(ce);
-					BufferedReader bufReader = new BufferedReader(new StringReader(tmpCe.getCmdResult()));
-					
-					String line=null;
-					while( (line=bufReader.readLine()) != null )
+					if(AgentEngine.pluginMap.containsKey(pluginName))
 					{
-						sb.append(pluginName + "_" + line + "\n");
+						PluginInterface pi = AgentEngine.pluginMap.get(pluginName);
+						CmdEvent tmpCe = pi.executeCommand(ce);
+						BufferedReader bufReader = new BufferedReader(new StringReader(tmpCe.getCmdResult()));
+						
+						String line=null;
+						while( (line=bufReader.readLine()) != null )
+						{
+							//sb.append(pluginName + "_" + line + "\n");
+							sb.append(line + "\n");
+						}
 					}
+					
 				}
+				
+				ce.setCmdType(AgentEngine.config.getAgentName());
+				ce.setCmdResult(sb.toString());
+			}
+			else
+			{
+				sb.append("help\n");
+				sb.append("show\n");
+				sb.append("show_agent\n");
+				sb.append("show_plugins\n");
+				ce.setCmdType(AgentEngine.config.getAgentName());
+				ce.setCmdResult(sb.toString());
 			}
 			
-			ce.setCmdType(AgentEngine.config.getAgentName());
-			ce.setCmdResult(sb.toString());
 			
 			return ce;		
 		}

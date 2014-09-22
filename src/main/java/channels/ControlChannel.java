@@ -104,7 +104,7 @@ public class ControlChannel implements Runnable {
 	        JAXBElement<CmdEvent> root = new JAXBElement<CmdEvent>(qName, CmdEvent.class, ce);
 	        CmdEventMarshaller.marshal(root, CmdEventXMLString);
 	        
-			//put responce on queue
+	        //put responce on queue
 		    channel.basicPublish( "", props.getReplyTo(), replyProps, CmdEventXMLString.toString().getBytes());
 		    channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
 		}
