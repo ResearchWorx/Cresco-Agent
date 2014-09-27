@@ -88,6 +88,7 @@ public class AgentEngine {
         	   
     		//just sleep until isActive=false
         	//need to add ability to control other threads here.
+        	//need to add upgrade ability
     		Thread.sleep(1000);
     		
     	   }
