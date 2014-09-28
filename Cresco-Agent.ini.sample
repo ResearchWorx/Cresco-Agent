@@ -1,6 +1,13 @@
-[plugins]
-plugin_0=<disable=0,enable=1>
+[general]
+agentname=<agent name>
+ampq_log_exchange=<log queue name>
+ampq_log_host=<AMPQ host>
+ampq_log_username=<username>
+ampq_log_password=<password>
 
-[plugin_0]
-pluginname=<name of plugin>
-jarfile=<plugin jar path>
+ampq_control_exchange=<control queue channel>
+ampq_control_host=<AMPQ host>
+ampq_control_username=<username>
+ampq_control_password=<password>
+watchdogtimer=5000
+plugin_config_file=Cresco-Agent-Plugins.ini
