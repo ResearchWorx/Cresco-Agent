@@ -1,6 +1,7 @@
 [plugins]
-plugin_0=<disable=0,enable=1>
+plugin/0=<disable=0,enable=1>
 
-[plugin_0]
+[plugin/0]
 pluginname=<name of plugin>
 jarfile=<plugin jar path>
+watchdogtimer=5000
