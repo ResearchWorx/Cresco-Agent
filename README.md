@@ -11,7 +11,7 @@ Cresco-Agent
 2. Download the [Latest Build](http://128.163.188.129:9998/job/Cresco-Agent/lastSuccessfulBuild/com.researchworx.cresco$cresco-agent/) of the Cresco-Agent. 
 3. Copy _Cresco-Agent.ini.sample_ to _Cresco-Agent.ini_
 4. Modify _Cresco-Agent.ini_ for your enviorment.  Make sure to configure the controll channel.
-5. Execute: java -jar  _cresco-agent-<version>.jar_ 
+5. Execute: java -jar  _cresco-agent-<<version>>.jar_ 
 
 ---
 
