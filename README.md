@@ -9,8 +9,8 @@ Cresco-Agent
 
 1. Download/update/confirm a [Java Runtime Environment](http://www.oracle.com/technetwork/java/javase/overview/index.html) (JRE, Java Runtime) 1.6 or greater.
 2. Download the [Latest Build](http://128.163.188.129:9998/job/Cresco-Agent/lastSuccessfulBuild/com.researchworx.cresco$cresco-agent/) of the Cresco-Agent. 
-3. Copy _Cresco-Controller.ini.sample_ to _Cresco-Controller.ini_
-4. Modify _Cresco-Controller.ini_ for your enviorment.
+3. Copy _Cresco-Agent.ini.sample_ to _Cresco-Agent.ini_
+4. Modify _Cresco-Agent.ini_ for your enviorment.
 5. Execute: java -jar  _cresco-controller-<version>.jar_
 
 ---
