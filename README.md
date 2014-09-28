@@ -20,7 +20,7 @@ Cresco-Agent
 1. SSH to the hostname of the controller server.
 2. Login using account: _admin_ and password: _admin_ **(actually any account will work as long as username matches password, this must be corrected soon)**
 3. Follow shell instructions.
-4. Agent commands can be found under the name of the agent: > agent_name command
+4. Agent commands can be found under the name of the shell: _\> \<agent name\> \<command\>_
 
 ---
 
