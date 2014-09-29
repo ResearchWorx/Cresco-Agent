@@ -29,7 +29,7 @@ public class LogProducer implements Runnable {
     
     public LogProducer(Queue<LogEvent> logQueue) {
     	this.logQueue = logQueue;
-        this.EXCHANGE_NAME_LOG = AgentEngine.config.getAMPQLogExchange();
+        this.EXCHANGE_NAME_LOG = AgentEngine.config.getRegion() + "_log";
         agentName = AgentEngine.config.getAgentName();
     }
     
@@ -39,10 +39,11 @@ public class LogProducer implements Runnable {
     	
     		//Queue AMPQ Output
     		factory = new ConnectionFactory();
-        	factory.setHost(AgentEngine.config.getAMPQLogHost());
-    	    factory.setUsername(AgentEngine.config.getAMPQLogUser());
-    	    factory.setPassword(AgentEngine.config.getAMPQLogPassword());
+    		factory.setHost(AgentEngine.config.getAMPQControlHost());
+    	    factory.setUsername(AgentEngine.config.getAMPQControlUser());
+    	    factory.setPassword(AgentEngine.config.getAMPQControlPassword());
     	    factory.setConnectionTimeout(10000);
+    	    
     	    connection = factory.newConnection();
     		channel_log = connection.createChannel();
     		channel_log.exchangeDeclare(EXCHANGE_NAME_LOG, "fanout");

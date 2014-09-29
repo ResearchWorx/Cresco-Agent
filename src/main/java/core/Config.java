@@ -37,66 +37,15 @@ public class Config {
 	}
 	
 	
-	public String getAMPQLogExchange()
+	public String getRegion()
 	{
 		SubnodeConfiguration sObj = iniConfObj.getSection("general");
-		return sObj.getString("ampq_log_exchange");
+		return sObj.getString("region");
 	}
-	public boolean setAMPQLogExchange(String logExchange) throws ConfigurationException
+	public boolean setRegion(String region) throws ConfigurationException
 	{
 		SubnodeConfiguration sObj = iniConfObj.getSection("general");
-	    sObj.setProperty("ampq_log_exchange", logExchange);
-	    iniConfObj.save();
-	    return true;
-	}
-	public String getAMPQLogHost()
-	{
-		SubnodeConfiguration sObj = iniConfObj.getSection("general");
-		return sObj.getString("ampq_log_host");
-	}
-	public boolean setAMPQLogHost(String host) throws ConfigurationException
-	{
-		SubnodeConfiguration sObj = iniConfObj.getSection("general");
-	    sObj.setProperty("ampq_log_host", host);
-	    iniConfObj.save();
-	    return true;
-	}
-	public String getAMPQLogUser()
-	{
-		SubnodeConfiguration sObj = iniConfObj.getSection("general");
-		return sObj.getString("ampq_log_username");	    
-	}
-	public boolean setAMPQLogUser(String userName) throws ConfigurationException
-	{
-		SubnodeConfiguration sObj = iniConfObj.getSection("general");
-	    sObj.setProperty("ampq_log_username", userName);
-	    iniConfObj.save();
-	    return true;
-	}
-	public String getAMPQLogPassword()
-	{
-		SubnodeConfiguration sObj = iniConfObj.getSection("general");
-		return sObj.getString("ampq_log_password");	    
-	}
-	public boolean setAMPQLogPassword(String password) throws ConfigurationException
-	{
-		SubnodeConfiguration sObj = iniConfObj.getSection("general");
-	    sObj.setProperty("ampq_log_password", password);
-	    iniConfObj.save();
-	    return true;
-	}
-	
-	
-	
-	public String getAMPQControlExchange()
-	{
-		SubnodeConfiguration sObj = iniConfObj.getSection("general");
-		return sObj.getString("ampq_control_exchange");
-	}
-	public boolean setAMPQControlExchange(String controlExchange) throws ConfigurationException
-	{
-		SubnodeConfiguration sObj = iniConfObj.getSection("general");
-	    sObj.setProperty("ampq_control_exchange", controlExchange);
+	    sObj.setProperty("region", region);
 	    iniConfObj.save();
 	    return true;
 	}
