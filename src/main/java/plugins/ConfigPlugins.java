@@ -19,8 +19,9 @@ public class ConfigPlugins {
 		iniConfObj = new HierarchicalINIConfiguration(configFile);
 	}
 	
-	public List getEnabledPluginList()
+	public List getEnabledPluginList(int isEnabled)
 	{
+		//isEnabled = 1 enabled
 		List<String> enabledPlugins = new ArrayList<String>();
 		SubnodeConfiguration sObj = iniConfObj.getSection("plugins");
 		
@@ -29,10 +30,12 @@ public class ConfigPlugins {
 			Object key = it.next();
 			int value = Integer.parseInt(sObj.getString(key.toString()));
 			//result.put(key.toString(), value);
-			if(value == 1)
+			if(value == isEnabled)
 			{
+				
 				enabledPlugins.add(key.toString());
-			}
+			
+			}	
 		}
 		return enabledPlugins;	
 	}

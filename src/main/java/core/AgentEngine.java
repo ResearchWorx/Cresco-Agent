@@ -10,7 +10,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import plugins.ConfigPlugins;
 import plugins.PluginInterface;
 import plugins.PluginLoader;
-import shared.CmdEvent;
 import shared.LogEvent;
 import channels.ControlChannel;
 import channels.LogProducer;
@@ -141,7 +140,7 @@ public class AgentEngine {
     return args[1];	
 	}
    
-    public static void processPlugins(Config conf) throws ClassNotFoundException, IOException
+   public static void processPlugins(Config conf) throws ClassNotFoundException, IOException
     {
     	try
     	{
@@ -157,7 +156,9 @@ public class AgentEngine {
     	
     		//pull in plugin configuration
     		pluginsconfig = new ConfigPlugins(plugin_config_file);
-    		List<String> enabledPlugins = pluginsconfig.getEnabledPluginList();
+    		
+    		@SuppressWarnings("unchecked")
+			List<String> enabledPlugins = pluginsconfig.getEnabledPluginList(1);//return enabled values in the config
     		
     		for(String pluginName : enabledPlugins)
     		{
