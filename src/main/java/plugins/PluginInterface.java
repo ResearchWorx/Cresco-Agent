@@ -13,6 +13,7 @@ public interface PluginInterface {
 	   public String getName();
 	   public String getVersion();
 	   public CmdEvent executeCommand(CmdEvent command);
+	   public void shutdown();
 	   
 	}
 

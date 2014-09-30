@@ -49,6 +49,18 @@ public class ConfigPlugins {
 		SubnodeConfiguration sObj = iniConfObj.getSection(pluginID);
 		return sObj.getString("jarfile");
 	}
+	public String getPluginStatus(String pluginID)
+	{
+		SubnodeConfiguration sObj = iniConfObj.getSection("plugins");
+		return sObj.getString(pluginID);
+	}
+	public boolean setPluginStatus(String pluginID, int status) throws ConfigurationException
+	{
+		SubnodeConfiguration sObj = iniConfObj.getSection("plugins");
+	    sObj.setProperty(pluginID, Integer.toString(status));
+	    iniConfObj.save();
+	    return true;
+	}
 	public SubnodeConfiguration getPluginConfig(String pluginID)
 	{
 		SubnodeConfiguration sObj = iniConfObj.getSection(pluginID);

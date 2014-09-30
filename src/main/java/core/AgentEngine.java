@@ -204,7 +204,119 @@ public class AgentEngine {
     	}
     	
     }
-     
+   
+   public static String disablePlugin(String plugin) //loop through known plugins on agent
+	{
+	   StringBuilder sb = new StringBuilder();
+		List<String> pluginListEnabled = pluginsconfig.getEnabledPluginList(1);
+		
+		if(pluginListEnabled.size() > 0)
+		{
+			boolean isFound = false;
+			for(String pluginName : pluginListEnabled)
+			{
+				if(pluginName.equals(plugin))
+				{
+					try 
+					{
+						isFound = true;
+						pluginsconfig.setPluginStatus(plugin, 0);
+						
+						PluginInterface pi = pluginMap.get(pluginName);
+    	    			String msg = "Plugin Configuration: [" + pluginName + "] Removed: (" + pi.getVersion() + ")";
+    	    			pi.shutdown();
+    	    			pi = null;
+    	    			pluginMap.remove(pluginName);
+    	    			System.out.println(msg);
+    	    			logQueue.offer(new LogEvent("INFO","CORE",msg));
+    	    			sb.append(msg);
+					}
+					catch (Exception ex) 
+					{
+						sb.append("Error : disablePlugin : " + ex.toString());
+					}
+					break;
+				}
+			}
+			if(!isFound)
+			{
+			sb.append("No Configuration Found for Plugin: [" + plugin + "]");
+			}
+		}
+		else
+		{
+			sb.append("No Plugins Found!");
+		}
+		return sb.toString();
+	}
+
+   public static String enablePlugin(String plugin) //loop through known plugins on agent
+	{
+		StringBuilder sb = new StringBuilder();
+		List<String> pluginListDisabled = pluginsconfig.getEnabledPluginList(0);
+		
+		if(pluginListDisabled.size() > 0)
+		{
+			boolean isFound = false;
+			for(String pluginName : pluginListDisabled)
+			{
+				if(pluginName.equals(plugin))
+				{
+					try 
+					{
+						isFound = true;
+						sb.append("Plugin: [" + plugin + "] Enabled");
+						pluginsconfig.setPluginStatus(plugin, 1);
+						PluginLoader pl = new PluginLoader(pluginsconfig.getPluginJar(pluginName));
+		    	    	PluginInterface pi = pl.getPluginInterface();
+		    	    	
+		    	    	if(pi.initialize(logQueue,pluginsconfig.getPluginConfig(pluginName),pluginName))
+		    	    	{
+		    	    		if(pluginsconfig.getPluginName(pluginName).equals(pi.getName()))
+		    	    		{
+		    	    			String msg = "Plugin Configuration: [" + pluginName + "] Initialized: (" + pi.getVersion() + ")";
+		    	    			System.out.println(msg);
+		    	    			logQueue.offer(new LogEvent("INFO","CORE",msg));	    	   	    			
+		    	    			pluginMap.put(pluginName, pi);
+		    	    		}
+		    	    		else
+		    	    		{
+		    	    			String msg = "Plugin Configuration: pluginname=" + pluginsconfig.getPluginName(pluginName) + " does not match Plugin Jar: " + pi.getVersion() + ")";
+		    	    			System.err.println(msg);
+		    	    	 		logQueue.offer(new LogEvent("ERROR","CORE",msg));
+		    	    	 		pl = null;
+		    	    			pi = null;
+		    	    			
+		    	    		}
+		    	    	}
+		    	    	else
+		    	    	{
+		    	    		String msg = pluginName + " Failed Initialization";
+		    	    		System.err.println(msg);
+			    	 		logQueue.offer(new LogEvent("ERROR","CORE",msg));
+		    	    	}
+		    	    	
+		    	    	
+					} 
+					catch (Exception ex) 
+					{
+						sb.append("Error : enablePlugin : " + ex.toString());
+					}
+					break;
+				}
+			}
+			if(!isFound)
+			{
+			sb.append("No Configuration Found for Plugin: [" + plugin + "]");
+			}
+		}
+		else
+		{
+			sb.append("No Plugins Found!");
+		}
+		return sb.toString();
+   }
+   
 }
 
 

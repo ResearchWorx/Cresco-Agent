@@ -5,8 +5,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.configuration.ConfigurationException;
+
 import core.AgentEngine;
 import plugins.PluginInterface;
+import plugins.PluginLoader;
 import shared.CmdEvent;
 
 public class CommandExec {
@@ -46,12 +49,30 @@ public class CommandExec {
 				sb.append("show_agent\n");
 				sb.append("show_plugins\n");
 				sb.append("enable\n");
-				sb.append("enable_plugin\n");
-				sb.append("disable\n");
-				sb.append("disable_plugin");
 				
+				List<String> pluginListDisabled = AgentEngine.pluginsconfig.getEnabledPluginList(0);
+				if(pluginListDisabled.size() > 0)
+				{
+					sb.append("enable_plugin\n");
+					for(String pluginName : pluginListDisabled)
+					{
+						sb.append("enable_plugin_" + pluginName + "\n");
+					}
+				}
+				
+				sb.append("disable\n");
+				List<String> pluginListEnabled = AgentEngine.pluginsconfig.getEnabledPluginList(1);
+				if(pluginListEnabled.size() > 0)
+				{
+					sb.append("disable_plugin\n");
+					for(String pluginName : pluginListEnabled)
+					{
+						sb.append("disable_plugin_" + pluginName + "\n");
+					}
+				}
 				ce.setCmdType(AgentEngine.config.getAgentName());
 				ce.setCmdResult(sb.toString());
+				System.out.println(sb.toString());
 			}
 			return ce;		
 		}
@@ -103,14 +124,45 @@ public class CommandExec {
 			{
 				ce.setCmdResult(plugins());
 			}
-			else if(ce.getCmdArg().startsWith("enable_plugin"))
+			else if(ce.getCmdArg().startsWith("enable"))
 			{
-				//String plugin = ce.getCmdArg().substring(ce.getCmdArg().indexOf("enable_plugin") + 1);
-				//System.out.println("Plugin Name0=" + plugin);
-				System.out.println("Plugin Name0=" + ce.getCmdArg());
+				//enable_plugin_plugin/1
+				String arg = ce.getCmdArg(); 
+				//plugin_plugin/1
+				String enable_arg = ce.getCmdArg().substring(ce.getCmdArg().indexOf("_") + 1);
 				
+				if(enable_arg.startsWith("plugin"))
+				{
+					String enable_plugin = enable_arg.substring(ce.getCmdArg().indexOf("_") + 1);
+					ce.setCmdResult(AgentEngine.enablePlugin(enable_plugin));
+				}
+				else
+				{
+					ce.setCmdResult("Agent Enable Command [" + ce.getCmdArg() + "] unknown");
+				}
 				
-				//ce.setCmdResult(plugins());
+			}
+			else if(ce.getCmdArg().startsWith("disable"))
+			{
+				//disable_plugin_plugin/1
+				String arg = ce.getCmdArg(); 
+				//plugin_plugin/1
+				String disable_arg = ce.getCmdArg().substring(ce.getCmdArg().indexOf("_") + 1);
+				
+				if(disable_arg.startsWith("plugin"))
+				{
+					String disable_plugin = disable_arg.substring(ce.getCmdArg().indexOf("_"));
+					
+					String result = AgentEngine.disablePlugin(disable_plugin);
+					//System.out.println("Enable Result:" + result);
+					ce.setCmdResult(result);							
+					
+				}
+				else
+				{
+					ce.setCmdResult("Agent Disable Command [" + ce.getCmdArg() + "] unknown");
+				}
+				
 			}
 			
 		}
@@ -190,27 +242,5 @@ public class CommandExec {
 		return sb.toString().substring(0,sb.toString().length()-1);
     }
 	
-	public static String enablePlugin(String plugin) //loop through known plugins on agent
-	{
-		StringBuilder sb = new StringBuilder();
-		List<String> pluginListDisabled = AgentEngine.pluginsconfig.getEnabledPluginList(0);
-		
-		if(pluginListDisabled.size() > 0)
-		{
-			for(String pluginName : pluginListDisabled)
-			{
-				if(pluginName.equals(plugin))
-				{
-					sb.append("Plugin: [" + plugin + "] Enabled");
-					break;
-				}
-			}
-			sb.append("No Configuration Found for Plugin: [" + plugin + "]");
-		}
-		else
-		{
-			sb.append("No Plugins Found!");
-		}
-		return sb.toString();
-    }
+	
 }
