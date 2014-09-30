@@ -81,7 +81,8 @@ public class AgentEngine {
         	//start core watchdog
 	    	WatchDog wd = new WatchDog(logQueue);
 	    	
-        	
+	    	logQueue.offer(new LogEvent("CONFIG",AgentEngine.config.getAgentName(),"enabled"));	    	   	    			
+			
         	while(isActive) 
     	   {
         	   
@@ -91,7 +92,8 @@ public class AgentEngine {
     		Thread.sleep(1000);
     		
     	   }
-   		   
+        	logQueue.offer(new LogEvent("CONFIG",AgentEngine.config.getAgentName(),"disabled"));	    	   	    			
+			
     	   //stop other threads
     	   logProducerActive = false;
     	   logProducerEnabled = false;
@@ -173,24 +175,27 @@ public class AgentEngine {
     	    		{
     	    			String msg = "Plugin Configuration: [" + pluginName + "] Initialized: (" + pi.getVersion() + ")";
     	    			System.out.println(msg);
-    	    			logQueue.offer(new LogEvent("INFO","CORE",msg));	    	   	    			
+    	    			//logQueue.offer(new LogEvent("INFO","CORE",msg));
+    	    			logQueue.offer(new LogEvent("CONFIG",AgentEngine.config.getAgentName() + "_" + pluginName,"enabled"));	    	   	    			
+    	    			
     	    			pluginMap.put(pluginName, pi);
     	    		}
     	    		else
     	    		{
     	    			String msg = "Plugin Configuration: pluginname=" + pluginsconfig.getPluginName(pluginName) + " does not match Plugin Jar: " + pi.getVersion() + ")";
     	    			System.err.println(msg);
-    	    	 		logQueue.offer(new LogEvent("ERROR","CORE",msg));
+    	    	 		//logQueue.offer(new LogEvent("ERROR","CORE",msg));
+    	    			logQueue.offer(new LogEvent("ERROR",AgentEngine.config.getAgentName() + "_" + pluginName,msg));
     	    	 		pl = null;
-    	    			pi = null;
-    	    			
+    	    			pi = null;	    			
     	    		}
     	    	}
     	    	else
     	    	{
     	    		String msg = pluginName + " Failed Initialization";
     	    		System.err.println(msg);
-	    	 		logQueue.offer(new LogEvent("ERROR","CORE",msg));
+	    	 		//logQueue.offer(new LogEvent("ERROR","CORE",msg));
+	    	 		logQueue.offer(new LogEvent("ERROR",AgentEngine.config.getAgentName(),msg));
     	    	}
     	    	
     		}
@@ -200,7 +205,8 @@ public class AgentEngine {
     	{
     		String msg = "Failed to Process Plugins: " + ex.toString();
 			System.err.println(msg);
-	 		logQueue.offer(new LogEvent("ERROR","CORE",msg));
+	 		//logQueue.offer(new LogEvent("ERROR","CORE",msg));
+	 		logQueue.offer(new LogEvent("ERROR",AgentEngine.config.getAgentName(),msg));
     	}
     	
     }
@@ -228,7 +234,7 @@ public class AgentEngine {
     	    			pi = null;
     	    			pluginMap.remove(pluginName);
     	    			System.out.println(msg);
-    	    			logQueue.offer(new LogEvent("INFO","CORE",msg));
+    	    			logQueue.offer(new LogEvent("CONFIG",AgentEngine.config.getAgentName() + "_" + pluginName,"disabled"));
     	    			sb.append(msg);
 					}
 					catch (Exception ex) 
@@ -276,14 +282,14 @@ public class AgentEngine {
 		    	    		{
 		    	    			String msg = "Plugin Configuration: [" + pluginName + "] Initialized: (" + pi.getVersion() + ")";
 		    	    			System.out.println(msg);
-		    	    			logQueue.offer(new LogEvent("INFO","CORE",msg));	    	   	    			
+		    	    			logQueue.offer(new LogEvent("CONFIG",AgentEngine.config.getAgentName() + "_" + pluginName,"enabled"));	    	   	    			
 		    	    			pluginMap.put(pluginName, pi);
 		    	    		}
 		    	    		else
 		    	    		{
 		    	    			String msg = "Plugin Configuration: pluginname=" + pluginsconfig.getPluginName(pluginName) + " does not match Plugin Jar: " + pi.getVersion() + ")";
 		    	    			System.err.println(msg);
-		    	    	 		logQueue.offer(new LogEvent("ERROR","CORE",msg));
+		    	    	 		logQueue.offer(new LogEvent("ERROR",AgentEngine.config.getAgentName() + "_" + pluginName,msg));
 		    	    	 		pl = null;
 		    	    			pi = null;
 		    	    			
@@ -293,7 +299,7 @@ public class AgentEngine {
 		    	    	{
 		    	    		String msg = pluginName + " Failed Initialization";
 		    	    		System.err.println(msg);
-			    	 		logQueue.offer(new LogEvent("ERROR","CORE",msg));
+			    	 		logQueue.offer(new LogEvent("ERROR",AgentEngine.config.getAgentName(),msg));
 		    	    	}
 		    	    	
 		    	    	

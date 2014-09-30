@@ -72,7 +72,7 @@ public class CommandExec {
 				}
 				ce.setCmdType(AgentEngine.config.getAgentName());
 				ce.setCmdResult(sb.toString());
-				System.out.println(sb.toString());
+				
 			}
 			return ce;		
 		}
