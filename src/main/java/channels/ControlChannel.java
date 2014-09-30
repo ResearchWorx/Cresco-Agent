@@ -36,7 +36,7 @@ public class ControlChannel implements Runnable {
 	
 		 public ControlChannel(Queue<LogEvent> log) {
 	        this.logQueue = log;
-	    	this.RPC_QUEUE_NAME = AgentEngine.config.getRegion() + "_control";
+	    	this.RPC_QUEUE_NAME = AgentEngine.config.getRegion() + "_control_" + AgentEngine.config.getAgentName();
 	    	commandExec = new CommandExec();
 	    }
 
@@ -53,7 +53,6 @@ public class ControlChannel implements Runnable {
 		Connection connection = factory.newConnection();
 		Channel channel = connection.createChannel();
 
-		System.out.println("QUEUENAME=" + RPC_QUEUE_NAME);
 		channel.queueDeclare(RPC_QUEUE_NAME, false, false, false, null);
 
 		channel.basicQos(1);
@@ -69,7 +68,6 @@ public class ControlChannel implements Runnable {
 	    CmdEventMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 		
 		
-		System.out.println(" [x] Awaiting RPC requests");
 		LogEvent le = new LogEvent("INFO","CORE","Controller Started");
 		logQueue.offer(le);
 		AgentEngine.ControlChannelEnabled = true;
@@ -86,7 +84,6 @@ public class ControlChannel implements Runnable {
 			
 		    String message = new String(delivery.getBody());
 		    
-		    System.out.println("RPC REQUEST: " + message);
 		    
 		    //create CmdEvent 
 		    InputStream stream = new ByteArrayInputStream(message.getBytes());		        
@@ -96,7 +93,6 @@ public class ControlChannel implements Runnable {
 		    CmdEvent ce = commandExec.cmdExec(rootUm.getValue());
 		    
 		    String msg = "Control Channel Command:" + ce.getCmdType() + " Arguement(s):" + ce.getCmdArg() + " result:" + ce.getCmdResult();
-		    System.out.println(msg);
 		    LogEvent le2 = new LogEvent("INFO","CORE",msg);
 		    logQueue.offer(le2);
 		    
