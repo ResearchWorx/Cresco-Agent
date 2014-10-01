@@ -17,6 +17,7 @@ public class ConfigPlugins {
 	    //String iniFile = "Cresco-Agent-Netflow.ini";
 	    
 		iniConfObj = new HierarchicalINIConfiguration(configFile);
+		iniConfObj.setAutoSave(true);
 	}
 	
 	public List getEnabledPluginList(int isEnabled)

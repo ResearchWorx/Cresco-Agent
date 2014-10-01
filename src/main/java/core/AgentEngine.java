@@ -2,6 +2,8 @@ package core;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +13,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import plugins.ConfigPlugins;
 import plugins.PluginInterface;
 import plugins.PluginLoader;
+import security.RandomString;
 import shared.LogEvent;
 import channels.ControlChannel;
 import channels.LogProducer;
@@ -51,6 +54,13 @@ public class AgentEngine {
         	//Make sure config file
         	config = new Config(configFile);
     		
+        	System.out.println("AGENT NAME:[" +config.getAgentName() +"]");
+        	
+        	//Generate Random Agent String
+        	RandomString rs = new RandomString(4);
+        	String AgentName = "agent-" + rs.nextString();
+        	config.setAgentName(AgentName);
+        	
         	//Create log Queue wait to start
     		logQueue = new ConcurrentLinkedQueue<LogEvent>();
     		LogProducer v = new LogProducer(logQueue);
@@ -65,7 +75,7 @@ public class AgentEngine {
 	    	}
 	    	
 	    	//Process Plugins
-            processPlugins(config);
+            processPlugins();
     		
 	    	
 	    	//create control channel after everything else has been loaded.
@@ -90,8 +100,7 @@ public class AgentEngine {
      	   
         	//start core watchdog
 	    	WatchDog wd = new WatchDog(logQueue);
-	    	
-	    	logQueue.offer(new LogEvent("CONFIG",AgentEngine.config.getAgentName(),"enabled"));	    	   	    			
+	    	logQueue.offer(new LogEvent("CONFIG",config.getAgentName(),"enabled"));	    	   	    			
 			
         	while(isActive) 
     	   {
@@ -147,11 +156,11 @@ public class AgentEngine {
     return args[1];	
 	}
    
-   public static void processPlugins(Config conf) throws ClassNotFoundException, IOException
+   public static void processPlugins() throws ClassNotFoundException, IOException
     {
     	try
     	{
-    		String plugin_config_file = conf.getPluginConfigFile();
+    		String plugin_config_file = config.getPluginConfigFile();
     		File f = new File(plugin_config_file);
     		if(!f.exists())
     		{
@@ -181,7 +190,7 @@ public class AgentEngine {
     	    			String msg = "Plugin Configuration: [" + pluginName + "] Initialized: (" + pi.getVersion() + ")";
     	    			System.out.println(msg);
     	    			//logQueue.offer(new LogEvent("INFO","CORE",msg));
-    	    			logQueue.offer(new LogEvent("CONFIG",AgentEngine.config.getAgentName() + "_" + pluginName,"enabled"));	    	   	    			
+    	    			logQueue.offer(new LogEvent("CONFIG",config.getAgentName() + "_" + pluginName,"enabled"));	    	   	    			
     	    			
     	    			pluginMap.put(pluginName, pi);
     	    		}
@@ -190,7 +199,7 @@ public class AgentEngine {
     	    			String msg = "Plugin Configuration: pluginname=" + pluginsconfig.getPluginName(pluginName) + " does not match Plugin Jar: " + pi.getVersion() + ")";
     	    			System.err.println(msg);
     	    	 		//logQueue.offer(new LogEvent("ERROR","CORE",msg));
-    	    			logQueue.offer(new LogEvent("ERROR",AgentEngine.config.getAgentName() + "_" + pluginName,msg));
+    	    			logQueue.offer(new LogEvent("ERROR",config.getAgentName() + "_" + pluginName,msg));
     	    	 		pl = null;
     	    			pi = null;	    			
     	    		}
@@ -200,7 +209,7 @@ public class AgentEngine {
     	    		String msg = pluginName + " Failed Initialization";
     	    		System.err.println(msg);
 	    	 		//logQueue.offer(new LogEvent("ERROR","CORE",msg));
-	    	 		logQueue.offer(new LogEvent("ERROR",AgentEngine.config.getAgentName(),msg));
+	    	 		logQueue.offer(new LogEvent("ERROR",config.getAgentName(),msg));
     	    	}
     	    	
     		}
@@ -211,7 +220,7 @@ public class AgentEngine {
     		String msg = "Failed to Process Plugins: " + ex.toString();
 			System.err.println(msg);
 	 		//logQueue.offer(new LogEvent("ERROR","CORE",msg));
-	 		logQueue.offer(new LogEvent("ERROR",AgentEngine.config.getAgentName(),msg));
+	 		logQueue.offer(new LogEvent("ERROR",config.getAgentName(),msg));
     	}
     	
     }
@@ -242,7 +251,7 @@ public class AgentEngine {
     	    			pi = null;
     	    			pluginMap.remove(pluginName);
     	    			System.out.println(msg);
-    	    			logQueue.offer(new LogEvent("CONFIG",AgentEngine.config.getAgentName() + "_" + pluginName,"disabled"));
+    	    			logQueue.offer(new LogEvent("CONFIG",config.getAgentName() + "_" + pluginName,"disabled"));
     	    			sb.append(msg);
 					}
 					catch (Exception ex) 
@@ -293,14 +302,14 @@ public class AgentEngine {
 		    	    		{
 		    	    			String msg = "Plugin Configuration: [" + pluginName + "] Initialized: (" + pi.getVersion() + ")";
 		    	    			System.out.println(msg);
-		    	    			logQueue.offer(new LogEvent("CONFIG",AgentEngine.config.getAgentName() + "_" + pluginName,"enabled"));	    	   	    			
+		    	    			logQueue.offer(new LogEvent("CONFIG",config.getAgentName() + "_" + pluginName,"enabled"));	    	   	    			
 		    	    			pluginMap.put(pluginName, pi);
 		    	    		}
 		    	    		else
 		    	    		{
 		    	    			String msg = "Plugin Configuration: pluginname=" + pluginsconfig.getPluginName(pluginName) + " does not match Plugin Jar: " + pi.getVersion() + ")";
 		    	    			System.err.println(msg);
-		    	    	 		logQueue.offer(new LogEvent("ERROR",AgentEngine.config.getAgentName() + "_" + pluginName,msg));
+		    	    	 		logQueue.offer(new LogEvent("ERROR",config.getAgentName() + "_" + pluginName,msg));
 		    	    	 		pl = null;
 		    	    			pi = null;
 		    	    			
@@ -310,7 +319,7 @@ public class AgentEngine {
 		    	    	{
 		    	    		String msg = pluginName + " Failed Initialization";
 		    	    		System.err.println(msg);
-			    	 		logQueue.offer(new LogEvent("ERROR",AgentEngine.config.getAgentName(),msg));
+			    	 		logQueue.offer(new LogEvent("ERROR",config.getAgentName(),msg));
 		    	    	}
 		    	    	
 		    	    	
@@ -346,7 +355,7 @@ public class AgentEngine {
 		        it.remove(); // avoids a ConcurrentModificationException
 		    }
 		    
-		    logQueue.offer(new LogEvent("CONFIG",AgentEngine.config.getAgentName(),"disabled"));	    	   	    			
+		    logQueue.offer(new LogEvent("CONFIG",config.getAgentName(),"disabled"));	    	   	    			
 			
 	    	   //stop other threads
 	    	   logProducerActive = false;

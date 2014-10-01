@@ -11,6 +11,7 @@ public class Config {
 	public Config(String configFile) throws ConfigurationException
 	{
 	    iniConfObj = new HierarchicalINIConfiguration(configFile);
+	    iniConfObj.setAutoSave(true);
 	}
 	
 	public String getAgentName()
@@ -22,7 +23,6 @@ public class Config {
 	{
 		SubnodeConfiguration sObj = iniConfObj.getSection("general");
 	    sObj.setProperty("agentname", agentname);
-	    iniConfObj.save();
 	    return true;
 	}
 	public int getWatchDogTimer()

@@ -25,12 +25,11 @@ public class LogProducer implements Runnable {
     private ConnectionFactory factory;    
     private String EXCHANGE_NAME_LOG;
     private Marshaller LogEventMarshaller;
-    private String agentName;
     
     public LogProducer(Queue<LogEvent> logQueue) {
     	this.logQueue = logQueue;
         this.EXCHANGE_NAME_LOG = AgentEngine.config.getRegion() + "_log";
-        agentName = AgentEngine.config.getAgentName();
+        //agentName = AgentEngine.config.getAgentName();
     }
     
     public void run() {
@@ -140,7 +139,7 @@ public class LogProducer implements Runnable {
     		while ((!logQueue.isEmpty())) {
     			
     			LogEvent le = logQueue.poll(); //get logevent
-    			le.setEventAgent(agentName); //set agent name
+    			le.setEventAgent(AgentEngine.config.getAgentName()); //set agent name
     			
     			//create rootXML for marshaler & create XML output
     			StringWriter LogEventXMLString = new StringWriter();
