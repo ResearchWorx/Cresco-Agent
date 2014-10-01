@@ -1,6 +1,7 @@
 package channels;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +49,7 @@ public class CommandExec {
 				sb.append("show\n");
 				sb.append("show_agent\n");
 				sb.append("show_plugins\n");
+				sb.append("show_address\n");
 				sb.append("enable\n");
 				
 				List<String> pluginListDisabled = AgentEngine.pluginsconfig.getEnabledPluginList(0);
@@ -109,6 +111,7 @@ public class CommandExec {
 				sb.append("help\t\t\t\t Shows This Message\n");
 				sb.append("show agent\t\t\t\t Shows Agent Info\n");
 				sb.append("show plugins\t\t\t\t Shows Plugins Info\n");
+				sb.append("show address\t\t\t\t Shows IP address of local host\n");
 				sb.append("enable  plugin [plugin/(id)]\t\t\t\t Enables a Plugin\n");
 				sb.append("disable plugin [plugin/(id}]\t\t\t\t Disables a Plugin\n");
 				sb.append("---");
@@ -124,6 +127,10 @@ public class CommandExec {
 			{
 				ce.setCmdResult(plugins());
 			}
+			else if(ce.getCmdArg().equals("show_address"))
+			{
+				ce.setCmdResult(InetAddress.getLocalHost().getHostAddress());
+			}
 			else if(ce.getCmdArg().startsWith("enable"))
 			{
 				//enable_plugin_plugin/1
@@ -134,7 +141,7 @@ public class CommandExec {
 				if(enable_arg.startsWith("plugin"))
 				{
 					String enable_plugin = enable_arg.substring(ce.getCmdArg().indexOf("_") + 1);
-					ce.setCmdResult(AgentEngine.enablePlugin(enable_plugin));
+					ce.setCmdResult(AgentEngine.enablePlugin(enable_plugin,true));
 				}
 				else
 				{
@@ -153,7 +160,7 @@ public class CommandExec {
 				{
 					String disable_plugin = disable_arg.substring(ce.getCmdArg().indexOf("_"));
 					
-					String result = AgentEngine.disablePlugin(disable_plugin);
+					String result = AgentEngine.disablePlugin(disable_plugin,true);
 					//System.out.println("Enable Result:" + result);
 					ce.setCmdResult(result);							
 					

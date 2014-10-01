@@ -107,7 +107,12 @@ public class LogProducer implements Runnable {
     	System.out.println("LogProducer Disabled");   	
     	le = new LogEvent("INFO","CORE","LogProducer Disabled");
     	logQueue.offer(le);
-    	Thread.currentThread().interrupt();
+    	try {
+			log(); //one last call
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} //
     	return;
     }
 

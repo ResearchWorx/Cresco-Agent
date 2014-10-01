@@ -2,6 +2,7 @@ package core;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,6 +24,8 @@ public class AgentEngine {
 	public static boolean logProducerEnabled = false; //thread on/off
 	public static boolean watchDogActive = false; //agent watchdog on/off
 	
+	private static Thread logProducerThread;
+	
 	public static Map<String, PluginInterface> pluginMap;
 	public static ConcurrentLinkedQueue<LogEvent> logQueue;
 	public static Config config;
@@ -32,6 +35,13 @@ public class AgentEngine {
     
     	try 
     	{
+    		//Cleanup on Shutdown
+    		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+    	        public void run() {
+    	            cleanup();	            
+    	        }
+    	    }, "Shutdown-thread"));
+    		
     		//Establish  a named map of plugin interfaces
     		pluginMap = new ConcurrentHashMap<String,PluginInterface>();
     		
@@ -44,7 +54,7 @@ public class AgentEngine {
         	//Create log Queue wait to start
     		logQueue = new ConcurrentLinkedQueue<LogEvent>();
     		LogProducer v = new LogProducer(logQueue);
-	    	Thread logProducerThread = new Thread(v);
+	    	logProducerThread = new Thread(v);
 	    	logProducerThread.start();
 	    	while(!logProducerEnabled)
 	    	{
@@ -92,12 +102,7 @@ public class AgentEngine {
     		Thread.sleep(1000);
     		
     	   }
-        	logQueue.offer(new LogEvent("CONFIG",AgentEngine.config.getAgentName(),"disabled"));	    	   	    			
-			
-    	   //stop other threads
-    	   logProducerActive = false;
-    	   logProducerEnabled = false;
-    	   
+        	
     	   System.exit(0);
     	}
     	catch (Exception e)
@@ -211,7 +216,7 @@ public class AgentEngine {
     	
     }
    
-   public static String disablePlugin(String plugin) //loop through known plugins on agent
+   public static String disablePlugin(String plugin, boolean save) //loop through known plugins on agent
 	{
 	   StringBuilder sb = new StringBuilder();
 		List<String> pluginListEnabled = pluginsconfig.getEnabledPluginList(1);
@@ -226,7 +231,10 @@ public class AgentEngine {
 					try 
 					{
 						isFound = true;
-						pluginsconfig.setPluginStatus(plugin, 0);
+						if(save)
+						{
+							pluginsconfig.setPluginStatus(plugin, 0);//save in config 
+						}
 						
 						PluginInterface pi = pluginMap.get(pluginName);
     	    			String msg = "Plugin Configuration: [" + pluginName + "] Removed: (" + pi.getVersion() + ")";
@@ -256,7 +264,7 @@ public class AgentEngine {
 		return sb.toString();
 	}
 
-   public static String enablePlugin(String plugin) //loop through known plugins on agent
+   public static String enablePlugin(String plugin, boolean save) //loop through known plugins on agent
 	{
 		StringBuilder sb = new StringBuilder();
 		List<String> pluginListDisabled = pluginsconfig.getEnabledPluginList(0);
@@ -272,7 +280,10 @@ public class AgentEngine {
 					{
 						isFound = true;
 						sb.append("Plugin: [" + plugin + "] Enabled");
-						pluginsconfig.setPluginStatus(plugin, 1);
+						if(save)
+						{
+							pluginsconfig.setPluginStatus(plugin, 1);
+						}
 						PluginLoader pl = new PluginLoader(pluginsconfig.getPluginJar(pluginName));
 		    	    	PluginInterface pi = pl.getPluginInterface();
 		    	    	
@@ -321,6 +332,35 @@ public class AgentEngine {
 			sb.append("No Plugins Found!");
 		}
 		return sb.toString();
+   }
+   
+   static void cleanup()
+   {
+	   System.out.println("\nDisabling Plugins");
+	       Iterator it = pluginMap.entrySet().iterator();
+		    while (it.hasNext()) {
+		        Map.Entry pairs = (Map.Entry)it.next();
+		        System.out.println(pairs.getKey() + " = " + pairs.getValue());
+		        String plugin = pairs.getKey().toString();
+		        disablePlugin(plugin,false);
+		        it.remove(); // avoids a ConcurrentModificationException
+		    }
+		    
+		    logQueue.offer(new LogEvent("CONFIG",AgentEngine.config.getAgentName(),"disabled"));	    	   	    			
+			
+	    	   //stop other threads
+	    	   logProducerActive = false;
+	    	   logProducerEnabled = false;
+	    	   
+		    while(logProducerThread.isAlive())
+		    {
+		    	try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		    }
    }
    
 }
