@@ -101,7 +101,7 @@ public class CommandExec {
 					{
 						PluginInterface pi = AgentEngine.pluginMap.get(pluginName);
 						ce.setCmdArg(arg);
-					    ce = pi.executeCommand(ce);
+					    ce = pi.incomingCommand(ce);
 					    break;
 					}
 				}				
