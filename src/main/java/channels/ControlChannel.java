@@ -22,6 +22,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.QueueingConsumer;
 
 import core.AgentEngine;
+import core.CommandExec;
 
 
 public class ControlChannel implements Runnable {

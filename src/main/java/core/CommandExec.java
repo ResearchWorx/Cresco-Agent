@@ -1,4 +1,4 @@
-package channels;
+package core;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -13,7 +13,6 @@ import java.util.Map;
 
 import org.apache.commons.configuration.ConfigurationException;
 
-import core.AgentEngine;
 import plugins.PluginInterface;
 import plugins.PluginLoader;
 import shared.CmdEvent;
@@ -217,7 +216,7 @@ public class CommandExec {
 		}
 		return ce;
 	}
-	
+
 	private String agent()
 	{
 		StringBuilder str = new StringBuilder();
@@ -261,31 +260,6 @@ public class CommandExec {
 		}
 		return sb.toString().substring(0,sb.toString().length()-1);
     }
-	
-	public static String plugins2() //loop through known plugins on agent
-	{
-		StringBuilder sb = new StringBuilder();
-        
-		if(AgentEngine.pluginMap.size() > 0)
-		{
-			Map mp = AgentEngine.pluginMap;
-			Iterator it = mp.entrySet().iterator();
-        	while (it.hasNext()) 
-        	{
-            	Map.Entry pairs = (Map.Entry)it.next();
-            	String pluginName = pairs.getKey().toString();
-            	PluginInterface pi = (PluginInterface)pairs.getValue();
-            	sb.append("Plugin Configuration: [" + pluginName + "] Initialized: " + pi.getVersion() + "\n");
-        	}
-        	
-		}
-		else
-		{
-			sb.append("No Plugins Found!\n");
-			
-		}
-		return sb.toString().substring(0,sb.toString().length()-1);
-    }
-	
+
 	
 }
