@@ -138,11 +138,11 @@ public class CommandExec {
 				StringBuilder sb = new StringBuilder();
 				try {
 					  InetAddress localhost = InetAddress.getLocalHost();
-					  sb.append(" IP Addr: " + localhost.getHostAddress());
+					  sb.append(" IP Addr: " + localhost.getHostAddress() + "\n");
 					  // Just in case this host has multiple IP addresses....
 					  InetAddress[] allMyIps = InetAddress.getAllByName(localhost.getCanonicalHostName());
 					  if (allMyIps != null && allMyIps.length > 1) {
-						  sb.append(" Full list of IP addresses:");
+						  sb.append(" Full list of IP addresses:\n");
 					    for (int i = 0; i < allMyIps.length; i++) {
 					    	sb.append("    " + allMyIps[i]);
 					    }
@@ -150,20 +150,20 @@ public class CommandExec {
 					} 
 				catch (UnknownHostException e) 
 				{
-					sb.append(" (error retrieving server host name)");
+					sb.append(" (error retrieving server host name)\n");
 				}
 
 					try {
-						sb.append("Full list of Network Interfaces:");
+						sb.append("Full list of Network Interfaces:\n");
 					  for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
 					    NetworkInterface intf = en.nextElement();
-					    sb.append("    " + intf.getName() + " " + intf.getDisplayName());
+					    sb.append("    " + intf.getName() + " " + intf.getDisplayName() + "\n");
 					    for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
-					    	sb.append("        " + enumIpAddr.nextElement().toString());
+					    	sb.append("        " + enumIpAddr.nextElement().toString() + "\n");
 					    }
 					  }
 					} catch (SocketException e) {
-						sb.append(" (error retrieving network interface list)");
+						sb.append(" (error retrieving network interface list)\n");
 					}
 					
 					ce.setCmdResult(sb.toString());
