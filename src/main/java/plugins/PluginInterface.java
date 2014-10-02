@@ -12,7 +12,9 @@ public interface PluginInterface {
 	   public boolean initialize(ConcurrentLinkedQueue<LogEvent> logQueue, SubnodeConfiguration configObj,String pluginSlot);
 	   public String getName();
 	   public String getVersion();
-	   public CmdEvent executeCommand(CmdEvent command);
+	   public CmdEvent incomingCommand(CmdEvent command);
+	   public LogEvent incomingLog(LogEvent log);
+	   
 	   public void shutdown();
 	   
 	}

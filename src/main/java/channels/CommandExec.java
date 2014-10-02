@@ -42,7 +42,7 @@ public class CommandExec {
 		        	if((AgentEngine.pluginMap.containsKey(pluginName)) && (pluginName.equals(ce.getCmdArg())))
 					{
 						PluginInterface pi = AgentEngine.pluginMap.get(pluginName);
-					    ce = pi.executeCommand(ce);
+					    ce = pi.incomingCommand(ce);
 					    break;
 					}
 				}				
