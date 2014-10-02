@@ -1,6 +1,8 @@
 [general]
 agentname=<agent name>
+generatename=<disable=0,enable=1>
 region=<region name>
+
 
 ampq_control_host=<AMPQ host>
 ampq_control_username=<username>

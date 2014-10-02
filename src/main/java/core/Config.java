@@ -25,6 +25,32 @@ public class Config {
 	    sObj.setProperty("agentname", agentname);
 	    return true;
 	}
+	public boolean getGenerateName()
+	{
+		SubnodeConfiguration sObj = iniConfObj.getSection("general");
+		int value = Integer.parseInt(sObj.getString("generatename"));
+		if(value == 1)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	public boolean setGenerateName(boolean genname) throws ConfigurationException
+	{
+		SubnodeConfiguration sObj = iniConfObj.getSection("general");
+	    if(genname)
+	    {
+	    	sObj.setProperty("generatename", 1);
+	    }
+	    else
+	    {
+	    	sObj.setProperty("generatename", 0);
+	    }
+	    return true;
+	}
 	public int getWatchDogTimer()
 	{
 		SubnodeConfiguration sObj = iniConfObj.getSection("general");

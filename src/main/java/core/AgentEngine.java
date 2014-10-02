@@ -54,12 +54,15 @@ public class AgentEngine {
         	//Make sure config file
         	config = new Config(configFile);
     		
+        	//Generate Random Agent String
+    		if(config.getGenerateName())
+        	{
+        		RandomString rs = new RandomString(4);
+        		String AgentName = "agent-" + rs.nextString();
+        		config.setAgentName(AgentName);
+        	}
         	System.out.println("AGENT NAME:[" +config.getAgentName() +"]");
         	
-        	//Generate Random Agent String
-        	RandomString rs = new RandomString(4);
-        	String AgentName = "agent-" + rs.nextString();
-        	config.setAgentName(AgentName);
         	
         	//Create log Queue wait to start
     		logQueue = new ConcurrentLinkedQueue<LogEvent>();
