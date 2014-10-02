@@ -2,6 +2,11 @@ package channels;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -129,7 +134,39 @@ public class CommandExec {
 			}
 			else if(ce.getCmdArg().equals("show_address"))
 			{
-				ce.setCmdResult(InetAddress.getLocalHost().getHostAddress());
+				
+				StringBuilder sb = new StringBuilder();
+				try {
+					  InetAddress localhost = InetAddress.getLocalHost();
+					  sb.append(" IP Addr: " + localhost.getHostAddress());
+					  // Just in case this host has multiple IP addresses....
+					  InetAddress[] allMyIps = InetAddress.getAllByName(localhost.getCanonicalHostName());
+					  if (allMyIps != null && allMyIps.length > 1) {
+						  sb.append(" Full list of IP addresses:");
+					    for (int i = 0; i < allMyIps.length; i++) {
+					    	sb.append("    " + allMyIps[i]);
+					    }
+					  }
+					} 
+				catch (UnknownHostException e) 
+				{
+					sb.append(" (error retrieving server host name)");
+				}
+
+					try {
+						sb.append("Full list of Network Interfaces:");
+					  for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+					    NetworkInterface intf = en.nextElement();
+					    sb.append("    " + intf.getName() + " " + intf.getDisplayName());
+					    for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
+					    	sb.append("        " + enumIpAddr.nextElement().toString());
+					    }
+					  }
+					} catch (SocketException e) {
+						sb.append(" (error retrieving network interface list)");
+					}
+					ce.setCmdResult(sb.toString());
+					
 			}
 			else if(ce.getCmdArg().startsWith("enable"))
 			{
