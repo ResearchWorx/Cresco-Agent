@@ -1,11 +1,7 @@
 [general]
 agentname=<agent name>
-ampq_log_exchange=<log queue name>
-ampq_log_host=<AMPQ host>
-ampq_log_username=<username>
-ampq_log_password=<password>
+region=<region name>
 
-ampq_control_exchange=<control queue channel>
 ampq_control_host=<AMPQ host>
 ampq_control_username=<username>
 ampq_control_password=<password>
