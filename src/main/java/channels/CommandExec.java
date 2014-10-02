@@ -165,7 +165,7 @@ public class CommandExec {
 					} catch (SocketException e) {
 						sb.append(" (error retrieving network interface list)");
 					}
-					//Whut
+					
 					ce.setCmdResult(sb.toString());
 					
 			}
