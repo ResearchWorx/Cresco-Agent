@@ -404,7 +404,6 @@ public class AgentEngine {
 			   System.err.println(msg);
 			   version = "Unable to determine Version";
 		   }
-		   System.out.println("WOOT:" + version);
 		   return config.getAgentName() + "." + version;
 	   }
    
