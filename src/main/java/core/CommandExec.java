@@ -51,6 +51,7 @@ public class CommandExec {
 			{
 				sb.append("help\n");
 				sb.append("show\n");
+				sb.append("show_name\n");
 				sb.append("show_agent\n");
 				sb.append("show_plugins\n");
 				sb.append("show_address\n");
@@ -113,6 +114,7 @@ public class CommandExec {
 				sb.append("\nAgent " + AgentEngine.config.getAgentName() + " Help\n");
 				sb.append("-\n");
 				sb.append("help\t\t\t\t Shows This Message\n");
+				sb.append("show name\t\t\t\t Shows Name of Agent\n");
 				sb.append("show agent\t\t\t\t Shows Agent Info\n");
 				sb.append("show plugins\t\t\t\t Shows Plugins Info\n");
 				sb.append("show address\t\t\t\t Shows IP address of local host\n");
@@ -122,6 +124,10 @@ public class CommandExec {
 				sb.append("plugin/[number of plugin]\t\t To access Plugin Info");
 				
 				ce.setCmdResult(sb.toString());
+			}
+			else if(ce.getCmdArg().equals("show_name"))
+			{
+				ce.setCmdResult(AgentEngine.config.getAgentName());				
 			}
 			else if(ce.getCmdArg().equals("show_agent"))
 			{
