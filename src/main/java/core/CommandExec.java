@@ -51,10 +51,11 @@ public class CommandExec {
 			{
 				sb.append("help\n");
 				sb.append("show\n");
-				sb.append("show_name\n");
-				sb.append("show_agent\n");
-				sb.append("show_plugins\n");
 				sb.append("show_address\n");
+				sb.append("show_agent\n");
+				sb.append("show_name\n");
+				sb.append("show_plugins\n");
+				sb.append("show_version\n");
 				sb.append("enable\n");
 				
 				List<String> pluginListDisabled = AgentEngine.pluginsconfig.getEnabledPluginList(0);
@@ -114,10 +115,11 @@ public class CommandExec {
 				sb.append("\nAgent " + AgentEngine.config.getAgentName() + " Help\n");
 				sb.append("-\n");
 				sb.append("help\t\t\t\t Shows This Message\n");
-				sb.append("show name\t\t\t\t Shows Name of Agent\n");
-				sb.append("show agent\t\t\t\t Shows Agent Info\n");
-				sb.append("show plugins\t\t\t\t Shows Plugins Info\n");
 				sb.append("show address\t\t\t\t Shows IP address of local host\n");
+				sb.append("show agent\t\t\t\t Shows Agent Info\n");
+				sb.append("show name\t\t\t\t Shows Name of Agent\n");
+				sb.append("show plugins\t\t\t\t Shows Plugins Info\n");
+				sb.append("show version\t\t\t\t Shows Agent Version\n");
 				sb.append("enable  plugin [plugin/(id)]\t\t\t\t Enables a Plugin\n");
 				sb.append("disable plugin [plugin/(id}]\t\t\t\t Disables a Plugin\n");
 				sb.append("---");
@@ -136,6 +138,10 @@ public class CommandExec {
 			else if(ce.getCmdArg().equals("show_plugins"))
 			{
 				ce.setCmdResult(plugins());
+			}
+			else if(ce.getCmdArg().equals("show_version"))
+			{
+				ce.setCmdResult(AgentEngine.agentVersion);
 			}
 			else if(ce.getCmdArg().equals("show_address"))
 			{

@@ -1,6 +1,7 @@
 package core;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
@@ -9,6 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.jar.Attributes;
+import java.util.jar.JarInputStream;
+import java.util.jar.Manifest;
 
 import plugins.ConfigPlugins;
 import plugins.PluginInterface;
@@ -26,7 +30,7 @@ public class AgentEngine {
 	public static boolean ControlChannelEnabled = false; //control service on/off
 	public static boolean logProducerEnabled = false; //thread on/off
 	public static boolean watchDogActive = false; //agent watchdog on/off
-	
+	public static String agentVersion = null;
 	private static Thread logProducerThread;
 	
 	public static Map<String, PluginInterface> pluginMap;
@@ -44,6 +48,7 @@ public class AgentEngine {
     	            cleanup();	            
     	        }
     	    }, "Shutdown-thread"));
+    		
     		
     		//Establish  a named map of plugin interfaces
     		pluginMap = new ConcurrentHashMap<String,PluginInterface>();
@@ -63,6 +68,9 @@ public class AgentEngine {
         	}
         	System.out.println("AGENT NAME:[" +config.getAgentName() +"]");
         	
+        	//set version name
+    		agentVersion = new String(getVersion());
+	    
         	
         	//Create log Queue wait to start
     		logQueue = new ConcurrentLinkedQueue<LogEvent>();
@@ -94,7 +102,7 @@ public class AgentEngine {
 	    	}
 	    	
 	    	//Notify agent start
-	    	String msg = "Agent Core (" + new Version().getVersion() + ") Started";
+	    	String msg = "Agent Core (" + agentVersion + ") Started";
 	    	logQueue.offer(new LogEvent("INFO","CORE",msg));
 	    	System.out.println(msg);
 	    	
@@ -374,6 +382,31 @@ public class AgentEngine {
 				}
 		    }
    }
+   public static String getVersion() //This should pull the version information from jar Meta data
+   {
+		   String version;
+		   try{
+		   String jarFile = AgentEngine.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+		   System.out.println("JARFILE:" + jarFile);
+		   //File file = new File(jarFile.substring(5, (jarFile.length() )));
+		   File file = new File(jarFile);
+          FileInputStream fis = new FileInputStream(file);
+          @SuppressWarnings("resource")
+		   JarInputStream jarStream = new JarInputStream(fis);
+		   Manifest mf = jarStream.getManifest();
+		   
+		   Attributes mainAttribs = mf.getMainAttributes();
+          version = mainAttribs.getValue("Implementation-Version");
+		   }
+		   catch(Exception ex)
+		   {
+			   String msg = "Unable to determine Plugin Version " + ex.toString();
+			   System.err.println(msg);
+			   version = "Unable to determine Version";
+		   }
+		   System.out.println("WOOT:" + version);
+		   return config.getAgentName() + "." + version;
+	   }
    
 }
 
