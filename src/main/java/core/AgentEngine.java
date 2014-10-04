@@ -139,7 +139,6 @@ public class AgentEngine {
    public static String checkConfig(String[] args)
 	{
 		String errorMgs = "Cresco-Agent\n" +
-    			"Version: " + new Version().getVersion() + "\n" +
     			"Usage: java -jar Cresco-Agent.jar" +
     			" -f <configuration_file>\n";
     			
