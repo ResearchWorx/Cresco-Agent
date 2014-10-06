@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -84,7 +85,7 @@ public class AgentEngine {
 	    	{
 	    		Thread.sleep(1000);
 	    		String msg = "Waiting for logProducer Initialization...";
-	    		logQueue.offer(new LogEvent("INFO","CORE",msg));
+	    		logQueue.offer(new LogEvent("INFO",AgentEngine.config.getAgentName(),msg));
 		    	System.out.println(msg);
 	    	}
 	    	
@@ -100,32 +101,44 @@ public class AgentEngine {
 	    	{
 	    		Thread.sleep(1000);
 	    		String msg = "Waiting for Control Channel Initialization...";
-	    		logQueue.offer(new LogEvent("INFO","CORE",msg));
+	    		logQueue.offer(new LogEvent("INFO",AgentEngine.config.getAgentName(),msg));
 		    	System.out.println(msg);
 	    	}
 	    	
 	    	if(ControlChannelEnabled && logProducerEnabled)
 	    	{
+	    		System.out.println("Waiting for Controller Response Initialization...");
 	    		int tryController = 1;
 	    		//give the controller 20 sec to respond. First 10 for possibe existing, 
 	    		//last 10 for one we try and start 
-	    		while((!ControllerActive) && (tryController < 20))
+	    		while((!ControllerActive) && (tryController < 10))
 	    		{
 	    			//Notify controler of agent enable wait for controller contact
 	    			logQueue.offer(new LogEvent("CONFIG",config.getAgentName(),"enabled"));	
 			    	Thread.sleep(1000);
 	    			tryController++; //give 10 atempts for controller to respond
-	    			if(tryController > 10)
+	    			if(tryController > 5)
 	    			{
 	    				String controllerPlugin = findPlugin("ControllerPlugin",0);
 	    				if(controllerPlugin != null)
 	    				{
 	    					System.out.println("Try and Start our own controller");
+	    					//start controller but don't save the config.
+	    					String controllerSlot = enablePlugin(controllerPlugin, false);
+	    					System.out.println("Enabled Controller Module [" + controllerSlot + "]");	
 	    				}
-	    			
+	    				
 	    			}
 	    		}
 	    		
+	    		if(ControllerActive)
+	    		{
+	    			System.out.println("Region:" + config.getRegion() + " Controller found:");
+	    		}
+	    		else
+	    		{
+	    			System.out.println("Region:" + config.getRegion() + " *NOT* Controller found:");
+	    		}
 	    		//wait until shutdown occures
 	        	isActive = true;
 	     	   
@@ -208,7 +221,7 @@ public class AgentEngine {
     		{
     			String msg = "The specified configuration file: " + plugin_config_file + " is invalid";
     			System.err.println(msg);
-    	 		logQueue.offer(new LogEvent("ERROR","CORE",msg));	    	
+    	 		logQueue.offer(new LogEvent("ERROR",AgentEngine.config.getAgentName(),msg));	    	
     			System.exit(1);	
     		}
     	
@@ -225,13 +238,12 @@ public class AgentEngine {
     			PluginLoader pl = new PluginLoader(pluginsconfig.getPluginJar(pluginName));
     	    	PluginInterface pi = pl.getPluginInterface();
     	    		   
-    	    	if(pi.initialize(logQueue,pluginsconfig.getPluginConfig(pluginName),pluginName))
+    	    	if(pi.initialize(logQueue,pluginsconfig.getPluginConfig(pluginName),pluginName,AgentEngine.config.getAgentName()))
     	    	{
     	    		if(pluginsconfig.getPluginName(pluginName).equals(pi.getName()))
     	    		{
     	    			String msg = "Plugin Configuration: [" + pluginName + "] Initialized: (" + pi.getVersion() + ")";
     	    			System.out.println(msg);
-    	    			//logQueue.offer(new LogEvent("INFO","CORE",msg));
     	    			logQueue.offer(new LogEvent("CONFIG",config.getAgentName() + "_" + pluginName,"enabled"));	    	   	    			
     	    			
     	    			pluginMap.put(pluginName, pi);
@@ -240,8 +252,7 @@ public class AgentEngine {
     	    		{
     	    			String msg = "Plugin Configuration: pluginname=" + pluginsconfig.getPluginName(pluginName) + " does not match Plugin Jar: " + pi.getVersion() + ")";
     	    			System.err.println(msg);
-    	    	 		//logQueue.offer(new LogEvent("ERROR","CORE",msg));
-    	    			logQueue.offer(new LogEvent("ERROR",config.getAgentName() + "_" + pluginName,msg));
+    	    	 		logQueue.offer(new LogEvent("ERROR",config.getAgentName() + "_" + pluginName,msg));
     	    	 		pl = null;
     	    			pi = null;	    			
     	    		}
@@ -250,7 +261,6 @@ public class AgentEngine {
     	    	{
     	    		String msg = pluginName + " Failed Initialization";
     	    		System.err.println(msg);
-	    	 		//logQueue.offer(new LogEvent("ERROR","CORE",msg));
 	    	 		logQueue.offer(new LogEvent("ERROR",config.getAgentName(),msg));
     	    	}
     	    	
@@ -261,7 +271,6 @@ public class AgentEngine {
     	{
     		String msg = "Failed to Process Plugins: " + ex.toString();
 			System.err.println(msg);
-	 		//logQueue.offer(new LogEvent("ERROR","CORE",msg));
 	 		logQueue.offer(new LogEvent("ERROR",config.getAgentName(),msg));
     	}
     	
@@ -338,7 +347,7 @@ public class AgentEngine {
 						PluginLoader pl = new PluginLoader(pluginsconfig.getPluginJar(pluginName));
 		    	    	PluginInterface pi = pl.getPluginInterface();
 		    	    	
-		    	    	if(pi.initialize(logQueue,pluginsconfig.getPluginConfig(pluginName),pluginName))
+		    	    	if(pi.initialize(logQueue,pluginsconfig.getPluginConfig(pluginName),pluginName,AgentEngine.config.getAgentName()))
 		    	    	{
 		    	    		if(pluginsconfig.getPluginName(pluginName).equals(pi.getName()))
 		    	    		{
@@ -384,8 +393,7 @@ public class AgentEngine {
 		}
 		return sb.toString();
    }
-   
-   
+ 
    public static String getVersion() //This should pull the version information from jar Meta data
    {
 		   String version;
@@ -410,30 +418,30 @@ public class AgentEngine {
 		   }
 		   return config.getAgentName() + "." + version;
 	   }
-   
+   //This needs to be redone to account for active but not configured
    public static String findPlugin(String searchPluginName, int isActive) //loop through known plugins on agent
 	{
 		StringBuilder sb = new StringBuilder();
        
 		List<String> pluginList = AgentEngine.pluginsconfig.getEnabledPluginList(isActive);
 		
+		
+		
 		if(pluginList.size() > 0)
 		{
-			
 			for(String pluginName : pluginList)
 			{
-				if(AgentEngine.pluginMap.containsKey(pluginName))
-				{
-					PluginInterface pi = AgentEngine.pluginMap.get(pluginName);
 					if(AgentEngine.pluginsconfig.getPluginName(pluginName).equals(searchPluginName))
 					{
-						return pluginName;
+						if((isActive == 0) && !AgentEngine.pluginMap.containsKey(pluginName))
+						{
+							return pluginName;
+						}
+						
 					}
-					//sb.append("Plugin: [" + pluginName + "] Name: " + AgentEngine.pluginsconfig.getPluginName(pluginName) + " Initialized: " + pi.getVersion() + "\n");
-				}
+				
 			}
 			return null;
-			//return sb.toString().substring(0,sb.toString().length()-1);		
 		}
 		else
 		{
@@ -441,26 +449,36 @@ public class AgentEngine {
 		}
 		
    }
-
+   
+   //needs to be redone to account for active and configured.
    public static String listPlugins() //loop through known plugins on agent
 	{
-		StringBuilder sb = new StringBuilder();
+	   StringBuilder sb = new StringBuilder();
       
-		List<String> pluginListEnabled = AgentEngine.pluginsconfig.getEnabledPluginList(1);
-		List<String> pluginListDisabled = AgentEngine.pluginsconfig.getEnabledPluginList(0);
+		List<String> pluginListEnabled = new ArrayList<String>(AgentEngine.pluginsconfig.getEnabledPluginList(1));
+		List<String> pluginListDisabled = new ArrayList<String>(AgentEngine.pluginsconfig.getEnabledPluginList(0));
+		List<String> pluginListActive = getActivePlugins(); 
+	   	   
+		
+		
 		if((pluginListEnabled.size() > 0) || (pluginListDisabled.size() > 0))
 		{
-			if(pluginListEnabled.size() > 0)
+			if((pluginListEnabled.size() > 0) || (pluginListActive.size() > 0))
 			{
 				sb.append("Enabled Plugins:\n");
 			}
 			for(String pluginName : pluginListEnabled)
 			{
-				if(AgentEngine.pluginMap.containsKey(pluginName))
+				if((AgentEngine.pluginMap.containsKey(pluginName)) && !pluginListActive.contains(pluginName))
 				{
 					PluginInterface pi = AgentEngine.pluginMap.get(pluginName);
 					sb.append("Plugin: [" + pluginName + "] Name: " + AgentEngine.pluginsconfig.getPluginName(pluginName) + " Initialized: " + pi.getVersion() + "\n");
 				}
+			}
+			for(String pluginName : pluginListActive)
+			{
+				PluginInterface pi = AgentEngine.pluginMap.get(pluginName);
+				sb.append("Plugin: [" + pluginName + "] Name: " + AgentEngine.pluginsconfig.getPluginName(pluginName) + " Initialized: " + pi.getVersion() + "\n");
 			}
 			if(pluginListDisabled.size() > 0)
 			{
@@ -468,7 +486,10 @@ public class AgentEngine {
 			}
 			for(String pluginName : pluginListDisabled)
 			{
+				if(!pluginListActive.contains(pluginName))
+				{
 				sb.append("Plugin: [" + pluginName + "] Name: " + AgentEngine.pluginsconfig.getPluginName(pluginName)  + "\n");
+				}
 			}		
 		}
 		else
@@ -479,10 +500,33 @@ public class AgentEngine {
 		return sb.toString().substring(0,sb.toString().length()-1);
   }
    
+   static List<String> getActivePlugins()
+   {
+	   List<String> pluginList = new ArrayList<String>();
+	   if(pluginMap != null)
+   	   {
+   		   Iterator it = pluginMap.entrySet().iterator();
+	    	while (it.hasNext()) {
+	        	Map.Entry pairs = (Map.Entry)it.next();
+	        	System.out.println(pairs.getKey() + " = " + pairs.getValue());
+	        	String plugin = pairs.getKey().toString();
+	        	//disablePlugin(plugin,false);
+	        	pluginList.add(plugin);
+	        	//it.remove(); // avoids a ConcurrentModificationException
+	    	}
+   	    }
+	   return pluginList;
+   }
+   
    static void cleanup()
    {
 	   System.out.println("Shutdown:Cleaning Active Agent Resources");
-	   
+	       List<String> pluginList = getActivePlugins(); 
+	   	   for(String plugin : pluginList)
+	   	   {
+	   		   disablePlugin(plugin,false);
+	   	   }
+	       /*
 	   	   if(pluginMap != null)
 	   	   {
 	   		   Iterator it = pluginMap.entrySet().iterator();
@@ -494,6 +538,7 @@ public class AgentEngine {
 		        	it.remove(); // avoids a ConcurrentModificationException
 		    	}
 	   	    }
+	   	    */
 		    if(logQueue != null)
 		    {
 		    logQueue.offer(new LogEvent("CONFIG",config.getAgentName(),"disabled"));	    	   	    			

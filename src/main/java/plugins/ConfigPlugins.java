@@ -3,10 +3,13 @@ package plugins;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalINIConfiguration;
 import org.apache.commons.configuration.SubnodeConfiguration;
+
+import core.AgentEngine;
 
 public class ConfigPlugins {
 
@@ -22,22 +25,20 @@ public class ConfigPlugins {
 	
 	public List getEnabledPluginList(int isEnabled)
 	{
-		//isEnabled = 1 enabled
-		List<String> enabledPlugins = new ArrayList<String>();
-		SubnodeConfiguration sObj = iniConfObj.getSection("plugins");
+		//isEnabled : 0=disabled , 1 enabled
 		
-		Iterator it = sObj.getKeys();
-		while (it.hasNext()) {
-			Object key = it.next();
-			int value = Integer.parseInt(sObj.getString(key.toString()));
-			//result.put(key.toString(), value);
-			if(value == isEnabled)
-			{
-				
-				enabledPlugins.add(key.toString());
-			
-			}	
-		}
+		List<String> enabledPlugins = new ArrayList<String>();
+			SubnodeConfiguration sObj = iniConfObj.getSection("plugins");
+			Iterator it = sObj.getKeys();
+			while (it.hasNext()) {
+				Object key = it.next();
+				int value = Integer.parseInt(sObj.getString(key.toString()));
+				//result.put(key.toString(), value);
+				if(value == isEnabled)
+				{
+					enabledPlugins.add(key.toString());		
+				}	
+			}
 		return enabledPlugins;	
 	}
 	public String getPluginName(String pluginID)

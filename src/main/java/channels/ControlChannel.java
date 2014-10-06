@@ -69,7 +69,7 @@ public class ControlChannel implements Runnable {
 	    CmdEventMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 		
 		
-		LogEvent le = new LogEvent("INFO","CORE","Controller Started");
+		LogEvent le = new LogEvent("INFO",AgentEngine.config.getAgentName(),"Controller Started");
 		logQueue.offer(le);
 		AgentEngine.ControlChannelEnabled = true;
 		while (true) {
@@ -94,8 +94,9 @@ public class ControlChannel implements Runnable {
 		    CmdEvent ce = commandExec.cmdExec(rootUm.getValue());
 		    
 		    String msg = "Control Channel Command:" + ce.getCmdType() + " Arguement(s):" + ce.getCmdArg() + " result:" + ce.getCmdResult();
-		    LogEvent le2 = new LogEvent("INFO","CORE",msg);
+		    LogEvent le2 = new LogEvent("INFO",AgentEngine.config.getAgentName(),msg);
 		    logQueue.offer(le2);
+		    //System.out.println(msg);
 		    
 		    
 		  //create rootXML for marshaler & create XML output
@@ -112,7 +113,7 @@ public class ControlChannel implements Runnable {
 		catch(Exception ex)
 		{
 			System.out.println(ex);
-			LogEvent le = new LogEvent("ERROR","CORE","Controller ERROR: " + ex.toString());
+			LogEvent le = new LogEvent("ERROR",AgentEngine.config.getAgentName(),"Controller ERROR: " + ex.toString());
 			logQueue.offer(le);
 			return;
 		}

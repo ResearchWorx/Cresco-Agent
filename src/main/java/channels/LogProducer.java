@@ -29,7 +29,6 @@ public class LogProducer implements Runnable {
     public LogProducer(Queue<LogEvent> logQueue) {
     	this.logQueue = logQueue;
         this.EXCHANGE_NAME_LOG = AgentEngine.config.getRegion() + "_log";
-        //agentName = AgentEngine.config.getAgentName();
     }
     
     public void run() {
@@ -64,7 +63,7 @@ public class LogProducer implements Runnable {
     	AgentEngine.logProducerActive = true;
     	AgentEngine.logProducerEnabled = true;
     	
-    	LogEvent le = new LogEvent("INFO","CORE","LogProducer Started");
+    	LogEvent le = new LogEvent("INFO",AgentEngine.config.getAgentName(),"LogProducer Started");
     	logQueue.offer(le);
     	
     	while (AgentEngine.logProducerEnabled) {
@@ -83,7 +82,7 @@ public class LogProducer implements Runnable {
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				//e.printStackTrace();
-				le = new LogEvent("INFO","CORE","LogProducer Stopped");
+				le = new LogEvent("INFO",AgentEngine.config.getAgentName(),"LogProducer Stopped");
 		    	logQueue.offer(le);
 		    	try{
 		    	if(channel_log.isOpen())
@@ -98,14 +97,14 @@ public class LogProducer implements Runnable {
 		    	catch(Exception ex)
 		    	{
 		    		System.out.println("LogProducer Interupted" + ex.toString());	        	
-		    		le = new LogEvent("ERROR","CORE","LogProducer Interupted" + ex.toString());
+		    		le = new LogEvent("ERROR",AgentEngine.config.getAgentName(),"LogProducer Interupted" + ex.toString());
 			    	logQueue.offer(le);
 		    	}		    	
 			}
         	
         }
     	System.out.println("LogProducer Disabled");   	
-    	le = new LogEvent("INFO","CORE","LogProducer Disabled");
+    	le = new LogEvent("INFO",AgentEngine.config.getAgentName(),"LogProducer Disabled");
     	logQueue.offer(le);
     	try {
 			log(); //one last call
@@ -149,8 +148,8 @@ public class LogProducer implements Runnable {
     	        LogEventMarshaller.marshal(root, LogEventXMLString);
     	        
     			//System.out.println(LogEventXMLString.toString());
-    	        
     	        //put XML on queue
+    	        
     			channel_log.basicPublish(EXCHANGE_NAME_LOG, "", null, LogEventXMLString.toString().getBytes());
     		}
     	}
