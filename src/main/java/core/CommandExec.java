@@ -29,6 +29,7 @@ public class CommandExec {
 		//Respond with command-set from discover messages
 		if(ce.getCmdType().equals("discover"))
 		{
+			AgentEngine.ControllerActive = true; //if we see a discover there is an active controller
 			StringBuilder sb = new StringBuilder();
 			//send discover message to plugin if addressed to plugin
 			if(ce.getCmdArg().toLowerCase().startsWith("plugin"))
@@ -137,7 +138,7 @@ public class CommandExec {
 			}
 			else if(ce.getCmdArg().equals("show_plugins"))
 			{
-				ce.setCmdResult(plugins());
+				ce.setCmdResult(AgentEngine.listPlugins());
 			}
 			else if(ce.getCmdArg().equals("show_version"))
 			{
@@ -236,42 +237,6 @@ public class CommandExec {
 		settings = settings + "watchDogActive=" + AgentEngine.watchDogActive;
 		return settings;
 	}
-	public static String plugins() //loop through known plugins on agent
-	{
-		StringBuilder sb = new StringBuilder();
-        
-		List<String> pluginListEnabled = AgentEngine.pluginsconfig.getEnabledPluginList(1);
-		List<String> pluginListDisabled = AgentEngine.pluginsconfig.getEnabledPluginList(0);
-		if((pluginListEnabled.size() > 0) || (pluginListDisabled.size() > 0))
-		{
-			if(pluginListEnabled.size() > 0)
-			{
-				sb.append("Enabled Plugins:\n");
-			}
-			for(String pluginName : pluginListEnabled)
-			{
-				if(AgentEngine.pluginMap.containsKey(pluginName))
-				{
-					PluginInterface pi = AgentEngine.pluginMap.get(pluginName);
-					sb.append("Plugin: [" + pluginName + "] Name: " + AgentEngine.pluginsconfig.getPluginName(pluginName) + " Initialized: " + pi.getVersion() + "\n");
-				}
-			}
-			if(pluginListDisabled.size() > 0)
-			{
-				sb.append("Disabled Plugins:\n");
-			}
-			for(String pluginName : pluginListDisabled)
-			{
-				sb.append("Plugin: [" + pluginName + "] Name: " + AgentEngine.pluginsconfig.getPluginName(pluginName)  + "\n");
-			}		
-		}
-		else
-		{
-			sb.append("No Plugins Found!\n");
-			
-		}
-		return sb.toString().substring(0,sb.toString().length()-1);
-    }
-
+	
 	
 }

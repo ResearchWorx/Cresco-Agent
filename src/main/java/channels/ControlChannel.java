@@ -114,7 +114,7 @@ public class ControlChannel implements Runnable {
 			System.out.println(ex);
 			LogEvent le = new LogEvent("ERROR","CORE","Controller ERROR: " + ex.toString());
 			logQueue.offer(le);
-			
+			return;
 		}
 	}
 }

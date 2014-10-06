@@ -28,7 +28,10 @@ public class AgentEngine {
 	public static boolean isActive = false; //agent on/off
 	public static boolean logProducerActive = false;  //log service on/off
 	public static boolean ControlChannelEnabled = false; //control service on/off
+	public static boolean ControllerActive = false; //control service on/off
+	public static boolean ControllerEnabled = false; //control service on/off	
 	public static boolean logProducerEnabled = false; //thread on/off
+	
 	public static boolean watchDogActive = false; //agent watchdog on/off
 	public static String agentVersion = null;
 	private static Thread logProducerThread;
@@ -77,7 +80,7 @@ public class AgentEngine {
     		LogProducer v = new LogProducer(logQueue);
 	    	logProducerThread = new Thread(v);
 	    	logProducerThread.start();
-	    	while(!logProducerEnabled)
+	    	while((!logProducerEnabled) && (logProducerThread.isAlive()))
 	    	{
 	    		Thread.sleep(1000);
 	    		String msg = "Waiting for logProducer Initialization...";
@@ -93,7 +96,7 @@ public class AgentEngine {
 	    	ControlChannel c = new ControlChannel(logQueue);
 	    	Thread ControlChannelThread = new Thread(c);
 	    	ControlChannelThread.start();
-	    	while(!ControlChannelEnabled)
+	    	while((!ControlChannelEnabled) && (ControlChannelThread.isAlive()))
 	    	{
 	    		Thread.sleep(1000);
 	    		String msg = "Waiting for Control Channel Initialization...";
@@ -101,18 +104,47 @@ public class AgentEngine {
 		    	System.out.println(msg);
 	    	}
 	    	
-	    	//Notify agent start
-	    	String msg = "Agent Core (" + agentVersion + ") Started";
-	    	logQueue.offer(new LogEvent("INFO","CORE",msg));
-	    	System.out.println(msg);
+	    	if(ControlChannelEnabled && logProducerEnabled)
+	    	{
+	    		int tryController = 1;
+	    		//give the controller 20 sec to respond. First 10 for possibe existing, 
+	    		//last 10 for one we try and start 
+	    		while((!ControllerActive) && (tryController < 20))
+	    		{
+	    			//Notify controler of agent enable wait for controller contact
+	    			logQueue.offer(new LogEvent("CONFIG",config.getAgentName(),"enabled"));	
+			    	Thread.sleep(1000);
+	    			tryController++; //give 10 atempts for controller to respond
+	    			if(tryController > 10)
+	    			{
+	    				String controllerPlugin = findPlugin("ControllerPlugin",0);
+	    				if(controllerPlugin != null)
+	    				{
+	    					System.out.println("Try and Start our own controller");
+	    				}
+	    			
+	    			}
+	    		}
+	    		
+	    		//wait until shutdown occures
+	        	isActive = true;
+	     	   
+	        	//start core watchdog
+		    	WatchDog wd = new WatchDog(logQueue);
+		    	
+		    	//Notify log that agent has started
+    			String msg = "Agent Core (" + agentVersion + ") Started";
+    			logQueue.offer(new LogEvent("INFO",config.getAgentName(),msg));
+    			System.out.println(msg);
+    			
+	    	}
+	    	else
+	    	{
+	    		System.out.println("Agent is a Zombie!\nNo Active Log or Control Channels!\nAgent will now shutdown.");
+	    		isActive = false;
+	    	}
 	    	
-           //wait until shutdown occures
-        	isActive = true;
-     	   
-        	//start core watchdog
-	    	WatchDog wd = new WatchDog(logQueue);
-	    	logQueue.offer(new LogEvent("CONFIG",config.getAgentName(),"enabled"));	    	   	    			
-			
+           
         	while(isActive) 
     	   {
         	   
@@ -353,34 +385,7 @@ public class AgentEngine {
 		return sb.toString();
    }
    
-   static void cleanup()
-   {
-	   System.out.println("\nDisabling Plugins");
-	       Iterator it = pluginMap.entrySet().iterator();
-		    while (it.hasNext()) {
-		        Map.Entry pairs = (Map.Entry)it.next();
-		        System.out.println(pairs.getKey() + " = " + pairs.getValue());
-		        String plugin = pairs.getKey().toString();
-		        disablePlugin(plugin,false);
-		        it.remove(); // avoids a ConcurrentModificationException
-		    }
-		    
-		    logQueue.offer(new LogEvent("CONFIG",config.getAgentName(),"disabled"));	    	   	    			
-			
-	    	   //stop other threads
-	    	   logProducerActive = false;
-	    	   logProducerEnabled = false;
-	    	   
-		    while(logProducerThread.isAlive())
-		    {
-		    	try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-		    }
-   }
+   
    public static String getVersion() //This should pull the version information from jar Meta data
    {
 		   String version;
@@ -406,6 +411,111 @@ public class AgentEngine {
 		   return config.getAgentName() + "." + version;
 	   }
    
+   public static String findPlugin(String searchPluginName, int isActive) //loop through known plugins on agent
+	{
+		StringBuilder sb = new StringBuilder();
+       
+		List<String> pluginList = AgentEngine.pluginsconfig.getEnabledPluginList(isActive);
+		
+		if(pluginList.size() > 0)
+		{
+			
+			for(String pluginName : pluginList)
+			{
+				if(AgentEngine.pluginMap.containsKey(pluginName))
+				{
+					PluginInterface pi = AgentEngine.pluginMap.get(pluginName);
+					if(AgentEngine.pluginsconfig.getPluginName(pluginName).equals(searchPluginName))
+					{
+						return pluginName;
+					}
+					//sb.append("Plugin: [" + pluginName + "] Name: " + AgentEngine.pluginsconfig.getPluginName(pluginName) + " Initialized: " + pi.getVersion() + "\n");
+				}
+			}
+			return null;
+			//return sb.toString().substring(0,sb.toString().length()-1);		
+		}
+		else
+		{
+			return null;
+		}
+		
+   }
+
+   public static String listPlugins() //loop through known plugins on agent
+	{
+		StringBuilder sb = new StringBuilder();
+      
+		List<String> pluginListEnabled = AgentEngine.pluginsconfig.getEnabledPluginList(1);
+		List<String> pluginListDisabled = AgentEngine.pluginsconfig.getEnabledPluginList(0);
+		if((pluginListEnabled.size() > 0) || (pluginListDisabled.size() > 0))
+		{
+			if(pluginListEnabled.size() > 0)
+			{
+				sb.append("Enabled Plugins:\n");
+			}
+			for(String pluginName : pluginListEnabled)
+			{
+				if(AgentEngine.pluginMap.containsKey(pluginName))
+				{
+					PluginInterface pi = AgentEngine.pluginMap.get(pluginName);
+					sb.append("Plugin: [" + pluginName + "] Name: " + AgentEngine.pluginsconfig.getPluginName(pluginName) + " Initialized: " + pi.getVersion() + "\n");
+				}
+			}
+			if(pluginListDisabled.size() > 0)
+			{
+				sb.append("Disabled Plugins:\n");
+			}
+			for(String pluginName : pluginListDisabled)
+			{
+				sb.append("Plugin: [" + pluginName + "] Name: " + AgentEngine.pluginsconfig.getPluginName(pluginName)  + "\n");
+			}		
+		}
+		else
+		{
+			sb.append("No Plugins Found!\n");
+			
+		}
+		return sb.toString().substring(0,sb.toString().length()-1);
+  }
+   
+   static void cleanup()
+   {
+	   System.out.println("Shutdown:Cleaning Active Agent Resources");
+	   
+	   	   if(pluginMap != null)
+	   	   {
+	   		   Iterator it = pluginMap.entrySet().iterator();
+		    	while (it.hasNext()) {
+		        	Map.Entry pairs = (Map.Entry)it.next();
+		        	System.out.println(pairs.getKey() + " = " + pairs.getValue());
+		        	String plugin = pairs.getKey().toString();
+		        	disablePlugin(plugin,false);
+		        	it.remove(); // avoids a ConcurrentModificationException
+		    	}
+	   	    }
+		    if(logQueue != null)
+		    {
+		    logQueue.offer(new LogEvent("CONFIG",config.getAgentName(),"disabled"));	    	   	    			
+		    }
+	    	   //stop other threads
+	    	   logProducerActive = false;
+	    	   logProducerEnabled = false;
+	    	if(logProducerThread != null)
+	    	{
+	    		while(logProducerThread.isAlive())
+	    		{
+		    		try 
+		    		{
+						Thread.sleep(1000);
+					} 
+		    		catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+		    	}
+	    	}
+   }
 }
 
 

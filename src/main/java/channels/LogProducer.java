@@ -57,7 +57,8 @@ public class LogProducer implements Runnable {
     	{
     		System.err.println("LogProducer Initialization Failed:  Exiting");
     		System.err.println(ex);
-    		System.exit(1);
+    		return; //don't kill app if log can't be established
+    		//System.exit(1);
     	}
     
     	AgentEngine.logProducerActive = true;
