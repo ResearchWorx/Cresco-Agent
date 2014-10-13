@@ -59,7 +59,8 @@ public class Config {
 	public int getControllerDiscoveryTimeout()
 	{
 		SubnodeConfiguration sObj = iniConfObj.getSection("general");
-		return sObj.getInt("controllerdiscoverytimeout");
+		int tmpTime = Math.round(sObj.getInt("controllerdiscoverytimeout")/1000);
+		return tmpTime;
 	}
 	public String getPluginConfigFile()
 	{

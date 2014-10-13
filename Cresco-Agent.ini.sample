@@ -3,9 +3,9 @@ agentname=<agent name>
 generatename=<disable=0,enable=1>
 region=<region name>
 
-
 ampq_control_host=<AMPQ host>
 ampq_control_username=<username>
 ampq_control_password=<password>
-watchdogtimer=5000
+watchdogtimer=<time in ms>
+controllerdiscoverytimeout=<time in ms>
 plugin_config_file=Cresco-Agent-Plugins.ini
