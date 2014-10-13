@@ -109,15 +109,17 @@ public class AgentEngine {
 	    	{
 	    		System.out.println("Waiting for Controller Response Initialization...");
 	    		int tryController = 1;
+	    		int controllerDiscoveryTimeout = config.getControllerDiscoveryTimeout();
+	    		int controllerLaunchTimeout = Math.round(controllerDiscoveryTimeout/2);
 	    		//give the controller 20 sec to respond. First 10 for possibe existing, 
 	    		//last 10 for one we try and start 
-	    		while((!ControllerActive) && (tryController < 60))
+	    		while((!ControllerActive) && (tryController < controllerDiscoveryTimeout))
 	    		{
 	    			//Notify controler of agent enable wait for controller contact
 	    			logQueue.offer(new LogEvent("CONFIG",config.getAgentName(),"enabled"));	
 			    	Thread.sleep(1000);
 	    			tryController++; //give 30 atempts for controller to respond
-	    			if(tryController > 30)
+	    			if(tryController > controllerLaunchTimeout)
 	    			{
 	    				String controllerPlugin = findPlugin("ControllerPlugin",0);
 	    				if(controllerPlugin != null)

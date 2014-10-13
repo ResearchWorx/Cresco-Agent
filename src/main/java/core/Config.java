@@ -56,6 +56,11 @@ public class Config {
 		SubnodeConfiguration sObj = iniConfObj.getSection("general");
 		return sObj.getInt("watchdogtimer");
 	}
+	public int getControllerDiscoveryTimeout()
+	{
+		SubnodeConfiguration sObj = iniConfObj.getSection("general");
+		return sObj.getInt("controllerdiscoverytimeout");
+	}
 	public String getPluginConfigFile()
 	{
 		SubnodeConfiguration sObj = iniConfObj.getSection("general");
