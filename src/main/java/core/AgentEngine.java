@@ -111,13 +111,13 @@ public class AgentEngine {
 	    		int tryController = 1;
 	    		//give the controller 20 sec to respond. First 10 for possibe existing, 
 	    		//last 10 for one we try and start 
-	    		while((!ControllerActive) && (tryController < 10))
+	    		while((!ControllerActive) && (tryController < 60))
 	    		{
 	    			//Notify controler of agent enable wait for controller contact
 	    			logQueue.offer(new LogEvent("CONFIG",config.getAgentName(),"enabled"));	
 			    	Thread.sleep(1000);
-	    			tryController++; //give 10 atempts for controller to respond
-	    			if(tryController > 5)
+	    			tryController++; //give 30 atempts for controller to respond
+	    			if(tryController > 30)
 	    			{
 	    				String controllerPlugin = findPlugin("ControllerPlugin",0);
 	    				if(controllerPlugin != null)
