@@ -9,21 +9,56 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalINIConfiguration;
 import org.apache.commons.configuration.SubnodeConfiguration;
 
-import core.AgentEngine;
-
 public class ConfigPlugins {
 
 	private HierarchicalINIConfiguration iniConfObj;
 	
 	public ConfigPlugins(String configFile) throws ConfigurationException
 	{
-	    //String iniFile = "Cresco-Agent-Netflow.ini";
-	    
 		iniConfObj = new HierarchicalINIConfiguration(configFile);
 		iniConfObj.setAutoSave(true);
+		
 	}
-	
-	public List getEnabledPluginList(int isEnabled)
+	public void removePlugin(String pluginID)
+	{
+		iniConfObj.clearProperty("plugins." + pluginID);
+		iniConfObj.clearTree(pluginID);
+	}
+	public String addPlugin(Map<String,String> params) throws ConfigurationException
+	{
+		Boolean isFound = false;
+		int pluginNum = 0;
+		String pluginID = null;
+		while(!isFound)
+		try
+		{
+			pluginID = "plugin/" + String.valueOf(pluginNum);
+			SubnodeConfiguration sObj = iniConfObj.getSection(pluginID);
+			if(sObj.isEmpty())
+			{
+				isFound = true;
+				iniConfObj.addProperty("plugins." + pluginID,"0");
+				System.out.println("added plugin record for:" + pluginID);
+			}
+			pluginNum++;
+		}
+		catch(Exception ex)
+		{
+			System.out.println("ConfigPlugins : Problem searching for open plugin slot");
+		}
+		
+		System.out.println("adding param records for=" + pluginID);
+		Iterator it = params.entrySet().iterator();
+	    while (it.hasNext()) {
+	        Map.Entry pairs = (Map.Entry)it.next();
+	        //System.out.println(pairs.getKey() + " = " + pairs.getValue());
+	        iniConfObj.addProperty(pluginID + "." + pairs.getKey().toString(),pairs.getValue().toString());
+	        //System.out.println("plugin:" + pluginID + "." + pairs.getKey().toString() + " " + pairs.getValue().toString() );
+	        it.remove(); // avoids a ConcurrentModificationException
+	    }
+	    return pluginID;
+	}
+	public List getPluginList(int isEnabled)
 	{
 		//isEnabled : 0=disabled , 1 enabled
 		

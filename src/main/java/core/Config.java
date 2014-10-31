@@ -62,6 +62,12 @@ public class Config {
 		int tmpTime = Math.round(sObj.getInt("controllerdiscoverytimeout")/1000);
 		return tmpTime;
 	}
+	public int getLogProducerTimeout()
+	{
+		SubnodeConfiguration sObj = iniConfObj.getSection("general");
+		int tmpTime = Math.round(sObj.getInt("logproducertimeout")/1000);
+		return tmpTime;
+	}
 	public String getPluginConfigFile()
 	{
 		SubnodeConfiguration sObj = iniConfObj.getSection("general");

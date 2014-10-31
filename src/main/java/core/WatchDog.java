@@ -1,43 +1,53 @@
 package core;
 
-import java.util.Queue;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import shared.LogEvent;
+import shared.MsgEvent;
+import shared.MsgEventType;
 
 
 public class WatchDog {
 
 	  private Timer timer;
-	  public Queue<LogEvent> log;
 	  private long startTS;
+	  private Map<String,String> wdMap;
 		
 	  
-	  public WatchDog(Queue<LogEvent> log) {
+	  public WatchDog() {
 		  startTS = System.currentTimeMillis();
-		  this.log = log;
 		  timer = new Timer();
 	      timer.scheduleAtFixedRate(new WatchDogTask(), 500, AgentEngine.config.getWatchDogTimer());
+	      wdMap = new HashMap<String,String>(); //for sending future WD messages
 	      
 	      AgentEngine.watchDogActive = true;
-	      LogEvent le = new LogEvent("INFO",AgentEngine.config.getAgentName(),"WatchDog timer set to " + AgentEngine.config.getWatchDogTimer() + " milliseconds");
-		  log.offer(le);
+	      MsgEvent le = new MsgEvent(MsgEventType.INFO,AgentEngine.config.getRegion(),null,null,"WatchDog timer set to " + AgentEngine.config.getWatchDogTimer() + " milliseconds");
+	      le.setParam("src_region", AgentEngine.region);
+		  le.setParam("src_agent", AgentEngine.agent);
+		  le.setParam("dst_region", AgentEngine.region);
+		  AgentEngine.clog.log(le);
 	  }
 
 
-	class WatchDogTask extends TimerTask {
-	    public void run() {
-	    	
-	    if(AgentEngine.watchDogActive)
+	class WatchDogTask extends TimerTask 
+	{
+	    public void run() 
 	    {
-	    	 long runTime = System.currentTimeMillis() - startTS;
-			 LogEvent le = new LogEvent("WATCHDOG",AgentEngine.config.getAgentName(),"Agent Uptime " + String.valueOf(runTime) + "ms");
-			 log.offer(le);
-	      //timer.cancel(); //Not necessary because we call System.exit
-	      //System.exit(0); //Stops the AWT thread (and everything else)
-	    }
+	    	
+	    	if(AgentEngine.watchDogActive)
+	    	{
+	    		long runTime = System.currentTimeMillis() - startTS;
+	    		wdMap.put("runtime", String.valueOf(runTime));
+	    		wdMap.put("timestamp", String.valueOf(System.currentTimeMillis()));
+	    	 
+	    		MsgEvent le = new MsgEvent(MsgEventType.WATCHDOG,AgentEngine.config.getRegion(),null,null,wdMap);
+	    		le.setParam("src_region", AgentEngine.region);
+	  		    le.setParam("src_agent", AgentEngine.agent);
+	  		    le.setParam("dst_region", AgentEngine.region);
+	  		    AgentEngine.clog.log(le);
+	    	}
 	    }
 	  }
-
 }

@@ -9,6 +9,8 @@ import java.util.Iterator;
 import java.util.ServiceLoader;
 import java.util.jar.JarFile;
 
+import shared.PluginInterface;
+
 public class PluginLoader {
 
 	private static URLClassLoader cl;
