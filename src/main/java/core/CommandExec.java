@@ -39,6 +39,14 @@ public class CommandExec {
 						AgentEngine.ControllerActive = true; //if we see a discover there is an active controller
 						return null;
 					}
+					else if(ce.getMsgBody().equals("controllerdisabled"))					
+					{
+						AgentEngine.ControllerActive = false;
+						AgentEngine.MsgInQueueEnabled = false;
+						AgentEngine.MsgOutQueueEnabled = false;
+						AgentEngine.MsgInQueueActive = false;
+						AgentEngine.MsgOutQueueActive = false;			    	
+					}
 				}
 			}
 		

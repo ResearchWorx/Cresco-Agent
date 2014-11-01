@@ -80,7 +80,13 @@ public class AgentEngine {
     		//Cleanup on Shutdown
     		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
     	        public void run() {
-    	            cleanup();	            
+    	            try{
+    	        	cleanup();
+    	            }
+    	            catch(Exception ex)
+    	            {
+    	            	System.out.println("Exception Shutting Down:" + ex.toString());
+    	            }
     	        }
     	    }, "Shutdown-thread"));
     		
@@ -645,7 +651,7 @@ public class AgentEngine {
 	   return pluginList;
    }
    
-   static void cleanup()
+   static void cleanup() throws ConfigurationException, IOException
    {
 	   System.out.println("Shutdown:Cleaning Active Agent Resources");
 	       List<String> pluginList = getActivePlugins(); 
@@ -666,47 +672,43 @@ public class AgentEngine {
 		    	}
 	   	    }
 	   	    */
-		    if(msgOutQueue != null)
+		    
+		    if(!isController)
+		   	{
+		   		if(msgInQueue != null)
+			    {
+		    		MsgEvent de = clog.getLog("disabled");
+		    		de.setMsgType(MsgEventType.CONFIG);
+		    		de.setMsgAgent(AgentEngine.agent); //route to this agent
+		    		de.setMsgPlugin(AgentEngine.channelPluginSlot); //route to controller plugin
+		    		AgentEngine.commandExec.cmdExec(de);
+		    	
+		    		int time = 0;
+				    int timeout = 30; //give 30sec to timeout from RPC request
+				    
+			    	if(MsgInQueueThread != null)
+			    	{
+			    		while((MsgInQueueThread.isAlive()) && (time < timeout))
+			    		{
+				    		try 
+				    		{
+								Thread.sleep(1000);
+							} 
+				    		catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+				    		time++;
+				    	}
+			    	}
+		    	}
+			}
+		    else
 		    {
-		    	MsgEvent me = new MsgEvent(MsgEventType.CONFIG,AgentEngine.config.getRegion(),null,null,"disabled");
-    			me.setParam("region",AgentEngine.region);
-    			me.setParam("agent",AgentEngine.agent);
-    			msgOutQueue.offer(me);	
+		    	//cleanup controller here
 		    }
 	    	
-		    MsgInQueueEnabled = false;
-		    MsgOutQueueEnabled = false;
-		    MsgInQueueActive = false;
-		    MsgOutQueueActive = false;
-	    	   
-	    	if(MsgInQueueThread != null)
-	    	{
-	    		while(MsgInQueueThread.isAlive())
-	    		{
-		    		try 
-		    		{
-						Thread.sleep(1000);
-					} 
-		    		catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-		    	}
-	    	}
-	    	if(MsgOutQueueThread != null)
-	    	{
-	    		while(MsgOutQueueThread.isAlive())
-	    		{
-		    		try 
-		    		{
-						Thread.sleep(1000);
-					} 
-		    		catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-		    	}
-	    	}
+	    	
    }
 }
 
