@@ -154,12 +154,7 @@ public class CommandExec {
 				}
 				else if(ce.getParam("cmd").equals("show_name"))
 				{
-					ce.setMsgBody(AgentEngine.config.getAgentName());
-					
-				}
-				else if(ce.getParam("cmd").equals("show_agent"))
-				{
-					ce.setMsgBody(agent());
+					ce.setMsgBody(AgentEngine.agent);
 					
 				}
 				else if(ce.getParam("cmd").equals("show_plugins"))
@@ -168,8 +163,7 @@ public class CommandExec {
 				}
 				else if(ce.getParam("cmd").equals("show_version"))
 				{
-					ce.setMsgBody(AgentEngine.agentVersion);
-					
+					ce.setMsgBody(AgentEngine.agentVersion);			
 				}
 				else if(ce.getParam("cmd").equals("show_address"))
 				{

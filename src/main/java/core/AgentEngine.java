@@ -267,6 +267,18 @@ public class AgentEngine {
     						me.setSrc(region, agent, null);
     						me.setDst(region, agent, channelPluginSlot);
     						AgentEngine.msgInQueue.offer(me); //enable the incoming queue
+    						//if controller is active enable REST interface
+    						String RESTPlugin = findPlugin("RESTPlugin",0);
+    	    				if(controllerPlugin != null)
+    	    				{
+    	    					System.out.println("Start RESTChannel for Controller on port 32001");
+    	    					boolean isREST = enablePlugin(RESTPlugin, false);
+    	    					if(!isREST)
+    	    					{
+    	    						System.out.println("RESTChannel Plugin NOT Loaded");
+    	    					}
+    	    				}
+    						
     					}
     				}
     				
