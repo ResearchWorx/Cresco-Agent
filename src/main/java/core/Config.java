@@ -1,5 +1,7 @@
 package core;
 
+import java.util.Iterator;
+
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalINIConfiguration;
 import org.apache.commons.configuration.SubnodeConfiguration;
@@ -12,6 +14,23 @@ public class Config {
 	{
 	    iniConfObj = new HierarchicalINIConfiguration(configFile);
 	    iniConfObj.setAutoSave(true);
+	}
+	
+	public String getPluginConfigString()
+	{
+		SubnodeConfiguration sObj = iniConfObj.getSection("general");
+		//final Map<String,String> result=new TreeMap<String,String>();
+		  StringBuilder sb = new StringBuilder();
+			final Iterator it=sObj.getKeys();
+		  while (it.hasNext()) {
+		    final Object key=it.next();
+		    final String value=sObj.getString(key.toString());
+		    //result.put(key.toString(),value);
+		    	sb.append(key.toString() + "=" + value + ",");	
+		    
+		  }
+		  return sb.toString().substring(0, sb.length() -1);
+		  //return result;	
 	}
 	
 	public String getAgentName()

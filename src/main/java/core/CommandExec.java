@@ -83,6 +83,7 @@ public class CommandExec {
 		{
 			if(ce.getMsgType() == MsgEventType.DISCOVER)
 			{
+				/*
 				StringBuilder sb = new StringBuilder();
 				
 				sb.append("help\n");
@@ -95,7 +96,8 @@ public class CommandExec {
 				sb.append("enable\n");
 				
 				ce.setMsgBody(sb.toString());
-				
+				*/
+				ce.setMsgBody(AgentEngine.config.getPluginConfigString());
 			}
 			else if(ce.getMsgType() == MsgEventType.CONFIG) //Execute and respond to execute commands
 			{
@@ -110,7 +112,17 @@ public class CommandExec {
 					ce.setMsgBody("Added Plugin:" + plugin);
 					
 				}
-				if(ce.getParam("configtype").equals("pluginremove"))
+				if(ce.getParam("configtype").equals("pluginaddexisting"))
+				{
+					//ce.removeParam("configtype");
+					//Map<String,String> hm = new HashMap<String,String>(ce.getParams());
+					//hm.remove("configtype");
+					//String plugin = AgentEngine.pluginsconfig.addPlugin(hm);
+					//ce.setParam("plugin", plugin);
+					//ce.setMsgBody("Added Plugin:" + plugin);
+					
+				}
+				else if(ce.getParam("configtype").equals("pluginremove"))
 				{
 					//disable if active
 					AgentEngine.disablePlugin(ce.getParam("plugin"),true);
