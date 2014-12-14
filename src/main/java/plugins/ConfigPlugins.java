@@ -1,6 +1,7 @@
 package plugins;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +58,25 @@ public class ConfigPlugins {
 	        it.remove(); // avoids a ConcurrentModificationException
 	    }
 	    return pluginID;
+	}
+	public Map<String,String> buildPluginMap(String configparams)
+	{
+		
+		Map<String,String> configMap = new HashMap<String,String>();
+		try
+		{
+			String[] configLines = configparams.split(",");
+			for(String config : configLines)
+			{
+				String[] configs = config.split("=");
+				configMap.put(configs[0], configs[1]);
+			}
+		}
+		catch(Exception ex)
+		{
+			System.out.println("Controller : PluginConfig : buildconfig ERROR : " + ex.toString());
+		}
+		return configMap;	
 	}
 	public List getPluginList(int isEnabled)
 	{

@@ -30,7 +30,7 @@ import shared.RandomString;
 public class AgentEngine {
     
 	public static boolean isActive = false; //agent on/off
-	
+	public static WatchDog wd;
 	public static boolean hasChannel = false;
 	public static String channelPluginSlot;
 	public static boolean isController = false;
@@ -153,7 +153,7 @@ public class AgentEngine {
         	}
         	
 	    	//start core watchdog
-	    	WatchDog wd = new WatchDog();
+	    	wd = new WatchDog();
 	    	
         	while(isActive) 
     	   {
@@ -454,8 +454,9 @@ public class AgentEngine {
 	    	//PluginNode pn = pluginMap.get(plugin);
 	    	PluginInterface pi = pluginMap.get(plugin);
 	    	pi.shutdown();
-			pi = null;
 			String msg = "Plugin Configuration: [" + plugin + "] Removed: (" + pi.getVersion() + ")";
+			pi = null;
+			System.out.println(msg);
 			pluginMap.remove(plugin);
 			
 			if(save)
@@ -463,12 +464,6 @@ public class AgentEngine {
 				pluginsconfig.setPluginStatus(plugin, 0);//save in config 
 			}
 			
-			MsgEvent me = new MsgEvent(MsgEventType.CONFIG,AgentEngine.config.getRegion(),null,null,"disabled");
-   			me.setParam("region",AgentEngine.region);
-   			me.setParam("agent",AgentEngine.agent);
-   			me.setParam("plugin",plugin);
-   			msgOutQueue.offer(me);
-   			
    			return true;	
 	    }
 	    else
@@ -663,14 +658,25 @@ public class AgentEngine {
 	   return pluginList;
    }
    
-   static void cleanup() throws ConfigurationException, IOException
+   static void cleanup() throws ConfigurationException, IOException, InterruptedException
    {
 	   System.out.println("Shutdown:Cleaning Active Agent Resources");
+	   wd.timer.cancel();
+   	
 	       List<String> pluginList = getActivePlugins(); 
-	   	   for(String plugin : pluginList)
+	   	   /*
+	       for(String plugin : pluginList)
 	   	   {
-	   		   disablePlugin(plugin,false);
+	   		   if(((isController) && (plugin.equals(channelPluginSlot))))
+	   		   {
+	   			   
+	   		   }
+	   		   else
+	   		   {
+	   			   //disablePlugin(plugin,false);
+	   		   }
 	   	   }
+	   	   */
 	       /*
 	   	   if(pluginMap != null)
 	   	   {
@@ -684,22 +690,42 @@ public class AgentEngine {
 		    	}
 	   	    }
 	   	    */
-		    
+	       
+	    	
 		    if(!isController)
 		   	{
+		    	
+		    	for(String plugin : pluginList)
+			   	{
+		    	   if(!plugin.equals(channelPluginSlot))
+			   	   {
+			   		   disablePlugin(plugin,false);   
+			   	   }
+			   	}
+		    	
 		   		if(msgInQueue != null)
 			    {
 		    		MsgEvent de = clog.getLog("disabled");
 		    		de.setMsgType(MsgEventType.CONFIG);
 		    		de.setMsgAgent(AgentEngine.agent); //route to this agent
 		    		de.setMsgPlugin(AgentEngine.channelPluginSlot); //route to controller plugin
+		    		de.setParam("src_region",region);
+					de.setParam("src_agent",agent);
+					de.setParam("dst_region",region);
+					
 		    		AgentEngine.commandExec.cmdExec(de);
-		    	
+		    		Thread.sleep(5000);
+		    		disablePlugin(channelPluginSlot,false);
+		    		/*
 		    		int time = 0;
 				    int timeout = 30; //give 30sec to timeout from RPC request
 				    
+				    
 			    	if(MsgInQueueThread != null)
 			    	{
+			    		//disablePlugin(controllerPluginSlot,false);
+			    		//disablePlugin(controllerPluginSlot,false);
+			   		 	disablePlugin(channelPluginSlot,false);
 			    		while((MsgInQueueThread.isAlive()) && (time < timeout))
 			    		{
 				    		try 
@@ -713,13 +739,21 @@ public class AgentEngine {
 				    		time++;
 				    	}
 			    	}
+			    	*/
+			    	
 		    	}
 			}
 		    else
 		    {
 		    	//cleanup controller here
+		    	for(String plugin : pluginList)
+			   	{
+		    		
+			   	     disablePlugin(plugin,false);   
+			   	     
+			   	}
+		    	
 		    }
-	    	
 	    	
    }
 }

@@ -75,6 +75,7 @@ public class CommandExec {
 			else
 			{
 				System.out.println("Agent : CommandExec : Why am I getting a message for a plugin that does not exist?");
+				System.out.println(ce.getParamsString());
 				MsgEvent ee = new MsgEvent(MsgEventType.ERROR,AgentEngine.region,AgentEngine.agent,null,"Agent : CommandExec : Why am I getting a message for a plugin that does not exist?");
 				return ee;
 			}
@@ -101,25 +102,18 @@ public class CommandExec {
 			}
 			else if(ce.getMsgType() == MsgEventType.CONFIG) //Execute and respond to execute commands
 			{
-				//public String addPlugin(Map<String,String> params)
 				if(ce.getParam("configtype").equals("pluginadd"))
 				{
 					//ce.removeParam("configtype");
-					Map<String,String> hm = new HashMap<String,String>(ce.getParams());
+					
+					//Map<String,String> hm = new HashMap<String,String>(ce.getParams());
+					Map<String,String> hm = AgentEngine.pluginsconfig.buildPluginMap(ce.getParam("configparams"));
+					
 					hm.remove("configtype");
 					String plugin = AgentEngine.pluginsconfig.addPlugin(hm);
 					ce.setParam("plugin", plugin);
 					ce.setMsgBody("Added Plugin:" + plugin);
-					
-				}
-				if(ce.getParam("configtype").equals("pluginaddexisting"))
-				{
-					//ce.removeParam("configtype");
-					//Map<String,String> hm = new HashMap<String,String>(ce.getParams());
-					//hm.remove("configtype");
-					//String plugin = AgentEngine.pluginsconfig.addPlugin(hm);
-					//ce.setParam("plugin", plugin);
-					//ce.setMsgBody("Added Plugin:" + plugin);
+					AgentEngine.enablePlugin(plugin, false);
 					
 				}
 				else if(ce.getParam("configtype").equals("pluginremove"))
