@@ -135,12 +135,14 @@ public class CommandExec {
 					
 					URL website = new URL(baseUrl + ce.getParam("plugin"));
 					System.out.println("3");
+					System.out.println(baseUrl + ce.getParam("plugin"));
 					
 					ReadableByteChannel rbc = Channels.newChannel(website.openStream());
 					System.out.println("4");
 					
 					File jarLocation = new File(AgentEngine.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
 					String parentDirName = jarLocation.getParent(); // to get the parent dir name
+					System.out.println(parentDirName + "/" + ce.getParam("plugin"));
 					FileOutputStream fos = new FileOutputStream(parentDirName + "/" + ce.getParam("plugin"));
 					System.out.println("5");
 					
