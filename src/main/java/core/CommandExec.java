@@ -1,10 +1,15 @@
 package core;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.net.URL;
 import java.net.UnknownHostException;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -115,6 +120,16 @@ public class CommandExec {
 					ce.setMsgBody("Added Plugin:" + plugin);
 					AgentEngine.enablePlugin(plugin, false);
 					
+				}
+				else if(ce.getParam("configtype").equals("plugindownload"))
+				{
+					URL website = new URL(ce.getParam("pluginurl"));
+					ReadableByteChannel rbc = Channels.newChannel(website.openStream());
+					File jarLocation = new File(AgentEngine.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+					String parentDirName = jarLocation.getParent(); // to get the parent dir name
+					FileOutputStream fos = new FileOutputStream(parentDirName + "/" + ce.getParam("plugin"));
+					fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+					ce.setMsgBody("Downloaded Plugin:" + ce.getParam("plugin"));
 				}
 				else if(ce.getParam("configtype").equals("pluginremove"))
 				{
