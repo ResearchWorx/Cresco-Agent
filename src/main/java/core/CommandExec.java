@@ -123,13 +123,36 @@ public class CommandExec {
 				}
 				else if(ce.getParam("configtype").equals("plugindownload"))
 				{
-					URL website = new URL(ce.getParam("pluginurl"));
+					System.out.println("1");
+					try
+					{
+					String baseUrl = ce.getParam("pluginurl");
+					if(!baseUrl.endsWith("/"))
+					{
+						baseUrl = baseUrl + "/";
+					}
+					System.out.println("2");
+					
+					URL website = new URL(baseUrl + ce.getParam("plugin"));
+					System.out.println("3");
+					
 					ReadableByteChannel rbc = Channels.newChannel(website.openStream());
+					System.out.println("4");
+					
 					File jarLocation = new File(AgentEngine.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
 					String parentDirName = jarLocation.getParent(); // to get the parent dir name
 					FileOutputStream fos = new FileOutputStream(parentDirName + "/" + ce.getParam("plugin"));
+					System.out.println("5");
+					
 					fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+					System.out.println("6");
+					
 					ce.setMsgBody("Downloaded Plugin:" + ce.getParam("plugin"));
+					}
+					catch(Exception ex)
+					{
+						System.out.println(ex.toString());
+					}
 				}
 				else if(ce.getParam("configtype").equals("pluginremove"))
 				{
