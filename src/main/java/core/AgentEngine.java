@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.jar.Attributes;
@@ -24,7 +25,7 @@ import shared.MsgEvent;
 import shared.MsgEventType;
 import shared.PluginInterface;
 import shared.RandomString;
-
+//add rand
 
 
 public class AgentEngine {
@@ -221,6 +222,13 @@ public class AgentEngine {
     	{
     		int tryController = 1;
     		int controllerDiscoveryTimeout = config.getControllerDiscoveryTimeout();
+    		//add random delay on startup
+    		Random r = new Random();
+    		int Low = 0;
+    		int High = 10000;
+    		int R = r.nextInt(High-Low) + Low;
+    		//
+    		controllerDiscoveryTimeout += R;//add random delay to startup so only one controller starts
     		int controllerLaunchTimeout = Math.round(controllerDiscoveryTimeout/2);
     		//give the controller 20 sec to respond. First 10 for possibe existing, 
     		//last 10 for one we try and start 
