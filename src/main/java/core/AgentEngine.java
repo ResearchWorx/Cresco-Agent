@@ -228,7 +228,7 @@ public class AgentEngine {
     		int High = 10000;
     		int R = r.nextInt(High-Low) + Low;
     		//
-    		controllerDiscoveryTimeout += R;//add random delay to startup so only one controller starts
+    		controllerDiscoveryTimeout = (controllerDiscoveryTimeout+R)/1000;//add random delay to startup so only one controller starts
     		int controllerLaunchTimeout = Math.round(controllerDiscoveryTimeout/2);
     		//give the controller 20 sec to respond. First 10 for possibe existing, 
     		//last 10 for one we try and start 

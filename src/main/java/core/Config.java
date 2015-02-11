@@ -78,7 +78,7 @@ public class Config {
 	public int getControllerDiscoveryTimeout()
 	{
 		SubnodeConfiguration sObj = iniConfObj.getSection("general");
-		int tmpTime = Math.round(sObj.getInt("controllerdiscoverytimeout")/1000);
+		int tmpTime = Math.round(sObj.getInt("controllerdiscoverytimeout"));
 		return tmpTime;
 	}
 	public int getLogProducerTimeout()
