@@ -496,13 +496,21 @@ public class AgentEngine {
 	   {
 	    if(!pluginMap.containsKey(plugin))
 	    {
+	    	System.out.println("plugin name: " + plugin);
+	    	
+	    	System.out.println("plugin0");
 	    	PluginLoader pl = new PluginLoader(pluginsconfig.getPluginJar(plugin));
+	    	System.out.println("plugin1");
 	    	PluginInterface pi = pl.getPluginInterface();
 	    	
 	    	if(pi.initialize(msgOutQueue,msgInQueue,pluginsconfig.getPluginConfig(plugin),AgentEngine.config.getRegion(),AgentEngine.config.getAgentName(),plugin))
 	    	{
+	    		System.out.println("plugin2");
+		    	
 	    		if(pluginsconfig.getPluginName(plugin).equals(pi.getName()))
 	    		{
+	    			System.out.println("plugin3");
+	    	    	
 	    			try
 	    			{
 	    				String msg = "Plugin Configuration: [" + plugin + "] Initialized: (" + pi.getVersion() + ")";
@@ -512,7 +520,11 @@ public class AgentEngine {
 	    			{
 	    				System.out.println("Plugin Configuration: pq.getVersion() Error: " + ex.toString());
 	    			}
+	    			System.out.println("plugin4");
+	    	    	
 	    			pluginMap.put(plugin, pi);
+	    			System.out.println("plugin5");
+	    	    	
 	    			if(save)
 					{
 						pluginsconfig.setPluginStatus(plugin, 1);
