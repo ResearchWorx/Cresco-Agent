@@ -537,7 +537,7 @@ public class AgentEngine {
 	   }
 	   catch(Exception ex)
 	   {
-		   String msg = "Plugin Failed Initialization: Agent=" + AgentEngine.agent + "pluginname=" + pluginsconfig.getPluginName(plugin);
+		   String msg = "Plugin Failed Initialization: Agent=" + AgentEngine.agent + "pluginname=" + pluginsconfig.getPluginName(plugin) + " Error: " + ex.toString();
 			clog.error(msg);
 			return false;
 	   }
