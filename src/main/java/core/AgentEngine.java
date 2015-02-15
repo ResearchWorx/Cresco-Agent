@@ -503,9 +503,15 @@ public class AgentEngine {
 	    	{
 	    		if(pluginsconfig.getPluginName(plugin).equals(pi.getName()))
 	    		{
-	    			String msg = "Plugin Configuration: [" + plugin + "] Initialized: (" + pi.getVersion() + ")";
-	    			clog.log(msg);
-	    			
+	    			try
+	    			{
+	    				String msg = "Plugin Configuration: [" + plugin + "] Initialized: (" + pi.getVersion() + ")";
+	    				clog.log(msg);
+	    			}
+	    			catch(Exception ex)
+	    			{
+	    				System.out.println("Plugin Configuration: pq.getVersion() Error: " + ex.toString());
+	    			}
 	    			pluginMap.put(plugin, pi);
 	    			if(save)
 					{
