@@ -18,32 +18,14 @@ public class PluginLoader {
 	
 	public PluginLoader(String pluginPath) throws ClassNotFoundException, IOException
 	{
-		System.out.println("pl0");
-		
 		File dir = new File(pluginPath);
-		System.out.println("pl1");
-		
 		URL loadPath = dir.toURI().toURL();
-		System.out.println("pl2");
-		
 		URL[] classUrl = new URL[]{loadPath};
-		System.out.println("pl3");
-		
 		JarFile jarFile = new JarFile(pluginPath);
-		System.out.println("pl4");
-		
 		Enumeration e = jarFile.entries();
-		System.out.println("pl5");
-		
 		URL[] urls = { new URL("jar:file:" + pluginPath+"!/") };
-		System.out.println("pl6");
-		
 		cl = URLClassLoader.newInstance(urls);
-		System.out.println("pl7");
-		
 		sl = ServiceLoader.load(PluginInterface.class, cl);
-		System.out.println("pl8");
-		
 	}
 	
 	public PluginInterface getPluginInterface()
