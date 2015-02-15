@@ -499,6 +499,9 @@ public class AgentEngine {
 	    	System.out.println("plugin name: " + plugin);
 	    	
 	    	System.out.println("plugin0");
+	    	
+	    	System.out.println(pluginsconfig.getPluginJar(plugin));
+	    	
 	    	PluginLoader pl = new PluginLoader(pluginsconfig.getPluginJar(plugin));
 	    	System.out.println("plugin1");
 	    	PluginInterface pi = pl.getPluginInterface();
