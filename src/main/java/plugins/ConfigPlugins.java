@@ -10,6 +10,8 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalINIConfiguration;
 import org.apache.commons.configuration.SubnodeConfiguration;
 
+import core.AgentEngine;
+
 public class ConfigPlugins {
 
 	private HierarchicalINIConfiguration iniConfObj;
@@ -43,9 +45,14 @@ public class ConfigPlugins {
 			SubnodeConfiguration sObj = iniConfObj.getSection(pluginID);
 			if(sObj.isEmpty())
 			{
-				isFound = true;
-				iniConfObj.addProperty("plugins." + pluginID,"0");
-				System.out.println("added plugin record for:" + pluginID);
+				if(!AgentEngine.pluginMap.containsKey(pluginID))
+				{
+					isFound = true;
+					iniConfObj.addProperty("plugins." + pluginID,"0");
+					System.out.println("added plugin record for:" + pluginID);
+					iniConfObj.save(); //problems with duplicates
+				}
+				
 			}
 			pluginNum++;
 		}
