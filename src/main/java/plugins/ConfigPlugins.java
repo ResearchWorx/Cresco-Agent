@@ -24,6 +24,12 @@ public class ConfigPlugins {
 	{
 		iniConfObj.clearProperty("plugins." + pluginID);
 		iniConfObj.clearTree(pluginID);
+		try {
+			iniConfObj.save();
+		} catch (ConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	public String addPlugin(Map<String,String> params) throws ConfigurationException
 	{

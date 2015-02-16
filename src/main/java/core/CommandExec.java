@@ -117,9 +117,16 @@ public class CommandExec {
 					hm.remove("configtype");
 					String plugin = AgentEngine.pluginsconfig.addPlugin(hm);
 					ce.setParam("plugin", plugin);
-					ce.setMsgBody("Added Plugin:" + plugin);
-					AgentEngine.enablePlugin(plugin, false);
-					
+					boolean isEnabled = AgentEngine.enablePlugin(plugin, false);
+					if(!isEnabled)
+					{
+						ce.setMsgBody("Failed to Add Plugin:" + plugin);
+						AgentEngine.pluginsconfig.removePlugin(plugin);
+					}
+					else
+					{
+						ce.setMsgBody("Added Plugin:" + plugin);
+					}
 				}
 				else if(ce.getParam("configtype").equals("plugindownload"))
 				{
