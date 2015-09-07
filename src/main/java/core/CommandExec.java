@@ -151,10 +151,11 @@ public class CommandExec {
 					    if(pluginList.length() > 0)
 					    {
 					    	pluginList = pluginList.substring(0, pluginList.length() - 1);
+					    	System.out.println("pluginList=" + pluginList);
+						    ce.setParam("pluginlist", pluginList);
+						    ce.setMsgBody("There were " + listOfFiles.length + " plugins found.");
 					    }
-					    System.out.println("pluginList=" + pluginList);
-					    ce.setParam("pluginlist", pluginList);
-					    ce.setMsgBody("There were " + listOfFiles.length + " plugins found.");
+					    
 					}
 					else
 					{
