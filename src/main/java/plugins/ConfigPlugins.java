@@ -117,7 +117,13 @@ public class ConfigPlugins {
 	public String getPluginJar(String pluginID)
 	{
 		SubnodeConfiguration sObj = iniConfObj.getSection(pluginID);
-		return sObj.getString("jarfile");
+		//using path in the other config file
+		String pluginPath = AgentEngine.config.getPluginPath();
+		if(!pluginPath.endsWith("/"))
+		{
+			pluginPath = pluginPath + "/";
+		}
+		return pluginPath + sObj.getString("jarfile");
 	}
 	public String getPluginStatus(String pluginID)
 	{
