@@ -128,6 +128,42 @@ public class CommandExec {
 						ce.setMsgBody("Added Plugin:" + plugin);
 					}
 				}
+				else if(ce.getParam("configtype").equals("plugininventory"))
+				{
+					String pluginList = "";
+					File jarLocation = new File(AgentEngine.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+					String parentDirName = jarLocation.getParent(); // to get the parent dir name
+					
+					File folder = new File(parentDirName + "/plugins");
+					if(folder.exists())
+					{
+					File[] listOfFiles = folder.listFiles();
+
+					    for (int i = 0; i < listOfFiles.length; i++) 
+					    {
+					      if (listOfFiles[i].isFile()) 
+					      {
+					        System.out.println("Found Plugin: " + listOfFiles[i].getName());
+					        pluginList = pluginList + listOfFiles[i].getName() + ",";
+					      } 
+					      
+					    }
+					    if(pluginList.length() > 0)
+					    {
+					    	pluginList = pluginList.substring(0, pluginList.length() - 1);
+					    }
+					    System.out.println("pluginList=" + pluginList);
+					    ce.setParam("pluginlist", pluginList);
+					    ce.setMsgBody("There were " + listOfFiles.length + " plugins found.");
+					}
+					else
+					{
+						ce.setMsgBody("No plugin directory exist to inventory");
+					}
+					    
+					 
+					
+				}
 				else if(ce.getParam("configtype").equals("plugindownload"))
 				{
 					try
@@ -158,6 +194,7 @@ public class CommandExec {
 					if(ce.getParam("forceplugindownload") != null)
 					{
 						forceDownload = true;
+						System.out.println("Forcing Plugin Download");
 					}
 					
 					File pluginFileObject = new File(pluginFile);
@@ -168,10 +205,12 @@ public class CommandExec {
 						fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
 						
 						ce.setMsgBody("Downloaded Plugin:" + ce.getParam("plugin"));
+						System.out.println("Downloaded Plugin:" + ce.getParam("plugin"));
 					}
 					else
 					{
-						ce.setMsgBody("Plugin already exists:" + ce.getParam("plugin"));		
+						ce.setMsgBody("Plugin already exists:" + ce.getParam("plugin"));
+						System.out.println("Plugin already exists:" + ce.getParam("plugin"));
 					}
 					
 					}
