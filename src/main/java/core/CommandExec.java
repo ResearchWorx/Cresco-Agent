@@ -143,12 +143,37 @@ public class CommandExec {
 					
 					File jarLocation = new File(AgentEngine.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
 					String parentDirName = jarLocation.getParent(); // to get the parent dir name
-					System.out.println(parentDirName + "/" + ce.getParam("plugin"));
-					FileOutputStream fos = new FileOutputStream(parentDirName + "/plugins/" + ce.getParam("plugin"));
+					String pluginDir = parentDirName + "/plugins";
+					//check if directory exist, if not create it
+					File pluginDirfile = new File(pluginDir);
+					if (!pluginDirfile.exists()) {
+						if (pluginDirfile.mkdir()) {
+							System.out.println("Directory " + pluginDir + " didn't exist and was created.");
+						} else {
+							System.out.println("Directory " + pluginDir + " didn't exist and we failed to create it!");
+						}
+					}
+					String pluginFile = parentDirName + "/plugins/" + ce.getParam("plugin");
+					boolean forceDownload = false;
+					if(ce.getParam("forceplugindownload") != null)
+					{
+						forceDownload = true;
+					}
 					
-					fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+					File pluginFileObject = new File(pluginFile);
+					if (!pluginFileObject.exists() || forceDownload) 
+					{
+						FileOutputStream fos = new FileOutputStream(parentDirName + "/plugins/" + ce.getParam("plugin"));
+						
+						fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+						
+						ce.setMsgBody("Downloaded Plugin:" + ce.getParam("plugin"));
+					}
+					else
+					{
+						ce.setMsgBody("Plugin already exists:" + ce.getParam("plugin"));		
+					}
 					
-					ce.setMsgBody("Downloaded Plugin:" + ce.getParam("plugin"));
 					}
 					catch(Exception ex)
 					{
