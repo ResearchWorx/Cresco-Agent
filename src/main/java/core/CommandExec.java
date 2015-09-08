@@ -177,10 +177,12 @@ public class CommandExec {
 					
 					URL website = new URL(baseUrl + ce.getParam("plugin"));
 					ReadableByteChannel rbc = Channels.newChannel(website.openStream());
-					
+					/*
 					File jarLocation = new File(AgentEngine.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
 					String parentDirName = jarLocation.getParent(); // to get the parent dir name
 					String pluginDir = parentDirName + "/plugins";
+					
+					
 					//check if directory exist, if not create it
 					File pluginDirfile = new File(pluginDir);
 					if (!pluginDirfile.exists()) {
@@ -190,7 +192,9 @@ public class CommandExec {
 							System.out.println("Directory " + pluginDir + " didn't exist and we failed to create it!");
 						}
 					}
-					String pluginFile = parentDirName + "/plugins/" + ce.getParam("plugin");
+					*/
+					
+					String pluginFile = AgentEngine.config.getPluginPath() + ce.getParam("plugin");
 					boolean forceDownload = false;
 					if(ce.getParam("forceplugindownload") != null)
 					{
@@ -201,9 +205,10 @@ public class CommandExec {
 					File pluginFileObject = new File(pluginFile);
 					if (!pluginFileObject.exists() || forceDownload) 
 					{
-						FileOutputStream fos = new FileOutputStream(parentDirName + "/plugins/" + ce.getParam("plugin"));
+						FileOutputStream fos = new FileOutputStream(AgentEngine.config.getPluginPath() + ce.getParam("plugin"));
 						
 						fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+						fos.close();
 						
 						ce.setMsgBody("Downloaded Plugin:" + ce.getParam("plugin"));
 						System.out.println("Downloaded Plugin:" + ce.getParam("plugin"));

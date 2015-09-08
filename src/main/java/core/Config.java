@@ -35,7 +35,12 @@ public class Config {
 	public String getPluginPath()
 	{
 		SubnodeConfiguration sObj = iniConfObj.getSection("general");
-		return sObj.getString("pluginpath");
+		String pluginPath = sObj.getString("pluginpath");
+		if(!pluginPath.endsWith("/"))
+		{
+			pluginPath = pluginPath + "/";
+		}
+		return pluginPath;
 	}
 	public String getAgentName()
 	{
