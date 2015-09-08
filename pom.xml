@@ -52,6 +52,7 @@
         <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>	
       </manifest>
       <manifestEntries>
+      		   <artifactId>cresco-agent</artifactId>
               <Implementation-Version>${project.version}.${buildNumber}.${maven.build.timestamp}</Implementation-Version>
       </manifestEntries>
     </archive>
@@ -85,5 +86,4 @@
     </plugins>
   </build>
   <groupId>com.researchworx.cresco</groupId>
-</project>
 </project>
