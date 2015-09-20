@@ -109,9 +109,6 @@ public class CommandExec {
 			{
 				if(ce.getParam("configtype").equals("pluginadd"))
 				{
-					//ce.removeParam("configtype");
-					
-					//Map<String,String> hm = new HashMap<String,String>(ce.getParams());
 					Map<String,String> hm = AgentEngine.pluginsconfig.buildPluginMap(ce.getParam("configparams"));
 					
 					hm.remove("configtype");
