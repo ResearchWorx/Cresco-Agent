@@ -183,7 +183,7 @@ public class AgentEngine {
 		{
 		Thread thread = new Thread(){
 		    public void run(){ //command request go in new threads
-		      
+		    	MsgEvent re = null;
 		    	try 
 		        {
 		        	if(ce == null)
@@ -191,7 +191,7 @@ public class AgentEngine {
 		        		System.out.println("Agent : msgIn : Incoming message NULL!!!!");
 		        	}
 		        	
-					MsgEvent re = commandExec.cmdExec(ce); //execute command
+					re = commandExec.cmdExec(ce); //execute command
 					if(re != null)
 					{
 						re.setReturn(); //reverse to-from for return
@@ -202,6 +202,13 @@ public class AgentEngine {
 		        catch(Exception ex)
 		        {
 		        	clog.error("Agent : AgentEngine : msgIn Thread: " + ex.toString());
+		        	clog.error("Agent : AgentEngine : msgIn ce EventMsg =" + ce.getParamsString());
+		        	
+		        	if(re != null)
+		        	{
+		        		clog.error("Agent : AgentEngine : msgIn re EventMsg =" + re.getParamsString());
+		        	}
+		        	
 		        }
 		    }
 		  };
@@ -502,34 +509,37 @@ public class AgentEngine {
 	    	if(pi.initialize(msgOutQueue,msgInQueue,pluginsconfig.getPluginConfig(plugin),AgentEngine.config.getRegion(),AgentEngine.config.getAgentName(),plugin))
 	    	{
 	    		
-	    		if(pluginsconfig.getPluginName(plugin).equals(pi.getName()))
-	    		{
-	    			try
+	    			boolean versionMatch = pluginsconfig.getPluginName(plugin).equals(pi.getName());
+	    			if(versionMatch)
 	    			{
-	    				String msg = "Plugin Configuration: [" + plugin + "] Initialized: (" + pi.getVersion() + ")";
-	    				clog.log(msg);
+	    				try
+	    				{
+	    					String msg = "Plugin Configuration: [" + plugin + "] Initialized: (" + pi.getVersion() + ")";
+	    					clog.log(msg);
+	    				}
+	    				catch(Exception ex)
+	    				{
+	    					System.out.println("Plugin Configuration: pq.getVersion() Error: " + ex.toString());
+	    				}
+	    	    	
+	    				pluginMap.put(plugin, pi);
+	    	    	
+	    				if(save)
+	    				{
+	    					pluginsconfig.setPluginStatus(plugin, 1);
+	    				}
+	    				return true;
 	    			}
-	    			catch(Exception ex)
+	    			else
 	    			{
-	    				System.out.println("Plugin Configuration: pq.getVersion() Error: " + ex.toString());
+	    				String msg = "Plugin Configuration: Agent=" + AgentEngine.agent + "pluginname=" + pluginsconfig.getPluginName(plugin) + " does not match Plugin Jar: " + pi.getVersion() + ")";
+	    				pluginMap.put(plugin, pi);
+		    	    	clog.error(msg);
+	    				pl = null;
+	    				pi = null;
+	    				return false;
 	    			}
-	    	    	
-	    			pluginMap.put(plugin, pi);
-	    	    	
-	    			if(save)
-					{
-						pluginsconfig.setPluginStatus(plugin, 1);
-					}
-	    			return true;
-	    		}
-	    		else
-	    		{
-	    			String msg = "Plugin Configuration: Agent=" + AgentEngine.agent + "pluginname=" + pluginsconfig.getPluginName(plugin) + " does not match Plugin Jar: " + pi.getVersion() + ")";
-	    			clog.error(msg);
-	    			pl = null;
-	    			pi = null;
-	    			return false;
-	    		}
+	    		
 	    	}
 	    	else
 	    	{
