@@ -545,7 +545,7 @@ public class AgentEngine {
 	    	}
 	    	else
 	    	{
-	    		String msg = "Plugin Failed Initialization: Agent=" + AgentEngine.agent + "pluginname=" + pluginsconfig.getPluginName(plugin) + " does not match Plugin Jar: " + pi.getVersion() + ")";
+	    		String msg = "Plugin Failed Initialization: Agent=" + AgentEngine.agent + " pluginname=" + pluginsconfig.getPluginName(plugin) + " does not match Plugin Jar: " + pi.getVersion() + ")";
     			clog.error(msg);
     			return false;
 	    	}
