@@ -73,8 +73,9 @@ public class MsgRoute implements Runnable{
 			}
 			else //process log if you have a channel even if not active
 			{
+				System.out.print(".");
 				//do nothing
-				System.out.println("Agent : MsgRoute : Can't log!  No active channel!");
+				//System.out.println("Agent : MsgRoute : Can't log!  No active channel!");
 			}
 		}
 		//not a log message
