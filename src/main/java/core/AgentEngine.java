@@ -534,7 +534,7 @@ public class AgentEngine {
 	    			}
 	    			else
 	    			{
-	    				String msg = "Plugin Configuration: Agent=" + AgentEngine.agent + "pluginname=" + pluginsconfig.getPluginName(plugin) + " does not match Plugin Jar: " + pi.getVersion() + ")";
+	    				String msg = "Plugin Configuration: Agent=" + AgentEngine.agent + " pluginname=" + pluginsconfig.getPluginName(plugin) + " does not match reported plugin Jar name: " + pi.getName() + ")";
 	    				pluginMap.put(plugin, pi);
 		    	    	clog.error(msg);
 	    				pl = null;
