@@ -333,7 +333,7 @@ public class AgentEngine {
     	//Try and load some plugins to establish comm
     	try
     	{
-    		String ampqPlugin = findPlugin("AMPQPlugin",0);
+    		String ampqPlugin = findPlugin("cresco-agent-ampqchannel-plugin",0);
     		if(ampqPlugin != null)
     		{
     			//start controller but don't save the config.
@@ -534,7 +534,7 @@ public class AgentEngine {
 	    			}
 	    			else
 	    			{
-	    				String msg = "Plugin Configuration: Agent=" + AgentEngine.agent + " pluginname=" + pluginsconfig.getPluginName(plugin) + " does not match reported plugin Jar name: " + pi.getName() + ")";
+	    				String msg = "Plugin Configuration: Agent=" + AgentEngine.agent + " pluginname=" + pluginsconfig.getPluginName(plugin) + " does not match reported plugin Jar name: " + pi.getName();
 	    				pluginMap.put(plugin, pi);
 		    	    	clog.error(msg);
 	    				pl = null;
