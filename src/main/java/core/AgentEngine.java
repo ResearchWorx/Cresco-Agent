@@ -103,6 +103,8 @@ public class AgentEngine {
         		RandomString rs = new RandomString(4);
         		String AgentName = "agent-" + rs.nextString();
         		config.setAgentName(AgentName);
+        		String Region = "region-" + rs.nextString();
+        		config.setRegionName(Region);
         	}
         	System.out.println("AGENT NAME:[" +config.getAgentName() +"]");
         	
