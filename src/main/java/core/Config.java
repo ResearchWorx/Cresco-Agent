@@ -91,6 +91,19 @@ public class Config {
 			return false;
 		}
 	}
+	public boolean getGenerateRegion()
+	{
+		SubnodeConfiguration sObj = iniConfObj.getSection("general");
+		int value = Integer.parseInt(sObj.getString("generateregion"));
+		if(value == 1)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
 	public boolean setGenerateName(boolean genname) throws ConfigurationException
 	{
 		SubnodeConfiguration sObj = iniConfObj.getSection("general");

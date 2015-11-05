@@ -98,12 +98,15 @@ public class AgentEngine {
         	config = new Config(configFile);
     		
         	//Generate Random Agent String
+        	RandomString rs = new RandomString(4);
     		if(config.getGenerateName())
         	{
-        		RandomString rs = new RandomString(4);
         		String AgentName = "agent-" + rs.nextString();
         		config.setAgentName(AgentName);
-        		String Region = "region-" + rs.nextString();
+        	}
+    		if(config.getGenerateRegion())
+        	{
+    			String Region = "region-" + rs.nextString();
         		config.setRegionName(Region);
         	}
     		System.out.println("REGION NAME:[" +config.getRegion() +"]");
