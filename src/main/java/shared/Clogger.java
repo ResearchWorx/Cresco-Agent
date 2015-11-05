@@ -53,7 +53,7 @@ public class Clogger {
 		}
 		me.setParam("dst_region", region);
 		//logOutQueue.offer(me);
-		System.out.println(logMessage);
+		//System.out.println(logMessage);
 		return me;
 	}
 	public void error(String ErrorMessage)
@@ -70,7 +70,7 @@ public class Clogger {
 		}
 		ee.setParam("dst_region", region);
 		logOutQueue.offer(ee);
-		System.out.println(ErrorMessage);
+		//System.out.println(ErrorMessage);
 	}
 	public MsgEvent getError(String ErrorMessage)
 	{
