@@ -106,6 +106,7 @@ public class AgentEngine {
         		String Region = "region-" + rs.nextString();
         		config.setRegionName(Region);
         	}
+    		System.out.println("REGION NAME:[" +config.getRegion() +"]");
         	System.out.println("AGENT NAME:[" +config.getAgentName() +"]");
         	
         	//set version name
