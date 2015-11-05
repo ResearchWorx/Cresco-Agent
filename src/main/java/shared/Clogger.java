@@ -33,7 +33,7 @@ public class Clogger {
 		}
 		me.setParam("dst_region", region);
 		logOutQueue.offer(me);
-		System.out.println(logMessage);
+		
 	}
 	public void log(MsgEvent me)
 	{
