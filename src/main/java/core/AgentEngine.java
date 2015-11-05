@@ -138,12 +138,17 @@ public class AgentEngine {
         		Thread.sleep(100);
         	}
         	
+        	System.out.println("start pluginmap");
         	//Establish  a named map of plugin interfaces
     		pluginMap = new ConcurrentHashMap<String,PluginInterface>();
+    		
+    		System.out.println("start process plugins");
         	
     		//build plugin list and launch startup plugins
         	processPlugins();
     		
+        	System.out.println("start hashchannel");
+        	
         	//if channel was not configured during startup try and establish
         	if(!hasChannel)
         	{
