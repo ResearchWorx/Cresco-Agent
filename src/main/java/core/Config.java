@@ -13,7 +13,9 @@ public class Config {
 	public Config(String configFile) throws ConfigurationException
 	{
 	    iniConfObj = new HierarchicalINIConfiguration(configFile);
+	    iniConfObj.setDelimiterParsingDisabled(true);
 	    iniConfObj.setAutoSave(true);
+	    
 	}
 	
 	public String getPluginConfigString()
