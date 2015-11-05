@@ -352,7 +352,7 @@ public class AgentEngine {
     				boolean isComm = enablePlugin(commPlugin, false);
     				if(!isComm)
     				{
-    					System.out.println("AMPQ is not enabled");
+    					System.out.println(commList[i] + " is not enabled");
     				}
     				else
     				{
