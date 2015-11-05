@@ -32,6 +32,23 @@ public class Config {
 		  return sb.toString().substring(0, sb.length() -1);
 		  //return result;	
 	}
+	
+
+	public String getParams(String section, String param)
+	{
+		String return_param = null;
+		try
+		{
+			SubnodeConfiguration sObj = iniConfObj.getSection(section);
+			return_param = sObj.getString(param);
+		}
+		catch(Exception ex)
+		{
+			System.out.println("AgentEngine : Config : Error : " + ex.toString());
+		}
+		return return_param;
+	}
+	
 	public String getPluginPath()
 	{
 		SubnodeConfiguration sObj = iniConfObj.getSection("general");

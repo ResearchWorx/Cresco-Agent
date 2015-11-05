@@ -332,10 +332,62 @@ public class AgentEngine {
 
     	
     }
-    
+   
     public static void getChannel()
     {
     	//Try and load some plugins to establish comm
+    	//while here not explicit names
+    	//commpluginlist="cresco-agent-ampqchannel-plugin"
+    	String commpluginlist = AgentEngine.config.getParams("communication", "commpluginlist");
+    	String[] commList = commpluginlist.split(",");
+    	int i = 0;
+    	while((i<commList.length) && !hasChannel)
+    	{
+    		try
+    		{
+    			String commPlugin = findPlugin(commList[i],0);
+    			if(commPlugin != null)
+    			{
+    				//start controller but don't save the config.
+    				boolean isComm = enablePlugin(commPlugin, false);
+    				if(!isComm)
+    				{
+    					System.out.println("AMPQ is not enabled");
+    				}
+    				else
+    				{
+    					//turn on queues and set channel
+    					MsgInQueueActive = true;
+    					MsgOutQueueActive = true;
+    					hasChannel = true;
+    					channelPluginSlot = commPlugin;
+    				}
+    			}
+    			else
+    			{
+    				System.out.println("NO configuration found for communication plugin " + commList[i]);
+    			}
+    		
+    		}
+    		catch(Exception ex)
+    		{
+    			System.out.println("Error creating communication channel using plugin " + commList[i]);
+    		}
+    		i++;
+    	}
+    	if(!hasChannel)
+    	{
+    		System.out.println("Unable to create communication channel.. exiting");
+    		System.exit(0);
+    	}
+    }
+    
+    
+    public static void getChannel2()
+    {
+    	//Try and load some plugins to establish comm
+    	//while here not explicit names
+    	
     	try
     	{
     		String ampqPlugin = findPlugin("cresco-agent-ampqchannel-plugin",0);
