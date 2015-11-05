@@ -219,7 +219,7 @@ public class CommandExec {
 					}
 					catch(Exception ex)
 					{
-						System.out.println(ex.toString());
+						System.out.println("CommandExec : plugindownload " + ex.toString());
 					}
 				}
 				else if(ce.getParam("configtype").equals("pluginremove"))

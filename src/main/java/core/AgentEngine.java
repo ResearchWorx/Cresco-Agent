@@ -241,10 +241,11 @@ public class AgentEngine {
     		int controllerLaunchTimeout = Math.round(controllerDiscoveryTimeout/2);
     		//give the controller 20 sec to respond. First 10 for possibe existing, 
     		//last 10 for one we try and start 
+    		System.out.println("Waiting for Controller Response Initialization");
     		while((!ControllerActive) && (tryController < controllerDiscoveryTimeout))
     		{
-    			System.out.println("Waiting for Controller Response Initialization...");
-	    		
+    			System.out.print(".");
+        		
     	    	 if(AgentEngine.channelPluginSlot != null) //controller plugin was found 
    	 			 {
    					MsgEvent de = clog.getLog("enabled");
