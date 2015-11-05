@@ -56,7 +56,7 @@ public class Config {
 	public boolean setRegionName(String region) throws ConfigurationException
 	{
 		SubnodeConfiguration sObj = iniConfObj.getSection("general");
-	    sObj.setProperty("agentname", region);
+	    sObj.setProperty("region", region);
 	    return true;
 	}
 	public boolean getGenerateName()
