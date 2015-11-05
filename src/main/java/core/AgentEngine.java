@@ -492,7 +492,7 @@ public class AgentEngine {
    			clog.error(msg);
    			System.exit(1);	
    		}
-   	
+   		System.out.println("PluginFile=" + plugin_config_file);
    		//pull in plugin configuration
    		pluginsconfig = new ConfigPlugins(plugin_config_file);
    		
