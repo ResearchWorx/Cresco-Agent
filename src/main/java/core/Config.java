@@ -123,12 +123,9 @@ public class Config {
 	}
 	public String getPluginConfigFile()
 	{
-		
-		String pluginpath = getPluginPath();
 		SubnodeConfiguration sObj = iniConfObj.getSection("general");
-		return pluginpath + sObj.getString("plugin_config_file");
+		return sObj.getString("plugin_config_file");
 	}
-	
 	
 	public String getRegion()
 	{
