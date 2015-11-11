@@ -581,6 +581,7 @@ public class AgentEngine {
 	    				{
 	    					String msg = "Plugin Configuration: [" + plugin + "] Initialized: (" + pi.getVersion() + ")";
 	    					clog.log(msg);
+	    					System.out.println(msg);
 	    				}
 	    				catch(Exception ex)
 	    				{
@@ -593,6 +594,7 @@ public class AgentEngine {
 	    				{
 	    					pluginsconfig.setPluginStatus(plugin, 1);
 	    				}
+	    				
 	    				return true;
 	    			}
 	    			else
@@ -602,6 +604,7 @@ public class AgentEngine {
 		    	    	clog.error(msg);
 	    				pl = null;
 	    				pi = null;
+	    				System.out.println(msg);
 	    				return false;
 	    			}
 	    		
