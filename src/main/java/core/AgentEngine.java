@@ -610,6 +610,7 @@ public class AgentEngine {
 	    	{
 	    		String msg = "Plugin Failed Initialization: Agent=" + AgentEngine.agent + " pluginname=" + pluginsconfig.getPluginName(plugin) + " does not match Plugin Jar: " + pi.getVersion() + ")";
     			clog.error(msg);
+    			System.out.println(msg);
     			return false;
 	    	}
 	    }
@@ -623,6 +624,7 @@ public class AgentEngine {
 	   {
 		   String msg = "Plugin Failed Initialization: Agent=" + AgentEngine.agent + "pluginname=" + pluginsconfig.getPluginName(plugin) + " Error: " + ex.toString();
 			clog.error(msg);
+			System.out.println(msg);
 			return false;
 	   }
 	    
