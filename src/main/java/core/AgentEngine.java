@@ -219,7 +219,14 @@ public class AgentEngine {
 		{
 			
 			PluginInterface pi = AgentEngine.pluginMap.get("plugin/0");		
-			MsgEvent me = new MsgEvent(MsgEventType.CONFIG,null,null,null,"comminit");
+			MsgEvent me = new MsgEvent(MsgEventType.CONFIG,region,agent,"plugin/0","comminit");
+			me.setParam("src_region", region);
+			me.setParam("src_agent", agent);
+			me.setParam("dst_region", region);
+			me.setParam("dst_agent", agent);
+			me.setParam("dst_agent", "plugin/0");
+			
+			
 			pi.msgIn(me); //send msg to plugin
 			
 			
