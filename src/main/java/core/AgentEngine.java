@@ -99,6 +99,27 @@ public class AgentEngine {
         	//Make sure config file
         	config = new Config(configFile);
     		
+        	System.out.println("Building MsgOutQueue");
+    		//start outgoing queue
+    		
+    		MsgOutQueue moq = new MsgOutQueue();
+    		MsgOutQueueThread = new Thread(moq);
+    		MsgOutQueueThread.start();
+        	while(!MsgOutQueueEnabled)
+        	{
+        		Thread.sleep(100);
+        	}
+
+        	System.out.println("Building MsgInQueue");
+    		//start incoming queue
+        	MsgInQueue miq = new MsgInQueue();
+        	MsgInQueueThread = new Thread(miq);
+        	MsgInQueueThread.start();
+        	while(!MsgInQueueEnabled)
+        	{
+        		Thread.sleep(100);
+        	}
+        	
         	/*
         	//Generate Random Agent String
         	RandomString rs = new RandomString(4);
@@ -114,6 +135,8 @@ public class AgentEngine {
         		config.setRegionName(Region);
         	}
         	*/
+        	region = "init";
+        	agent = "init";
         	
         	//Establish  a named map of plugin interfaces
     		pluginMap = new ConcurrentHashMap<String,PluginInterface>();
@@ -123,19 +146,18 @@ public class AgentEngine {
     		//and launch static plugins
         	//enableStaticPlugins()
         	
-        	System.out.println("REGION NAME:[" +config.getRegion() +"]");
-        	System.out.println("AGENT NAME:[" +config.getAgentName() +"]");
         	
     		LoadControllerPlugin();
         	
+    		System.out.println("REGION NAME:[" +config.getRegion() +"]");
+        	System.out.println("AGENT NAME:[" +config.getAgentName() +"]");
+        	
+    		
         	//Die here
         	System.out.println("SYSTEM EXIT");
         	System.exit(0);
         	
         	
-        	
-        	
-    		
         	//set version name
     		agentVersion = new String(getVersion());
     		//set region and agent
@@ -144,28 +166,7 @@ public class AgentEngine {
         	
     		clog = new Clogger(msgInQueue,region,agent,null);
     		
-    		
-    		System.out.println("Building MsgOutQueue");
-    		//start outgoing queue
-    		
-    		MsgOutQueue moq = new MsgOutQueue();
-    		MsgOutQueueThread = new Thread(moq);
-    		MsgOutQueueThread.start();
-        	while(!MsgOutQueueEnabled)
-        	{
-        		Thread.sleep(100);
-        	}
-        	System.out.println("Building MsgInQueue");
-    		//start incoming queue
-        	MsgInQueue miq = new MsgInQueue();
-        	MsgInQueueThread = new Thread(miq);
-        	MsgInQueueThread.start();
-        	while(!MsgInQueueEnabled)
-        	{
-        		Thread.sleep(100);
-        	}
-        	
-        	//Establish  a named map of plugin interfaces
+    		//Establish  a named map of plugin interfaces
     		//pluginMap = new ConcurrentHashMap<String,PluginInterface>();
     		
     		
@@ -217,6 +218,7 @@ public class AgentEngine {
 		}
 		else
 		{
+			MsgInQueueActive = true; //allow incoming message
 			
 			PluginInterface pi = AgentEngine.pluginMap.get("plugin/0");		
 			MsgEvent me = new MsgEvent(MsgEventType.CONFIG,region,agent,"plugin/0","comminit");
@@ -224,11 +226,8 @@ public class AgentEngine {
 			me.setParam("src_agent", agent);
 			me.setParam("dst_region", region);
 			me.setParam("dst_agent", agent);
-			me.setParam("dst_agent", "plugin/0");
-			
-			
+			me.setParam("dst_plugin", "plugin/0");
 			pi.msgIn(me); //send msg to plugin
-			
 			
 			//if(ce.getParam("comminit") != null)
 				

@@ -45,7 +45,11 @@ public class CommandExec {
 					AgentEngine.agent = ce.getParam("set_agent");
 					AgentEngine.config.setAgentName(AgentEngine.agent);
 					AgentEngine.isCommInit = true;
+					System.out.println("region: " + AgentEngine.region);
+					System.out.println("agent: " + AgentEngine.agent);
+					return null;
 				}
+				
 			}
 			else if((ce.getMsgBody() != null) && (ce.getParam("dst_region") != null) && (ce.getParam("dst_agent") != null))
 			{
@@ -64,6 +68,7 @@ public class CommandExec {
 						AgentEngine.MsgInQueueActive = false;
 						AgentEngine.MsgOutQueueActive = false;			    	
 					}
+					
 				}
 			}
 		
