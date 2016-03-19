@@ -9,6 +9,7 @@ public class MsgRoute implements Runnable{
 	public MsgRoute(MsgEvent me)
 	{
 		this.me = me;
+		System.out.println(me.getParams());
 	}
 	public void run()
 	{

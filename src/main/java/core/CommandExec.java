@@ -35,7 +35,19 @@ public class CommandExec {
 		 
 		if(ce.getMsgType() == MsgEventType.CONFIG) //this is only for controller detection
 		{
-			if((ce.getMsgBody() != null) && (ce.getParam("dst_region") != null) && (ce.getParam("dst_agent") != null))
+			//create for initial discovery
+			if((ce.getMsgBody() != null) && (ce.getParam("set_region") != null) && (ce.getParam("set_agent") != null))
+			{
+				if(ce.getMsgBody().equals("comminit"))
+				{
+					AgentEngine.region = ce.getParam("set_region");
+					AgentEngine.config.setRegionName(AgentEngine.region);
+					AgentEngine.agent = ce.getParam("set_agent");
+					AgentEngine.config.setAgentName(AgentEngine.agent);
+					AgentEngine.isCommInit = true;
+				}
+			}
+			else if((ce.getMsgBody() != null) && (ce.getParam("dst_region") != null) && (ce.getParam("dst_agent") != null))
 			{
 				if((ce.getParam("dst_region").equals(AgentEngine.region)) && (ce.getParam("dst_agent").equals(AgentEngine.agent)))
 				{
