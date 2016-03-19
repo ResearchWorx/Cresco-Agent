@@ -217,12 +217,14 @@ public class AgentEngine {
 		}
 		else
 		{
-			/*
+			
 			PluginInterface pi = AgentEngine.pluginMap.get("plugin/0");		
-			MsgEvent me = new MsgEvent(MsgEventType.CONFIG,null,null,null,"test");
-			me.setParam("src_region", region);
-			pi.msgIn(ce); //send msg to plugin
-			*/
+			MsgEvent me = new MsgEvent(MsgEventType.CONFIG,null,null,null,"comminit");
+			pi.msgIn(me); //send msg to plugin
+			
+			
+			//if(ce.getParam("comminit") != null)
+				
 			while(!isCommInit)
 			{
 				Thread.sleep(1000);
