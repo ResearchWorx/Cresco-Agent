@@ -444,8 +444,7 @@ public class AgentEngine {
     		System.exit(0);
     	}
     }
-    
-    
+      
     public static void getChannel2()
     {
     	//Try and load some plugins to establish comm
@@ -569,6 +568,7 @@ public class AgentEngine {
 			clog.error(msg);
    	}   	
    }
+   
    public static void enableStaticPlugins()
    {
 	   try
@@ -603,7 +603,6 @@ public class AgentEngine {
 	   	} 
    }
 		   
-   
    public static boolean disablePlugin(String plugin, boolean save) //loop through known plugins on agent
 	{
 	   try
@@ -660,11 +659,12 @@ public class AgentEngine {
 	    				try
 	    				{
 	    					String msg = "Plugin Configuration: [" + plugin + "] Initialized: (" + pi.getVersion() + ")";
-	    					clog.log(msg);
+	    					//clog.log(msg);
 	    					System.out.println(msg);
 	    				}
 	    				catch(Exception ex)
 	    				{
+	    					ex.printStackTrace();
 	    					System.out.println("Plugin Configuration: pq.getVersion() Error: " + ex.toString());
 	    				}
 	    	    	
@@ -681,7 +681,7 @@ public class AgentEngine {
 	    			{
 	    				String msg = "Plugin Configuration: Agent=" + AgentEngine.agent + " pluginname=" + pluginsconfig.getPluginName(plugin) + " does not match reported plugin Jar name: " + pi.getName();
 	    				pluginMap.put(plugin, pi);
-		    	    	clog.error(msg);
+		    	    	//clog.error(msg);
 	    				pl = null;
 	    				pi = null;
 	    				System.out.println(msg);
