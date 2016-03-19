@@ -658,7 +658,7 @@ public class AgentEngine {
 	    			{
 	    				try
 	    				{
-	    					String msg = "Plugin Configuration: [" + plugin + "] Initialized: (" + pi.getVersion() + ")";
+	    					String msg = "Plugin Configuration: [" + plugin + "] Initialized: (" + pi.getName() + " Version: " +  pi.getVersion() + ")";
 	    					//clog.log(msg);
 	    					System.out.println(msg);
 	    				}
