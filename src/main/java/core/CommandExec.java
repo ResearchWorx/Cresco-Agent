@@ -40,13 +40,20 @@ public class CommandExec {
 			{
 				if(ce.getMsgBody().equals("comminit"))
 				{
-					AgentEngine.region = ce.getParam("set_region");
-					AgentEngine.config.setRegionName(AgentEngine.region);
-					AgentEngine.agent = ce.getParam("set_agent");
-					AgentEngine.config.setAgentName(AgentEngine.agent);
-					AgentEngine.isCommInit = true;
-					System.out.println("region: " + AgentEngine.region);
-					System.out.println("agent: " + AgentEngine.agent);
+					if(Boolean.parseBoolean(ce.getParam("is_active")))
+					{
+						AgentEngine.region = ce.getParam("set_region");
+						AgentEngine.config.setRegionName(AgentEngine.region);
+						AgentEngine.agent = ce.getParam("set_agent");
+						AgentEngine.config.setAgentName(AgentEngine.agent);
+						AgentEngine.isCommInit = true;
+						if(Boolean.parseBoolean(ce.getParam("is_regional_controller")))
+						{
+							AgentEngine.isRegionalController = true;
+						}
+						
+					}
+					
 					return null;
 				}
 				

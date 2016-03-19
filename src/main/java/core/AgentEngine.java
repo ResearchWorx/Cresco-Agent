@@ -34,7 +34,7 @@ public class AgentEngine {
 	public static WatchDog wd;
 	public static boolean hasChannel = false;
 	public static String channelPluginSlot;
-	public static boolean isController = false;
+	public static boolean isRegionalController = false;
 	public static String controllerPluginSlot;
 	
 	public static boolean isCommInit = false;
@@ -99,6 +99,7 @@ public class AgentEngine {
         	//Make sure config file
         	config = new Config(configFile);
     		
+        	/*
         	System.out.println("Building MsgOutQueue");
     		//start outgoing queue
     		
@@ -109,7 +110,8 @@ public class AgentEngine {
         	{
         		Thread.sleep(100);
         	}
-
+        	*/
+        	
         	System.out.println("Building MsgInQueue");
     		//start incoming queue
         	MsgInQueue miq = new MsgInQueue();
@@ -135,8 +137,8 @@ public class AgentEngine {
         		config.setRegionName(Region);
         	}
         	*/
-        	region = "init";
-        	agent = "init";
+        	region = "init"; //set temp setting to allow routing
+        	agent = "init"; //region and agent will come from controller
         	
         	//Establish  a named map of plugin interfaces
     		pluginMap = new ConcurrentHashMap<String,PluginInterface>();
@@ -149,8 +151,11 @@ public class AgentEngine {
         	
     		LoadControllerPlugin();
         	
+    		
     		System.out.println("REGION NAME:[" +config.getRegion() +"]");
+    		System.out.println("REGION CONTROLLER:[" + AgentEngine.isRegionalController +"]");
         	System.out.println("AGENT NAME:[" +config.getAgentName() +"]");
+        	
         	
     		
         	//Die here
@@ -228,8 +233,6 @@ public class AgentEngine {
 			me.setParam("dst_agent", agent);
 			me.setParam("dst_plugin", "plugin/0");
 			pi.msgIn(me); //send msg to plugin
-			
-			//if(ce.getParam("comminit") != null)
 				
 			while(!isCommInit)
 			{
@@ -322,15 +325,15 @@ public class AgentEngine {
      			
     			//Notify controler of agent enable wait for controller contact
     			
-		    	if((tryController > controllerLaunchTimeout) && !isController)
+		    	if((tryController > controllerLaunchTimeout) && !isRegionalController)
     			{
     				String controllerPlugin = findPlugin("ControllerPlugin",0);
     				if(controllerPlugin != null)
     				{
     					System.out.println("Try and Start our own controller");
     					//start controller but don't save the config.
-    					isController = enablePlugin(controllerPlugin, false);
-    					if(!isController)
+    					isRegionalController = enablePlugin(controllerPlugin, false);
+    					if(!isRegionalController)
     					{
     						System.out.println("Controller Plugin NOT Loaded");
     					}
@@ -869,7 +872,7 @@ public class AgentEngine {
 	   	    */
 	       
 	    	
-		    if(!isController)
+		    if(!isRegionalController)
 		   	{
 		    	
 		    	for(String plugin : pluginList)

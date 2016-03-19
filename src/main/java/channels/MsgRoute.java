@@ -9,7 +9,6 @@ public class MsgRoute implements Runnable{
 	public MsgRoute(MsgEvent me)
 	{
 		this.me = me;
-		System.out.println(me.getParams());
 	}
 	public void run()
 	{
@@ -43,7 +42,7 @@ public class MsgRoute implements Runnable{
 			if(AgentEngine.isActive)
 			{
 				//if we are a controller
-				if(AgentEngine.isController)
+				if(AgentEngine.isRegionalController)
 				{		    						
 				
 					if(AgentEngine.controllerPluginSlot != null) //controller plugin was found 
