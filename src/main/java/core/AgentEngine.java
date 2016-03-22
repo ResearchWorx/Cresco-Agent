@@ -150,8 +150,8 @@ public class AgentEngine {
         	
         	
     		LoadControllerPlugin();
-        	
-    		
+
+			isActive = true;
     		System.out.println("REGION NAME:[" +config.getRegion() +"]");
     		System.out.println("REGION CONTROLLER:[" + AgentEngine.isRegionalController +"]");
         	System.out.println("AGENT NAME:[" +config.getAgentName() +"]");
