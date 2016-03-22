@@ -51,7 +51,10 @@ public class CommandExec {
 						{
 							AgentEngine.isRegionalController = true;
 						}
-						
+						System.out.println("REGION NAME:[" +AgentEngine.config.getRegion() +"]");
+						System.out.println("REGION CONTROLLER:[" + AgentEngine.isRegionalController +"]");
+						System.out.println("AGENT NAME:[" +AgentEngine.config.getAgentName() +"]");
+
 					}
 					
 					return null;
