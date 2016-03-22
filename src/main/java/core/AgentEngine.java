@@ -147,8 +147,11 @@ public class AgentEngine {
         	processPlugins();
     		//and launch static plugins
         	//enableStaticPlugins()
-        	
-        	
+
+			//delay and waiting for network init.
+			int startupdelay = Integer.parseInt(config.getParams("general", "startupdelay"));
+			Thread.sleep(startupdelay);
+
     		LoadControllerPlugin();
 
 			isActive = true;
