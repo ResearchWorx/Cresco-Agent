@@ -1,3 +1,7 @@
+target
+
+*.ini
+
 ### Java template
 *.class
 
