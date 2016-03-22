@@ -155,8 +155,14 @@ public class AgentEngine {
     		System.out.println("REGION NAME:[" +config.getRegion() +"]");
     		System.out.println("REGION CONTROLLER:[" + AgentEngine.isRegionalController +"]");
         	System.out.println("AGENT NAME:[" +config.getAgentName() +"]");
-        	
-        	
+
+			while(isActive)
+			{
+				//just sleep until isActive=false
+				//need to add ability to control other threads here.
+				//need to add upgrade ability
+				Thread.sleep(1000);
+			}
     		
         	//Die here
         	System.out.println("SYSTEM EXIT");
@@ -191,7 +197,7 @@ public class AgentEngine {
         	
 	    	//start core watchdog
 	    	wd = new WatchDog();
-	    	
+	    	/*
         	while(isActive) 
     	   {
         	   //just sleep until isActive=false
@@ -199,7 +205,7 @@ public class AgentEngine {
         		//need to add upgrade ability
         		Thread.sleep(1000);
     	   }
-        	
+        	*/
     	   System.exit(0);
     	}
     	catch (Exception e)
