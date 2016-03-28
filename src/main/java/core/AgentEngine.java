@@ -3,11 +3,7 @@ package core;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.jar.Attributes;
@@ -156,6 +152,28 @@ public class AgentEngine {
 
 			isActive = true;
 
+			Scanner scanner = new Scanner(System.in);
+			String input = scanner.nextLine();
+
+			while (!input.toLowerCase().equals("q")) {
+
+
+				System.out.print("Name of Agent to message [q to quit]: ");
+
+				PluginInterface pi = AgentEngine.pluginMap.get("plugin/0");
+				MsgEvent me = new MsgEvent(MsgEventType.EXEC,region,agent,"plugin/0","external");
+				me.setParam("src_region", region);
+				me.setParam("src_agent", agent);
+				me.setParam("dst_region", region);
+				me.setParam("dst_agent", agent);
+				me.setParam("dst_plugin", "plugin/0");
+				pi.msgIn(me); //send msg to plugin
+
+
+				input = scanner.nextLine();
+			}
+
+			/*
 			while(isActive)
 			{
 				//just sleep until isActive=false
@@ -163,7 +181,7 @@ public class AgentEngine {
 				//need to add upgrade ability
 				Thread.sleep(1000);
 			}
-    		
+    		*/
         	//Die here
         	System.out.println("SYSTEM EXIT");
         	System.exit(0);
@@ -221,7 +239,8 @@ public class AgentEngine {
 
     public static void LoadControllerPlugin() throws InterruptedException
     {
-    	boolean isComm = enablePlugin("plugin/0", false);
+		String controllerPluginSlot = "plugin/0";
+    	boolean isComm = enablePlugin(controllerPluginSlot, false);
 		if(!isComm)
 		{
 			System.out.println("failed to load");
@@ -231,8 +250,8 @@ public class AgentEngine {
 		{
 			MsgInQueueActive = true; //allow incoming message
 			
-			PluginInterface pi = AgentEngine.pluginMap.get("plugin/0");		
-			MsgEvent me = new MsgEvent(MsgEventType.CONFIG,region,agent,"plugin/0","comminit");
+			PluginInterface pi = AgentEngine.pluginMap.get(controllerPluginSlot);
+			MsgEvent me = new MsgEvent(MsgEventType.CONFIG,region,agent,controllerPluginSlot,"comminit");
 			me.setParam("src_region", region);
 			me.setParam("src_agent", agent);
 			me.setParam("dst_region", region);
