@@ -250,7 +250,7 @@ public class AgentEngine {
 
     public static void LoadControllerPlugin() throws InterruptedException
     {
-		String controllerPluginSlot = "plugin/0";
+		controllerPluginSlot = "plugin/0";
     	boolean isComm = enablePlugin(controllerPluginSlot, false);
 		if(!isComm)
 		{
