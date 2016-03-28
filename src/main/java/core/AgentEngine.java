@@ -174,6 +174,7 @@ public class AgentEngine {
 							me.setParam("dst_plugin", sstr[2]);
 						}
 						pi.msgIn(me); //send msg to plugin
+						System.out.println("SENT MESSAGE TO MSGIN1= " + me.getParams());
 					}
 					catch(Exception ex) {
 						ex.printStackTrace();
