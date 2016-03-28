@@ -160,13 +160,17 @@ public class AgentEngine {
 
 				System.out.println("Name of Agent to message [q to quit]: ");
 				if(input.length() > 0) {
-					PluginInterface pi = AgentEngine.pluginMap.get("plugin/0");
-					MsgEvent me = new MsgEvent(MsgEventType.EXEC, region, agent, "plugin/0", "external");
+					String[] sstr = input.toLowerCase().split(" ");
+
+					PluginInterface pi = AgentEngine.pluginMap.get(controllerPluginSlot);
+					MsgEvent me = new MsgEvent(MsgEventType.EXEC, region, agent, controllerPluginSlot, "external");
 					me.setParam("src_region", region);
 					me.setParam("src_agent", agent);
-					me.setParam("dst_region", region);
-					me.setParam("dst_agent", agent);
-					me.setParam("dst_plugin", "plugin/0");
+					me.setParam("dst_region", sstr[0]);
+					me.setParam("dst_agent", sstr[1]);
+					if(sstr.length == 3) {
+						me.setParam("dst_plugin", sstr[2]);
+					}
 					pi.msgIn(me); //send msg to plugin
 				}
 
