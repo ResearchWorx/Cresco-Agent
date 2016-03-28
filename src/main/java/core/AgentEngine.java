@@ -161,7 +161,7 @@ public class AgentEngine {
 				System.out.println("Name of Agent to message [q to quit]: ");
 				if(input.length() > 0) {
 					try {
-						String[] sstr = input.toLowerCase().split(" ");
+						String[] sstr = input.split(",");
 						System.out.println("region: " + sstr[0] + " agent=" + sstr[1] + " plugin=" + sstr[2]);
 						PluginInterface pi = AgentEngine.pluginMap.get(controllerPluginSlot);
 						MsgEvent me = new MsgEvent(MsgEventType.EXEC, region, agent, controllerPluginSlot, "external");
