@@ -35,12 +35,17 @@ public class CommandExec {
 		 boolean isLocal = false;
 		 if ((ce.getParam("dst_region") != null) && (ce.getParam("dst_agent") != null)) {
 			 if ((ce.getParam("dst_region").equals(AgentEngine.region)) && (ce.getParam("dst_agent").equals(AgentEngine.agent))) {
-				 isLocal = true;
+				 //if (ce.getParam("dst_plugin") != null) {
+				 //	 if (!ce.getParam("dst_plugin").equals(AgentEngine.controllerPluginSlot)) { //default messages route to controller
+						 isLocal = true;
+				//	 }
+				// }
 			 }
 		 }
 
 		 if (isLocal) {
 
+			 //old stuff
 			 if (ce.getMsgType() == MsgEventType.CONFIG) //this is only for controller detection
 			 {
 				 //create for initial discovery
@@ -325,6 +330,7 @@ public class CommandExec {
 			 return ce;
 		 } else {
 			 //send to controller
+			 System.out.println("SENT MESSAGE TO CONTROLLER: " + ce.getParams());
 			 PluginInterface pi = AgentEngine.pluginMap.get(AgentEngine.controllerPluginSlot);
 			 pi.msgIn(ce); //send msg to plugin
 			return null;
