@@ -163,6 +163,7 @@ public class AgentEngine {
 					try {
 						String[] sstr = input.split(",");
 						System.out.println("region: " + sstr[0] + " agent=" + sstr[1] + " plugin=" + sstr[2]);
+						System.out.println("controllerPluginSlot=" + controllerPluginSlot);
 						PluginInterface pi = AgentEngine.pluginMap.get(controllerPluginSlot);
 						MsgEvent me = new MsgEvent(MsgEventType.EXEC, region, agent, controllerPluginSlot, "external");
 						me.setParam("src_region", region);
