@@ -30,8 +30,8 @@ public class MsgInQueue implements Runnable {
 			    		while ((!AgentEngine.msgInQueue.isEmpty()) && AgentEngine.MsgInQueueEnabled) 
 			    		{
 			    			MsgEvent me = AgentEngine.msgInQueue.poll(); //get logevent
-								new MsgRoute(me).run(); //route messages in new thread
-
+								//new MsgRoute(me).run(); //route messages in new thread
+								AgentEngine.msgIn(me);
 			    		}
 					}
 				}
