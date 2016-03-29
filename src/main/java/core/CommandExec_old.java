@@ -14,16 +14,16 @@ import java.nio.channels.ReadableByteChannel;
 import java.util.Enumeration;
 import java.util.Map;
 
-public class CommandExec_bak {
+public class CommandExec_old {
 
-	public CommandExec_bak()
+	public CommandExec_old()
 	{
-
+		
 	}
-
+	
 	public MsgEvent cmdExec(MsgEvent ce) throws IOException, ConfigurationException
 	{
-
+		
 	 try {
 		 //determine if local or controller
 		 boolean isLocal = false;
@@ -55,6 +55,8 @@ public class CommandExec_bak {
 				 return null;
 			 }
 
+
+				 //old stuff
 			 if (ce.getMsgType() == MsgEventType.CONFIG) //this is only for controller detection
 			 {
 				 //create for initial discovery
@@ -74,99 +76,147 @@ public class CommandExec_bak {
 							 System.out.println("AGENT NAME:[" + AgentEngine.config.getAgentName() + "]");
 
 						 }
-						 if (ce.getParam("configtype").equals("pluginadd")) {
-							 Map<String, String> hm = AgentEngine.pluginsconfig.buildPluginMap(ce.getParam("configparams"));
 
-							 hm.remove("configtype");
-							 String plugin = AgentEngine.pluginsconfig.addPlugin(hm);
-							 ce.setParam("plugin", plugin);
-							 boolean isEnabled = AgentEngine.enablePlugin(plugin, false);
-							 if (!isEnabled) {
-								 ce.setMsgBody("Failed to Add Plugin:" + plugin);
-								 AgentEngine.pluginsconfig.removePlugin(plugin);
-							 } else {
-								 ce.setMsgBody("Added Plugin:" + plugin);
-							 }
-						 } else if (ce.getParam("configtype").equals("plugininventory")) {
-							 String pluginList = "";
-							 File jarLocation = new File(AgentEngine.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
-							 String parentDirName = jarLocation.getParent(); // to get the parent dir name
+						 return null;
+					 }
 
-							 File folder = new File(parentDirName + "/plugins");
-							 if (folder.exists()) {
-								 File[] listOfFiles = folder.listFiles();
-
-								 for (int i = 0; i < listOfFiles.length; i++) {
-									 if (listOfFiles[i].isFile()) {
-										 System.out.println("Found Plugin: " + listOfFiles[i].getName());
-										 pluginList = pluginList + listOfFiles[i].getName() + ",";
-									 }
-
-								 }
-								 if (pluginList.length() > 0) {
-									 pluginList = pluginList.substring(0, pluginList.length() - 1);
-									 System.out.println("pluginList=" + pluginList);
-									 ce.setParam("pluginlist", pluginList);
-									 ce.setMsgBody("There were " + listOfFiles.length + " plugins found.");
-								 }
-
-							 } else {
-								 ce.setMsgBody("No plugin directory exist to inventory");
-							 }
-
-
-						 } else if (ce.getParam("configtype").equals("plugindownload")) {
-							 try {
-								 String baseUrl = ce.getParam("pluginurl");
-								 if (!baseUrl.endsWith("/")) {
-									 baseUrl = baseUrl + "/";
-								 }
-
-								 URL website = new URL(baseUrl + ce.getParam("plugin"));
-								 ReadableByteChannel rbc = Channels.newChannel(website.openStream());
-
-								 String pluginFile = AgentEngine.config.getPluginPath() + ce.getParam("plugin");
-								 boolean forceDownload = false;
-								 if (ce.getParam("forceplugindownload") != null) {
-									 forceDownload = true;
-									 System.out.println("Forcing Plugin Download");
-								 }
-
-								 File pluginFileObject = new File(pluginFile);
-								 if (!pluginFileObject.exists() || forceDownload) {
-									 FileOutputStream fos = new FileOutputStream(AgentEngine.config.getPluginPath() + ce.getParam("plugin"));
-
-									 fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-									 fos.close();
-
-									 ce.setMsgBody("Downloaded Plugin:" + ce.getParam("plugin"));
-									 System.out.println("Downloaded Plugin:" + ce.getParam("plugin"));
-								 } else {
-									 ce.setMsgBody("Plugin already exists:" + ce.getParam("plugin"));
-									 System.out.println("Plugin already exists:" + ce.getParam("plugin"));
-								 }
-
-							 } catch (Exception ex) {
-								 System.out.println("CommandExec : plugindownload " + ex.toString());
-							 }
-						 } else if (ce.getParam("configtype").equals("pluginremove")) {
-							 //disable if active
-							 AgentEngine.disablePlugin(ce.getParam("plugin"), true);
-							 //remove configuration
-							 AgentEngine.pluginsconfig.removePlugin(ce.getParam("plugin"));
-							 ce.setMsgBody("Removed Plugin:" + ce.getParam("plugin"));
-
-						 } else if (ce.getParam("configtype").equals("componentstate")) {
-							 if (ce.getMsgBody().equals("disabled")) {
-								 //System.exit(0);//shutdown agent
-								 AgentEngine.ds = new DelayedShutdown(5000l);
-								 ce.setMsgBody("Shutting Down");
-							 }
+				 } /*else if ((ce.getMsgBody() != null) && (ce.getParam("dst_region") != null) && (ce.getParam("dst_agent") != null)) {
+					 if ((ce.getParam("dst_region").equals(AgentEngine.region)) && (ce.getParam("dst_agent").equals(AgentEngine.agent))) {
+						 if (ce.getMsgBody().equals("controllerenabled")) {
+							 AgentEngine.ControllerActive = true; //if we see a discover there is an active controller
+							 return null;
+						 } else if (ce.getMsgBody().equals("controllerdisabled")) {
+							 AgentEngine.ControllerActive = false;
+							 AgentEngine.MsgInQueueEnabled = false;
+							 AgentEngine.MsgOutQueueEnabled = false;
+							 AgentEngine.MsgInQueueActive = false;
+							 AgentEngine.MsgOutQueueActive = false;
 						 }
+
 					 }
 				 }
+				*/
 			 }
-			 	  else if (ce.getMsgType() == MsgEventType.EXEC) //Execute and respond to execute commands
+
+			 if (ce.getMsgPlugin() != null) //let plugins deal with their own messages
+			 {
+				 if (AgentEngine.pluginMap.containsKey(ce.getMsgPlugin())) {
+					 try {
+						 PluginInterface pi = AgentEngine.pluginMap.get(ce.getMsgPlugin());
+
+						 pi.msgIn(ce); //send msg to plugin
+
+						 return null; //plugin will deal with its own messages
+					 } catch (Exception ex) {
+						 System.out.println("Agent : CommandExec : Exec Plugin Cmd : " + ex.toString());
+						 MsgEvent ee = new MsgEvent(MsgEventType.ERROR, AgentEngine.region, AgentEngine.agent, null, "Agent : CommandExec : Exec Plugin Cmd : " + ex.toString());
+						 return ee;
+					 }
+
+				 } else {
+					 System.out.println("Agent : CommandExec : Why am I getting a message for a plugin that does not exist?");
+					 System.out.println(ce.getParamsString());
+					 MsgEvent ee = new MsgEvent(MsgEventType.ERROR, AgentEngine.region, AgentEngine.agent, null, "Agent : CommandExec : Why am I getting a message for a plugin that does not exist?");
+					 return ee;
+				 }
+			 } else //messages for the core agent.
+			 {
+				 if (ce.getMsgType() == MsgEventType.DISCOVER) {
+
+					 ce.setMsgBody(AgentEngine.config.getPluginConfigString());
+				 } else if (ce.getMsgType() == MsgEventType.CONFIG) //Execute and respond to execute commands
+				 {
+					 if (ce.getParam("configtype").equals("pluginadd")) {
+						 Map<String, String> hm = AgentEngine.pluginsconfig.buildPluginMap(ce.getParam("configparams"));
+
+						 hm.remove("configtype");
+						 String plugin = AgentEngine.pluginsconfig.addPlugin(hm);
+						 ce.setParam("plugin", plugin);
+						 boolean isEnabled = AgentEngine.enablePlugin(plugin, false);
+						 if (!isEnabled) {
+							 ce.setMsgBody("Failed to Add Plugin:" + plugin);
+							 AgentEngine.pluginsconfig.removePlugin(plugin);
+						 } else {
+							 ce.setMsgBody("Added Plugin:" + plugin);
+						 }
+					 } else if (ce.getParam("configtype").equals("plugininventory")) {
+						 String pluginList = "";
+						 File jarLocation = new File(AgentEngine.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+						 String parentDirName = jarLocation.getParent(); // to get the parent dir name
+
+						 File folder = new File(parentDirName + "/plugins");
+						 if (folder.exists()) {
+							 File[] listOfFiles = folder.listFiles();
+
+							 for (int i = 0; i < listOfFiles.length; i++) {
+								 if (listOfFiles[i].isFile()) {
+									 System.out.println("Found Plugin: " + listOfFiles[i].getName());
+									 pluginList = pluginList + listOfFiles[i].getName() + ",";
+								 }
+
+							 }
+							 if (pluginList.length() > 0) {
+								 pluginList = pluginList.substring(0, pluginList.length() - 1);
+								 System.out.println("pluginList=" + pluginList);
+								 ce.setParam("pluginlist", pluginList);
+								 ce.setMsgBody("There were " + listOfFiles.length + " plugins found.");
+							 }
+
+						 } else {
+							 ce.setMsgBody("No plugin directory exist to inventory");
+						 }
+
+
+					 } else if (ce.getParam("configtype").equals("plugindownload")) {
+						 try {
+							 String baseUrl = ce.getParam("pluginurl");
+							 if (!baseUrl.endsWith("/")) {
+								 baseUrl = baseUrl + "/";
+							 }
+
+							 URL website = new URL(baseUrl + ce.getParam("plugin"));
+							 ReadableByteChannel rbc = Channels.newChannel(website.openStream());
+
+							 String pluginFile = AgentEngine.config.getPluginPath() + ce.getParam("plugin");
+							 boolean forceDownload = false;
+							 if (ce.getParam("forceplugindownload") != null) {
+								 forceDownload = true;
+								 System.out.println("Forcing Plugin Download");
+							 }
+
+							 File pluginFileObject = new File(pluginFile);
+							 if (!pluginFileObject.exists() || forceDownload) {
+								 FileOutputStream fos = new FileOutputStream(AgentEngine.config.getPluginPath() + ce.getParam("plugin"));
+
+								 fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+								 fos.close();
+
+								 ce.setMsgBody("Downloaded Plugin:" + ce.getParam("plugin"));
+								 System.out.println("Downloaded Plugin:" + ce.getParam("plugin"));
+							 } else {
+								 ce.setMsgBody("Plugin already exists:" + ce.getParam("plugin"));
+								 System.out.println("Plugin already exists:" + ce.getParam("plugin"));
+							 }
+
+						 } catch (Exception ex) {
+							 System.out.println("CommandExec : plugindownload " + ex.toString());
+						 }
+					 } else if (ce.getParam("configtype").equals("pluginremove")) {
+						 //disable if active
+						 AgentEngine.disablePlugin(ce.getParam("plugin"), true);
+						 //remove configuration
+						 AgentEngine.pluginsconfig.removePlugin(ce.getParam("plugin"));
+						 ce.setMsgBody("Removed Plugin:" + ce.getParam("plugin"));
+
+					 } else if (ce.getParam("configtype").equals("componentstate")) {
+						 if (ce.getMsgBody().equals("disabled")) {
+							 //System.exit(0);//shutdown agent
+							 AgentEngine.ds = new DelayedShutdown(5000l);
+							 ce.setMsgBody("Shutting Down");
+						 }
+					 }
+
+				 } else if (ce.getMsgType() == MsgEventType.EXEC) //Execute and respond to execute commands
 				 {
 					 if (ce.getParam("cmd").equals("show") || ce.getParam("cmd").equals("?") || ce.getParam("cmd").equals("help")) {
 
@@ -257,6 +307,8 @@ public class CommandExec_bak {
 					 ce.setMsgBody(msg);
 				 }
 
+			 }
+
 			 return ce;
 		 } else {
 			 //send to controller
@@ -277,6 +329,12 @@ public class CommandExec_bak {
 	 }
 	}
 
-
+	private String agent()
+	{
+		StringBuilder str = new StringBuilder();
+		String settings = "watchDogActive=" + AgentEngine.watchDogActive;
+		return settings;
+	}
+	
 	
 }
