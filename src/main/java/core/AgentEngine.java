@@ -171,7 +171,7 @@ public class AgentEngine {
 						//PluginInterface pi = AgentEngine.pluginMap.get(controllerPluginSlot);
 						MsgEvent me = new MsgEvent(MsgEventType.EXEC, region, agent, controllerPluginSlot, "external");
 						//ce.getParam("cmd").equals("show_version")
-						me.setParam("cmd","show_version");
+						me.setParam("cmd","show_plugins");
 						me.setParam("src_region", region);
 						me.setParam("src_agent", agent);
 						me.setParam("dst_region", sstr[0]);
