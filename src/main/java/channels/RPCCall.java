@@ -20,6 +20,7 @@ public class RPCCall {
             System.out.println("SENT RPC MESSAGE= " + me.getParams());
             int count = 0;
             int timeout = 300;
+            boolean isWaiting = true;
             while(count < timeout)
             {
                 if(AgentEngine.rpcMap.containsKey(callId))

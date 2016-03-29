@@ -182,6 +182,7 @@ public class AgentEngine {
 						//pi.msgIn(me); //send msg to plugin
 						System.out.println("MESSAGE TO SEND : " + me.getParams());
 						new RPCCall().call(me);
+						System.out.println("MESSAGE RETURNED : " + me.getParams());
 						//msgInQueue.offer(me);
 
 					}
