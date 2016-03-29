@@ -202,7 +202,6 @@ public class CommandExec {
 						 ce.setMsgBody(AgentEngine.listPlugins());
 					 } else if (ce.getParam("cmd").equals("show_version")) {
 						 ce.setMsgBody(AgentEngine.agentVersion);
-                         System.out.println("SHOW VERSION: " + AgentEngine.agentVersion);
 					 } else if (ce.getParam("cmd").equals("show_address")) {
 
 						 StringBuilder sb = new StringBuilder();
@@ -266,6 +265,7 @@ public class CommandExec {
 					 String msg = "Agent Command [" + ce.getMsgType().toString() + "] unknown";
 					 ce.setMsgBody(msg);
 				 }
+             System.out.println("COMMAND RETURNING : " + ce.getParams());
 			 return ce;
 		 } else {
 			 //send to controller
