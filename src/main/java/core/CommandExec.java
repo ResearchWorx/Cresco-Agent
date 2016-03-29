@@ -49,8 +49,14 @@ public class CommandExec {
 				 System.out.println("LOCAL AGENT PLUGIN MESSAGE: " + ce.getParams());
 				 //check if plugin exist... then send async
 				 if(AgentEngine.pluginMap.containsKey(ce.getParam("dst_plugin"))) {
-					 PluginInterface pi = AgentEngine.pluginMap.get(ce.getParam("dst_plugin"));
-					 pi.msgIn(ce); //send msg to plugin
+					 if(AgentEngine.pluginMap.containsKey(ce.getParam("dst_plugin"))) {
+						 PluginInterface pi = AgentEngine.pluginMap.get(ce.getParam("dst_plugin"));
+						 pi.msgIn(ce); //send msg to plugin
+					 }
+					 else
+					 {
+						System.out.println("AgentEngine CommandExec can't sent to local plugin, it does not exist");
+					 }
 				 }
 				 return null;
 			 }
