@@ -306,7 +306,9 @@ public class AgentEngine {
 					re = commandExec.cmdExec(ce); //execute command
 					if(re != null)
 					{
+						System.out.println("Agent : msgIn : pre-reverse: " + re.getParams());
 						re.setReturn(); //reverse to-from for return
+						System.out.println("Agent : msgIn : reverse: " + re.getParams());
 						msgInQueue.offer(re);
 					}
 					

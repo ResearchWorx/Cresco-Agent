@@ -261,7 +261,6 @@ public class CommandExec {
 					 String msg = "Agent Command [" + ce.getMsgType().toString() + "] unknown";
 					 ce.setMsgBody(msg);
 				 }
-
 			 return ce;
 		 } else {
 			 //send to controller
