@@ -54,8 +54,10 @@ public class CommandExec {
 				 }
 				 return null;
 			 }
-			 String callId = ce.getParam("callId-" + AgentEngine.region + "-" + AgentEngine.agent); //unique callId
-			 if(ce.getParam(callId) != null) { //send message to RPC hash
+			 String callId = ce.getParam("callId-" + AgentEngine.region + "_" + AgentEngine.agent); //unique callId
+             System.out.println("LOCAL RPC AGENT MESSAGE: CALLID:" + callId  + " " + ce.getParams());
+
+             if(ce.getParam(callId) != null) { //send message to RPC hash
 			 	 AgentEngine.rpcMap.put(ce.getParam(callId), ce);
 				 return null;
 			 }

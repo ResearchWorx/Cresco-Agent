@@ -15,7 +15,7 @@ public class RPCCall {
         {
 
             String callId = java.util.UUID.randomUUID().toString();
-            me.setParam("callId-" + AgentEngine.region + "-" + AgentEngine.agent, callId);
+            me.setParam("callId-" + AgentEngine.region + "_" + AgentEngine.agent, callId);
             AgentEngine.msgInQueue.offer(me);
             System.out.println("SENT RPC MESSAGE= " + me.getParams());
             int count = 0;
