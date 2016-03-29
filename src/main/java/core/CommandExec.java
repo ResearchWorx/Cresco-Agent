@@ -33,20 +33,30 @@ public class CommandExec {
 	 try {
 		 //determine if local or controller
 		 boolean isLocal = false;
+		 boolean isLocalPlugin = false;
 		 if ((ce.getParam("dst_region") != null) && (ce.getParam("dst_agent") != null)) {
 			 if ((ce.getParam("dst_region").equals(AgentEngine.region)) && (ce.getParam("dst_agent").equals(AgentEngine.agent))) {
-				 //if (ce.getParam("dst_plugin") != null) {
-				 //	 if (!ce.getParam("dst_plugin").equals(AgentEngine.controllerPluginSlot)) { //default messages route to controller
-						 isLocal = true;
-				//	 }
-				// }
+				 isLocal = true;
+			 	 if (ce.getParam("dst_plugin") != null) {
+				 		 isLocalPlugin = true;
+					 }
 			 }
 		 }
 
 		 if (isLocal) {
 			 System.out.println("LOCAL AGENT MESSAGE: " + ce.getParams());
+			 if(isLocalPlugin) {
+				 System.out.println("LOCAL AGENT PLUGIN MESSAGE: " + ce.getParams());
+				 //check if plugin exist... then send async
+				 if(AgentEngine.pluginMap.containsKey(ce.getParam("dst_plugin"))) {
+					 PluginInterface pi = AgentEngine.pluginMap.get(ce.getParam("dst_plugin"));
+					 pi.msgIn(ce); //send msg to plugin
+				 }
+				 return null;
+			 }
 
-			 //old stuff
+
+				 //old stuff
 			 if (ce.getMsgType() == MsgEventType.CONFIG) //this is only for controller detection
 			 {
 				 //create for initial discovery
