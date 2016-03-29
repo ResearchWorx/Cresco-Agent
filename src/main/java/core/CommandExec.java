@@ -44,6 +44,7 @@ public class CommandExec {
 		 }
 
 		 if (isLocal) {
+			 System.out.println("LOCAL AGENT MESSAGE: " + ce.getParams());
 
 			 //old stuff
 			 if (ce.getMsgType() == MsgEventType.CONFIG) //this is only for controller detection
@@ -330,7 +331,7 @@ public class CommandExec {
 			 return ce;
 		 } else {
 			 //send to controller
-			 System.out.println("SENT MESSAGE TO CONTROLLER: " + ce.getParams());
+			 System.out.println("REMOTE MESSAGE SENT TO CONTROLLER: " + ce.getParams());
 			 PluginInterface pi = AgentEngine.pluginMap.get(AgentEngine.controllerPluginSlot);
 			 pi.msgIn(ce); //send msg to plugin
 			return null;
