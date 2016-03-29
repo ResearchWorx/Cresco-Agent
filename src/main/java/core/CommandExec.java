@@ -72,7 +72,7 @@ public class CommandExec {
 							 System.out.println("REGION NAME:[" + AgentEngine.config.getRegion() + "]");
 							 System.out.println("REGION CONTROLLER:[" + AgentEngine.isRegionalController + "]");
 							 System.out.println("AGENT NAME:[" + AgentEngine.config.getAgentName() + "]");
-
+							 return null;
 						 }
 						 if (ce.getParam("configtype").equals("pluginadd")) {
 							 Map<String, String> hm = AgentEngine.pluginsconfig.buildPluginMap(ce.getParam("configparams"));
