@@ -166,19 +166,19 @@ public class MsgEvent {
 		  }
 			
 		  params.put("dst_region", src_region);
-		  setMsgRegion(src_region);
+		  //setMsgRegion(src_region);
 		  params.put("dst_agent", src_agent);
-		  setMsgAgent(src_agent);
+		  //setMsgAgent(src_agent);
 			
 		  if(src_plugin != null)
 		  {
 			  params.put("dst_plugin", src_plugin);
-			  setMsgPlugin(src_plugin);
+			  //setMsgPlugin(src_plugin);
 		  }
 		  else
 		  {
 			  params.remove("dst_plugin");
-			  setMsgPlugin(null);
+			  //setMsgPlugin(null);
 		  }
 		  
 		 
