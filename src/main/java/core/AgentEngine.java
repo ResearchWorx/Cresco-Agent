@@ -162,7 +162,7 @@ public class AgentEngine {
 				if(input.length() > 0) {
 					try {
 						String[] sstr = input.split(",");
-						System.out.println("region: " + sstr[0] + " agent=" + sstr[1] + " plugin=" + sstr[2]);
+						//System.out.println("region: " + sstr[0] + " agent=" + sstr[1] + " plugin=" + sstr[2]);
 						System.out.println("controllerPluginSlot=" + controllerPluginSlot);
 						//PluginInterface pi = AgentEngine.pluginMap.get(controllerPluginSlot);
 						MsgEvent me = new MsgEvent(MsgEventType.EXEC, region, agent, controllerPluginSlot, "external");
@@ -174,6 +174,7 @@ public class AgentEngine {
 							me.setParam("dst_plugin", sstr[2]);
 						}
 						//pi.msgIn(me); //send msg to plugin
+						System.out.println("MESSAGE TO SEND : " + me.getParams());
 						msgInQueue.offer(me);
 						System.out.println("SENT MESSAGE TO MSGIN QUEUE= " + me.getParams());
 					}
