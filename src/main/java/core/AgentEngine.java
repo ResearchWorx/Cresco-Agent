@@ -157,12 +157,14 @@ public class AgentEngine {
 			isActive = true;
 
 			Scanner scanner = new Scanner(System.in);
+
+			System.out.println("Name of Agent to message [q to quit]: ");
 			String input = scanner.nextLine();
+
 
 			while (!input.toLowerCase().equals("q")) {
 
 
-				System.out.println("Name of Agent to message [q to quit]: ");
 				if(input.length() > 0) {
 					try {
 						String[] sstr = input.split(",");
@@ -191,7 +193,7 @@ public class AgentEngine {
 					}
 
 				}
-
+				System.out.println("Name of Agent to message [q to quit]: ");
 				input = scanner.nextLine();
 			}
 
