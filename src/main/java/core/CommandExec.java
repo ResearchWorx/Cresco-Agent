@@ -60,9 +60,11 @@ public class CommandExec {
 				 return null;
 			 }
 
-				 if (ce.getMsgType() == MsgEventType.CONFIG) //this is only for controller detection
-			 {
-				 //create for initial discovery
+             if (ce.getMsgType() == MsgEventType.CONFIG) //this is only for controller detection
+             {
+                 System.out.println("LOCAL AGENT MESSAGE (CONFIG): " + ce.getParams());
+
+                 //create for initial discovery
 				 if ((ce.getMsgBody() != null) && (ce.getParam("set_region") != null) && (ce.getParam("set_agent") != null)) {
 					 if (ce.getMsgBody().equals("comminit")) {
 						 if (Boolean.parseBoolean(ce.getParam("is_active"))) {
@@ -171,9 +173,11 @@ public class CommandExec {
 					 }
 				 }
 			 }
-			 	  else if (ce.getMsgType() == MsgEventType.EXEC) //Execute and respond to execute commands
-				 {
-					 if (ce.getParam("cmd").equals("show") || ce.getParam("cmd").equals("?") || ce.getParam("cmd").equals("help")) {
+             else if (ce.getMsgType() == MsgEventType.EXEC) //Execute and respond to execute commands
+             {
+                 System.out.println("LOCAL AGENT MESSAGE (EXEC): " + ce.getParams());
+
+                 if (ce.getParam("cmd").equals("show") || ce.getParam("cmd").equals("?") || ce.getParam("cmd").equals("help")) {
 
 						 StringBuilder sb = new StringBuilder();
 						 sb.append("\nAgent " + AgentEngine.config.getAgentName() + " Help\n");
@@ -198,6 +202,7 @@ public class CommandExec {
 						 ce.setMsgBody(AgentEngine.listPlugins());
 					 } else if (ce.getParam("cmd").equals("show_version")) {
 						 ce.setMsgBody(AgentEngine.agentVersion);
+                         System.out.println("SHOW VERSION: " + AgentEngine.agentVersion);
 					 } else if (ce.getParam("cmd").equals("show_address")) {
 
 						 StringBuilder sb = new StringBuilder();
