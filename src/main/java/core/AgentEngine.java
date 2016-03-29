@@ -49,7 +49,9 @@ public class AgentEngine {
 	public static boolean ControllerActive = false; //control service on/off	
 	
 	public static CommandExec commandExec;
-	
+	public static Map<String,MsgEvent> rpcMap;
+
+
 	public static boolean watchDogActive = false; //agent watchdog on/off
 	public static String agentVersion = null;
 	
@@ -75,7 +77,8 @@ public class AgentEngine {
     		//create logger and base queue
     		msgInQueue = new ConcurrentLinkedQueue<MsgEvent>();
     		msgOutQueue = new ConcurrentLinkedQueue<MsgEvent>();
-    		
+    		rpcMap = new ConcurrentHashMap<>();
+
     		//Cleanup on Shutdown
     		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
     	        public void run() {
@@ -166,6 +169,8 @@ public class AgentEngine {
 						System.out.println("controllerPluginSlot=" + controllerPluginSlot);
 						//PluginInterface pi = AgentEngine.pluginMap.get(controllerPluginSlot);
 						MsgEvent me = new MsgEvent(MsgEventType.EXEC, region, agent, controllerPluginSlot, "external");
+						//ce.getParam("cmd").equals("show_version")
+						me.setParam("cmd","show_version");
 						me.setParam("src_region", region);
 						me.setParam("src_agent", agent);
 						me.setParam("dst_region", sstr[0]);

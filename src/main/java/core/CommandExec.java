@@ -54,8 +54,13 @@ public class CommandExec {
 				 }
 				 return null;
 			 }
+			 String callId = ce.getParam("callId-" + AgentEngine.region + "-" + AgentEngine.agent); //unique callId
+			 if(ce.getParam(callId) != null) { //send message to RPC hash
+			 	 AgentEngine.rpcMap.put(ce.getParam(callId), ce);
+				 return null;
+			 }
 
-			 if (ce.getMsgType() == MsgEventType.CONFIG) //this is only for controller detection
+				 if (ce.getMsgType() == MsgEventType.CONFIG) //this is only for controller detection
 			 {
 				 //create for initial discovery
 				 if ((ce.getMsgBody() != null) && (ce.getParam("set_region") != null) && (ce.getParam("set_agent") != null)) {
