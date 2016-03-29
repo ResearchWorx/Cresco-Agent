@@ -10,6 +10,7 @@ import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 
+import channels.RPCCall;
 import org.apache.commons.configuration.ConfigurationException;
 
 import channels.MsgInQueue;
@@ -180,8 +181,9 @@ public class AgentEngine {
 						}
 						//pi.msgIn(me); //send msg to plugin
 						System.out.println("MESSAGE TO SEND : " + me.getParams());
-						msgInQueue.offer(me);
-						System.out.println("SENT MESSAGE TO MSGIN QUEUE= " + me.getParams());
+						new RPCCall().call(me);
+						//msgInQueue.offer(me);
+
 					}
 					catch(Exception ex) {
 						ex.printStackTrace();
