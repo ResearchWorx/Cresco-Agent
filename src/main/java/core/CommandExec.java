@@ -267,7 +267,7 @@ public class CommandExec {
 					 ce.setMsgBody(msg);
 				 }
              System.out.println("COMMAND RETURNING : " + ce.getParams());
-			 return ce;
+			 return null;
 		 } else {
 			 //send to controller
 			 System.out.println("REMOTE MESSAGE SENT TO CONTROLLER: " + ce.getParams());
