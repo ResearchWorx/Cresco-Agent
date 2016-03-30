@@ -95,6 +95,7 @@ public class CommandExec {
 							 } else {
 								 ce.setMsgBody("Added Plugin:" + plugin);
 							 }
+                             return ce;
 						 } else if (ce.getParam("configtype").equals("plugininventory")) {
 							 String pluginList = "";
 							 File jarLocation = new File(AgentEngine.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
@@ -122,7 +123,7 @@ public class CommandExec {
 								 ce.setMsgBody("No plugin directory exist to inventory");
 							 }
 
-
+                             return ce;
 						 } else if (ce.getParam("configtype").equals("plugindownload")) {
 							 try {
 								 String baseUrl = ce.getParam("pluginurl");
@@ -157,18 +158,20 @@ public class CommandExec {
 							 } catch (Exception ex) {
 								 System.out.println("CommandExec : plugindownload " + ex.toString());
 							 }
+                             return ce;
 						 } else if (ce.getParam("configtype").equals("pluginremove")) {
 							 //disable if active
 							 AgentEngine.disablePlugin(ce.getParam("plugin"), true);
 							 //remove configuration
 							 AgentEngine.pluginsconfig.removePlugin(ce.getParam("plugin"));
 							 ce.setMsgBody("Removed Plugin:" + ce.getParam("plugin"));
-
+                             return ce;
 						 } else if (ce.getParam("configtype").equals("componentstate")) {
 							 if (ce.getMsgBody().equals("disabled")) {
 								 //System.exit(0);//shutdown agent
 								 AgentEngine.ds = new DelayedShutdown(5000l);
 								 ce.setMsgBody("Shutting Down");
+                                 return ce;
 							 }
 						 }
 					 }
@@ -195,14 +198,16 @@ public class CommandExec {
 						 sb.append("plugin/[number of plugin]\t\t To access Plugin Info");
 
 						 ce.setMsgBody(sb.toString());
-
+                         return ce;
 					 } else if (ce.getParam("cmd").equals("show_name")) {
 						 ce.setMsgBody(AgentEngine.agent);
-
+                         return ce;
 					 } else if (ce.getParam("cmd").equals("show_plugins")) {
 						 ce.setMsgBody(AgentEngine.listPlugins());
+                        return ce;
 					 } else if (ce.getParam("cmd").equals("show_version")) {
 						 ce.setMsgBody(AgentEngine.agentVersion);
+                        return ce;
 					 } else if (ce.getParam("cmd").equals("show_address")) {
 
 						 StringBuilder sb = new StringBuilder();
@@ -217,6 +222,7 @@ public class CommandExec {
 									 sb.append("    " + allMyIps[i]);
 								 }
 							 }
+                             return ce;
 						 } catch (UnknownHostException e) {
 							 sb.append(" (error retrieving server host name)\n");
 						 }
@@ -229,6 +235,7 @@ public class CommandExec {
 								 for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
 									 sb.append("        " + enumIpAddr.nextElement().toString() + "\n");
 								 }
+                                 return ce;
 							 }
 						 } catch (SocketException e) {
 							 sb.append(" (error retrieving network interface list)\n");
@@ -248,6 +255,7 @@ public class CommandExec {
 						 } else {
 							 ce.setMsgBody("Agent Enable Command [" + ce.getParam("cmd") + "] unknown");
 						 }
+                        return ce;
 					 } else if (ce.getParam("cmd").startsWith("disable")) {
 						 if (ce.getParam("plugin") != null) {
 							 //ce.setMsgBody(AgentEngine.disablePlugin(ce.getParam("plugin"),true));
@@ -260,11 +268,13 @@ public class CommandExec {
 						 } else {
 							 ce.setMsgBody("Agent Disable Command [" + ce.getParam("cmd") + "] unknown");
 						 }
+                     return ce;
 					 }
 				 } else //if command unknown report that is it unknown
 				 {
 					 String msg = "Agent Command [" + ce.getMsgType().toString() + "] unknown";
 					 ce.setMsgBody(msg);
+                     return ce;
 				 }
              System.out.println("COMMAND RETURNING : " + ce.getParams());
 			 return null;
