@@ -173,7 +173,7 @@ public class AgentEngine {
 						//PluginInterface pi = AgentEngine.pluginMap.get(controllerPluginSlot);
 						MsgEvent me = new MsgEvent(MsgEventType.EXEC, region, agent, controllerPluginSlot, "external");
 						//ce.getParam("cmd").equals("show_version")
-						me.setParam("cmd","show_plugins");
+						me.setParam("cmd","show_name");
 						me.setParam("src_region", region);
 						me.setParam("src_agent", agent);
 						me.setParam("dst_region", sstr[0]);
@@ -184,7 +184,9 @@ public class AgentEngine {
 						//pi.msgIn(me); //send msg to plugin
 						System.out.println("MESSAGE TO SEND : " + me.getParams());
 						MsgEvent re = new RPCCall().call(me);
-						System.out.println("MESSAGE RETURNED : " + re.getParams());
+						if(re != null) {
+							System.out.println("MESSAGE RETURNED : " + re.getParams());
+						}
 						//msgInQueue.offer(me);
 
 					}
