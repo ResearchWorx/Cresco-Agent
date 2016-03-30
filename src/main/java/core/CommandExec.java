@@ -52,13 +52,13 @@ public class CommandExec {
 						System.out.println("AgentEngine CommandExec can't sent to local plugin, it does not exist");
 					 }
 				 }
-				 return null;
+			//	 return null;
 			 }
 			 String callId = "callId-" + AgentEngine.region + "_" + AgentEngine.agent; //unique callId
 
              if(ce.getParam(callId) != null) { //send message to RPC hash
 			 	 AgentEngine.rpcMap.put(ce.getParam(callId), ce);
-				 return null;
+			//	 return null;
 			 }
 
              if (ce.getMsgType() == MsgEventType.CONFIG) //this is only for controller detection
