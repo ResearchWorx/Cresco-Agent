@@ -35,6 +35,7 @@ public class MsgRoute implements Runnable{
      }
      catch(Exception ex)
      {
+         ex.printStackTrace();
     	 System.out.println("Agent : MsgRoute : Route Failed " + ex.toString());
      }
 
