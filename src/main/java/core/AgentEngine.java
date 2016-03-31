@@ -153,6 +153,10 @@ public class AgentEngine {
 
     		LoadControllerPlugin();
 
+			//start core watchdog
+			wd = new WatchDog();
+
+
 			isActive = true;
 
 			Scanner scanner = new Scanner(System.in);
