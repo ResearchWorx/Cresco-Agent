@@ -26,7 +26,7 @@ public class MsgRoute implements Runnable{
              case 52:  //System.out.println("AGENT ROUTE TO EXTERNAL VIA ONTROLLER : 52 "  + rm.getParams());
                        sendToController();
                  break;
-             case 53:  System.out.println("AGENT REGIONAL WATCHDOG : 56 "  + rm.getParams());
+             case 53:  System.out.println("AGENT REGIONAL WATCHDOG : 53 "  + rm.getParams());
                  //re = getCommandExec();
                  break;
              case 56:  //System.out.println("AGENT ROUTE TO COMMANDEXEC : 56 "  + rm.getParams());
