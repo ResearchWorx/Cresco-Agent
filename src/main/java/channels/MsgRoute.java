@@ -28,6 +28,7 @@ public class MsgRoute implements Runnable{
                  break;
              case 53:  System.out.println("AGENT REGIONAL WATCHDOG : 56 "  + rm.getParams());
                  //re = getCommandExec();
+                 break;
              case 56:  //System.out.println("AGENT ROUTE TO COMMANDEXEC : 56 "  + rm.getParams());
                  re = getCommandExec();
                  break;
