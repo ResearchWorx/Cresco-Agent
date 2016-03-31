@@ -23,15 +23,13 @@ public class MsgRoute implements Runnable{
          String callId = null;
          MsgEvent re = null;
          switch (routePath) {
-             case 1:  System.out.println("AGENT ROUTE CASE 1");
-                 break;
-             case 52:  System.out.println("AGENT ROUTE TO EXTERNAL VIA ONTROLLER : 52 "  + rm.getParams());
+             case 52:  //System.out.println("AGENT ROUTE TO EXTERNAL VIA ONTROLLER : 52 "  + rm.getParams());
                        sendToController();
                  break;
-             case 56:  System.out.println("AGENT ROUTE TO COMMANDEXEC : 56 "  + rm.getParams());
+             case 56:  //System.out.println("AGENT ROUTE TO COMMANDEXEC : 56 "  + rm.getParams());
                  re = getCommandExec();
                  break;
-             case 61:  System.out.println("AGENT ROUTE TO COMMANDEXEC : 61 "  + rm.getParams());
+             case 61:  //System.out.println("AGENT ROUTE TO COMMANDEXEC : 61 "  + rm.getParams());
                  re = getCommandExec();
                  break;
              default: System.out.println("AGENT ROUTE CASE " + routePath + " " + rm.getParams());
