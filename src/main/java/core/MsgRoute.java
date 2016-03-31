@@ -88,6 +88,7 @@ public class MsgRoute implements Runnable{
         catch(Exception ex)
         {
             System.out.println("AgentEngine : MsgRoute : getRoutePath Error: " + ex.getMessage());
+            ex.printStackTrace();
             routePath = -1;
         }
         return routePath;
