@@ -24,11 +24,20 @@ public class MsgRoute implements Runnable{
 
          int routePath = getRoutePath();
 
+         MsgEvent re = null;
          switch (routePath) {
              case 1:  System.out.println("ROUTE CASE 1");
                  break;
+             case 42:  System.out.println("ROUTE LOCAL PLUGIN TO LOCAL AGNET");
+                        re = AgentEngine.commandExec.cmdExec(rm);
+                 break;
              default: System.out.println("ROUTE CASE " + routePath + " " + rm.getParams());
                  break;
+         }
+         if(re != null)
+         {
+             re.setReturn(); //reverse to-from for return
+             AgentEngine.msgInQueue.offer(re);
          }
                  //	AgentEngine.commandExec.cmdExec(me);
 
