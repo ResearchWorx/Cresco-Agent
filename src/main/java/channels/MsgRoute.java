@@ -1,5 +1,6 @@
-package core;
+package channels;
 
+import core.AgentEngine;
 import shared.MsgEvent;
 
 public class MsgRoute implements Runnable{
