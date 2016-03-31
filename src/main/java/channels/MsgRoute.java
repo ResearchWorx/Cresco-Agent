@@ -95,12 +95,12 @@ public class MsgRoute implements Runnable{
 
             if (rm.getParam("src_region") != null) {
                 if (rm.getParam("src_region").equals(AgentEngine.region)) {
-                    RXr = "1";
+                    TXr = "1";
                     if (rm.getParam("src_agent") != null) {
                         if (rm.getParam("src_agent").equals(AgentEngine.agent)) {
-                            RXa = "1";
+                            TXa = "1";
                             if (rm.getParam("src_plugin") != null) {
-                                RXp = "1";
+                                TXp = "1";
                             }
                         }
                     }
