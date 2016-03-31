@@ -28,23 +28,11 @@ public class MsgRoute implements Runnable{
              case 52:  System.out.println("AGENT ROUTE TO EXTERNAL VIA ONTROLLER : 52 "  + rm.getParams());
                        sendToController();
                  break;
-             case 56:  System.out.println("AGENT ROUTE TO COMMANDEXEC : 61 "  + rm.getParams());
-                 callId = "callId-" + AgentEngine.region + "_" + AgentEngine.agent; //calculate callID
-                 if(rm.getParam(callId) != null) { //send message to RPC hash
-                     AgentEngine.rpcMap.put(rm.getParam(callId), rm);
-                 }
-                 else {
-                     re = AgentEngine.commandExec.cmdExec(rm);
-                 }
+             case 56:  System.out.println("AGENT ROUTE TO COMMANDEXEC : 56 "  + rm.getParams());
+                 re = getCommandExec();
                  break;
              case 61:  System.out.println("AGENT ROUTE TO COMMANDEXEC : 61 "  + rm.getParams());
-                 callId = "callId-" + AgentEngine.region + "_" + AgentEngine.agent; //calculate callID
-                 if(rm.getParam(callId) != null) { //send message to RPC hash
-                     AgentEngine.rpcMap.put(rm.getParam(callId), rm);
-                 }
-                 else {
-                     re = AgentEngine.commandExec.cmdExec(rm);
-                 }
+                 re = getCommandExec();
                  break;
              default: System.out.println("AGENT ROUTE CASE " + routePath + " " + rm.getParams());
                  break;
@@ -64,6 +52,22 @@ public class MsgRoute implements Runnable{
      }
 
 	}
+
+    private MsgEvent getCommandExec() {
+        try {
+            String callId = "callId-" + AgentEngine.region + "_" + AgentEngine.agent; //calculate callID
+            if(rm.getParam(callId) != null) { //send message to RPC hash
+                AgentEngine.rpcMap.put(rm.getParam(callId), rm);
+            }
+            else {
+                return AgentEngine.commandExec.cmdExec(rm);
+            }
+        }
+        catch(Exception ex) {
+            System.out.println("AgentEngine : MsgRoute : getCommandExec Error : " + ex.getMessage());
+        }
+        return null;
+    }
 
     private void sendToController()
     {
