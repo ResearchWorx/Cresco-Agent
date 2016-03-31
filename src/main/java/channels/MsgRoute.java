@@ -29,7 +29,7 @@ public class MsgRoute implements Runnable{
          switch (routePath) {
              case 1:  System.out.println("AGENT ROUTE CASE 1");
                  break;
-             case 42:  System.out.println("AGENT ROUTE LOCAL PLUGIN TO LOCAL AGNET");
+             case 42:  System.out.println("AGENT ROUTE TO COMMANDEXEC : 42");
                         re = AgentEngine.commandExec.cmdExec(rm);
                  break;
              default: System.out.println("AGENT ROUTE CASE " + routePath + " " + rm.getParams());
