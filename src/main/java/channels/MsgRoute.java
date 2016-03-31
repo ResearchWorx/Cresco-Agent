@@ -25,7 +25,7 @@ public class MsgRoute implements Runnable{
          switch (routePath) {
              case 1:  System.out.println("AGENT ROUTE CASE 1");
                  break;
-             case 40:  System.out.println("AGENT ROUTE TO EXTERNAL VIA ONTROLLER : 40 "  + rm.getParams());
+             case 52:  System.out.println("AGENT ROUTE TO EXTERNAL VIA ONTROLLER : 52 "  + rm.getParams());
                        sendToController();
                  break;
              case 61:  System.out.println("AGENT ROUTE TO COMMANDEXEC : 61 "  + rm.getParams());
