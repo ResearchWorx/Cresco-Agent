@@ -27,7 +27,7 @@ public class MsgRoute implements Runnable{
          switch (routePath) {
              case 1:  System.out.println("ROUTE CASE 1");
                  break;
-             default: System.out.println("ROUTE CASE " + routePath);
+             default: System.out.println("ROUTE CASE " + routePath + " " + rm.getParams());
                  break;
          }
                  //	AgentEngine.commandExec.cmdExec(me);
