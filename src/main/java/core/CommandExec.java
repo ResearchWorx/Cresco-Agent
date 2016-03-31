@@ -27,8 +27,6 @@ public class CommandExec {
 
             if (ce.getMsgType() == MsgEventType.CONFIG) //this is only for controller detection
             {
-                System.out.println("LOCAL AGENT MESSAGE (CONFIG): " + ce.getParams());
-
                 //create for initial discovery
                 if ((ce.getMsgBody() != null) && (ce.getParam("set_region") != null) && (ce.getParam("set_agent") != null)) {
                     if (ce.getMsgBody().equals("comminit")) {
@@ -141,8 +139,6 @@ public class CommandExec {
                     }
                 }
             } else if (ce.getMsgType() == MsgEventType.EXEC) {//Execute and respond to execute commands
-
-                System.out.println("LOCAL AGENT MESSAGE (EXEC): " + ce.getParams());
 
                 if (ce.getParam("cmd").equals("show") || ce.getParam("cmd").equals("?") || ce.getParam("cmd").equals("help")) {
 
