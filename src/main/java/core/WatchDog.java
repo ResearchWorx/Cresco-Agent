@@ -29,7 +29,7 @@ public class WatchDog {
 		  le.setParam("dst_region", AgentEngine.region);
 		  //AgentEngine.msgIn(le);
 		  //AgentEngine.clog.log(le);
-          AgentEngine.msgInQueue.offer(le);
+          //AgentEngine.msgInQueue.offer(le);
 	  }
 
 
