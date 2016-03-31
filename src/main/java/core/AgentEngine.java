@@ -295,6 +295,9 @@ public class AgentEngine {
     
     public static void msgIn(MsgEvent me)
 	{
+
+		new MsgRoute(me).run();
+		/*
 		final MsgEvent ce = me;
 		try
 		{
@@ -338,7 +341,7 @@ public class AgentEngine {
 			
 			clog.error("Agent : AgentEngine : msgIn : " + ex.toString());
 		}
-		
+		*/
 	}
     
     public static void getController() throws InterruptedException, ConfigurationException, IOException

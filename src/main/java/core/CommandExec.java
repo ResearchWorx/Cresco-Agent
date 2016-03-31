@@ -25,17 +25,8 @@ public class CommandExec {
 	{
 
 	 try {
-		 //determine if local or controller
-		 boolean isLocal = false;
-		 boolean isLocalPlugin = false;
-		 if ((ce.getParam("dst_region") != null) && (ce.getParam("dst_agent") != null)) {
-			 if ((ce.getParam("dst_region").equals(AgentEngine.region)) && (ce.getParam("dst_agent").equals(AgentEngine.agent))) {
-				 isLocal = true;
-			 	 if (ce.getParam("dst_plugin") != null) {
-				 		 isLocalPlugin = true;
-					 }
-			 }
-		 }
+            boolean isLocal = true;
+         boolean isLocalPlugin = true;
 
 		 if (isLocal) {
 			 System.out.println("LOCAL AGENT MESSAGE: " + ce.getParams());
@@ -280,7 +271,7 @@ public class CommandExec {
 			 return null;
 		 } else {
 			 //send to controller
-			 System.out.println("REMOTE MESSAGE SENT TO CONTROLLER: " + ce.getParams());
+			 //System.out.println("REMOTE MESSAGE SENT TO CONTROLLER: " + ce.getParams());
 			 PluginInterface pi = AgentEngine.pluginMap.get(AgentEngine.controllerPluginSlot);
 			 pi.msgIn(ce); //send msg to plugin
 			return null;
