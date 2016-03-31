@@ -17,11 +17,6 @@ public class MsgRoute implements Runnable{
 			 return;
 		 }
 
-         String callId = "callId-" + AgentEngine.region + "_" + AgentEngine.agent; //calculate callID
-         if(rm.getParam(callId) != null) { //send message to RPC hash
-             AgentEngine.rpcMap.put(rm.getParam(callId), rm);
-             return;
-         }
 
          int routePath = getRoutePath();
 
@@ -30,7 +25,14 @@ public class MsgRoute implements Runnable{
              case 1:  System.out.println("AGENT ROUTE CASE 1");
                  break;
              case 42:  System.out.println("AGENT ROUTE TO COMMANDEXEC : 42");
-                        re = AgentEngine.commandExec.cmdExec(rm);
+                 String callId = "callId-" + AgentEngine.region + "_" + AgentEngine.agent; //calculate callID
+                 if(rm.getParam(callId) != null) { //send message to RPC hash
+                     AgentEngine.rpcMap.put(rm.getParam(callId), rm);
+                     return;
+                 }
+                 else {
+                     re = AgentEngine.commandExec.cmdExec(rm);
+                 }
                  break;
              default: System.out.println("AGENT ROUTE CASE " + routePath + " " + rm.getParams());
                  break;
