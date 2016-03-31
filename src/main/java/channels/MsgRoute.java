@@ -2,6 +2,7 @@ package channels;
 
 import core.AgentEngine;
 import shared.MsgEvent;
+import shared.PluginInterface;
 
 public class MsgRoute implements Runnable{
 
@@ -24,11 +25,13 @@ public class MsgRoute implements Runnable{
          switch (routePath) {
              case 1:  System.out.println("AGENT ROUTE CASE 1");
                  break;
+             case 40:  System.out.println("AGENT ROUTE TO EXTERNAL VIA ONTROLLER : 40");
+                       sendToController();
+                 break;
              case 42:  System.out.println("AGENT ROUTE TO COMMANDEXEC : 42");
                  String callId = "callId-" + AgentEngine.region + "_" + AgentEngine.agent; //calculate callID
                  if(rm.getParam(callId) != null) { //send message to RPC hash
                      AgentEngine.rpcMap.put(rm.getParam(callId), rm);
-                     return;
                  }
                  else {
                      re = AgentEngine.commandExec.cmdExec(rm);
@@ -53,6 +56,17 @@ public class MsgRoute implements Runnable{
 
 	}
 
+    private void sendToController()
+    {
+        try {
+            PluginInterface pi = AgentEngine.pluginMap.get(AgentEngine.controllerPluginSlot);
+            pi.msgIn(rm); //send msg to plugin
+        }
+        catch(Exception ex) {
+            System.out.println("AgentEngine : MsgRoute Error : " + ex.getMessage());
+        }
+
+    }
     private int getRoutePath() {
         int routePath = -1;
         try {
