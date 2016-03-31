@@ -68,12 +68,12 @@ public class MsgRoute implements Runnable{
             }
 
             if (rm.getParam("src_region") != null) {
-                if (rm.getParam("scr_region").equals(AgentEngine.region)) {
+                if (rm.getParam("src_region").equals(AgentEngine.region)) {
                     RXr = "1";
-                    if (rm.getParam("scr_agent") != null) {
-                        if (rm.getParam("scr_agent").equals(AgentEngine.agent)) {
+                    if (rm.getParam("src_agent") != null) {
+                        if (rm.getParam("src_agent").equals(AgentEngine.agent)) {
                             RXa = "1";
-                            if (rm.getParam("scr_plugin") != null) {
+                            if (rm.getParam("src_plugin") != null) {
                                 RXp = "1";
                             }
                         }
