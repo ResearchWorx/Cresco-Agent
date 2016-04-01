@@ -820,7 +820,7 @@ public class AgentEngine {
 
                 if (msgInQueue != null) {
 
-                    disablePlugin(channelPluginSlot, false);
+                    //disablePlugin(channelPluginSlot, false);
 
                 /*
                 MsgEvent de = clog.getLog("disabled");
