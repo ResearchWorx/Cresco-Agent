@@ -44,7 +44,9 @@ public class CommandExec {
                             System.out.println("AGENT NAME:[" + AgentEngine.config.getAgentName() + "]");
                             return null;
                         }
-                        if (ce.getParam("configtype").equals("pluginadd")) {
+                    }
+                }
+                        else if (ce.getParam("configtype").equals("pluginadd")) {
                             Map<String, String> hm = AgentEngine.pluginsconfig.buildPluginMap(ce.getParam("configparams"));
 
                             hm.remove("configtype");
@@ -135,8 +137,8 @@ public class CommandExec {
                                 ce.setMsgBody("Shutting Down");
                                 return ce;
                             }
-                        }
-                    }
+
+
                 }
             } else if (ce.getMsgType() == MsgEventType.EXEC) {//Execute and respond to execute commands
 
