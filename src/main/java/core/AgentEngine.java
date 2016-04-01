@@ -259,6 +259,7 @@ public class AgentEngine {
 
             PluginInterface pi = AgentEngine.pluginMap.get(controllerPluginSlot);
             MsgEvent me = new MsgEvent(MsgEventType.CONFIG, region, agent, controllerPluginSlot, "comminit");
+            me.setParam("configtype","comminit");
             me.setParam("src_region", region);
             me.setParam("src_agent", agent);
             me.setParam("dst_region", region);
