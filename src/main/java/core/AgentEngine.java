@@ -769,20 +769,21 @@ public class AgentEngine {
     }
 
     static void cleanup() throws ConfigurationException, IOException, InterruptedException {
-        System.out.println("Shutdown:Cleaning Active Agent Resources");
-        wd.timer.cancel();
+        try {
+            System.out.println("Shutdown:Cleaning Active Agent Resources");
+            wd.timer.cancel();
 
-        MsgEvent de = clog.getLog("disabled");
-        de.setMsgType(MsgEventType.CONFIG);
-        de.setMsgAgent(AgentEngine.agent); //route to this agent
-        de.setMsgPlugin(AgentEngine.channelPluginSlot); //route to controller plugin
-        de.setParam("src_region", region);
-        de.setParam("src_agent", agent);
-        de.setParam("dst_region", region);
-        //AgentEngine.commandExec.cmdExec(de);
-        AgentEngine.msgInQueue.offer(de);
+            MsgEvent de = clog.getLog("disabled");
+            de.setMsgType(MsgEventType.CONFIG);
+            de.setMsgAgent(AgentEngine.agent); //route to this agent
+            de.setMsgPlugin(AgentEngine.channelPluginSlot); //route to controller plugin
+            de.setParam("src_region", region);
+            de.setParam("src_agent", agent);
+            de.setParam("dst_region", region);
+            //AgentEngine.commandExec.cmdExec(de);
+            AgentEngine.msgInQueue.offer(de);
 
-        List<String> pluginList = getActivePlugins();
+            List<String> pluginList = getActivePlugins();
 	   	   /*
 	       for(String plugin : pluginList)
 	   	   {
@@ -811,17 +812,17 @@ public class AgentEngine {
 	   	    */
 
 
-        if (!isRegionalController) {
+            if (!isRegionalController) {
 
-            for (String plugin : pluginList) {
-                if (!plugin.equals(channelPluginSlot)) {
-                    disablePlugin(plugin, false);
+                for (String plugin : pluginList) {
+                    if (!plugin.equals(channelPluginSlot)) {
+                        disablePlugin(plugin, false);
+                    }
                 }
-            }
 
-            if (msgInQueue != null) {
+                if (msgInQueue != null) {
 
-                disablePlugin(channelPluginSlot, false);
+                    disablePlugin(channelPluginSlot, false);
 
                 /*
                 MsgEvent de = clog.getLog("disabled");
@@ -862,17 +863,22 @@ public class AgentEngine {
 			    	}
 			    	*/
 
+                }
+            } else {
+                //cleanup controller here
+                for (String plugin : pluginList) {
+
+                    disablePlugin(plugin, false);
+
+                }
+
             }
-        } else {
-            //cleanup controller here
-            for (String plugin : pluginList) {
-
-                disablePlugin(plugin, false);
-
-            }
-
         }
-
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+            System.out.println("Shutdown Error: " + ex.getMessage());
+        }
     }
 }
 
