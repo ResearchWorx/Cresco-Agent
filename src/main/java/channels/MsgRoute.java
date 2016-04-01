@@ -27,7 +27,7 @@ public class MsgRoute implements Runnable{
                        sendToController();
                  break;
              case 53:  System.out.println("AGENT REGIONAL WATCHDOG : 53 "  + rm.getParams());
-                 //re = getCommandExec();
+                        sendToController();
                  break;
              case 56:  //System.out.println("AGENT ROUTE TO COMMANDEXEC : 56 "  + rm.getParams());
                  re = getCommandExec();
@@ -82,7 +82,7 @@ public class MsgRoute implements Runnable{
 
     }
     private int getRoutePath() {
-        int routePath = -1;
+        int routePath;
         try {
             //determine if local or controller
             String RXr = "0";
