@@ -773,10 +773,8 @@ public class AgentEngine {
             System.out.println("Shutdown:Cleaning Active Agent Resources");
             wd.timer.cancel();
 
-            MsgEvent de = clog.getLog("disabled");
-            de.setMsgType(MsgEventType.CONFIG);
-            de.setMsgAgent(AgentEngine.agent); //route to this agent
-            de.setMsgPlugin(AgentEngine.channelPluginSlot); //route to controller plugin
+            //MsgEvent de = clog.getLog("disabled");
+            MsgEvent de = new MsgEvent(MsgEventType.CONFIG,AgentEngine.config.getRegion(),null,null,"disabled");
             de.setParam("src_region", region);
             de.setParam("src_agent", agent);
             de.setParam("dst_region", region);
