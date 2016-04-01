@@ -772,6 +772,16 @@ public class AgentEngine {
         System.out.println("Shutdown:Cleaning Active Agent Resources");
         wd.timer.cancel();
 
+        MsgEvent de = clog.getLog("disabled");
+        de.setMsgType(MsgEventType.CONFIG);
+        de.setMsgAgent(AgentEngine.agent); //route to this agent
+        de.setMsgPlugin(AgentEngine.channelPluginSlot); //route to controller plugin
+        de.setParam("src_region", region);
+        de.setParam("src_agent", agent);
+        de.setParam("dst_region", region);
+        //AgentEngine.commandExec.cmdExec(de);
+        AgentEngine.msgInQueue.offer(de);
+
         List<String> pluginList = getActivePlugins();
 	   	   /*
 	       for(String plugin : pluginList)
@@ -810,6 +820,10 @@ public class AgentEngine {
             }
 
             if (msgInQueue != null) {
+
+                disablePlugin(channelPluginSlot, false);
+
+                /*
                 MsgEvent de = clog.getLog("disabled");
                 de.setMsgType(MsgEventType.CONFIG);
                 de.setMsgAgent(AgentEngine.agent); //route to this agent
@@ -822,6 +836,7 @@ public class AgentEngine {
                 AgentEngine.msgInQueue.offer(de);
                 Thread.sleep(5000);
                 disablePlugin(channelPluginSlot, false);
+                */
 		    		/*
 		    		int time = 0;
 				    int timeout = 30; //give 30sec to timeout from RPC request
