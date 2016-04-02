@@ -34,9 +34,24 @@ public class Config {
 		  return sb.toString().substring(0, sb.length() -1);
 		  //return result;	
 	}
-	
 
-	public String getParams(String section, String param)
+
+	public int getIntParams(String section, String param)
+	{
+		int return_param = -1;
+		try
+		{
+			SubnodeConfiguration sObj = iniConfObj.getSection(section);
+			return_param = Integer.parseInt(sObj.getString(param));
+		}
+		catch(Exception ex)
+		{
+			System.out.println("AgentEngine : Config : Error : " + ex.toString());
+		}
+		return return_param;
+	}
+
+	public String getStringParams(String section, String param)
 	{
 		String return_param = null;
 		try
