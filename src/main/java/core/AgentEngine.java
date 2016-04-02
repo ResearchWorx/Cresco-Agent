@@ -144,7 +144,7 @@ public class AgentEngine {
             //enableStaticPlugins()
 
             //delay and waiting for network init.
-            int startupdelay = Integer.parseInt(config.getParams("general", "startupdelay"));
+            int startupdelay = Integer.parseInt(config.getStringParams("general", "startupdelay"));
             Thread.sleep(startupdelay);
 
             LoadControllerPlugin();
@@ -423,7 +423,7 @@ public class AgentEngine {
         //Try and load some plugins to establish comm
         //while here not explicit names
         //commpluginlist="cresco-agent-ampqchannel-plugin"
-        String commpluginlist = AgentEngine.config.getParams("communication", "commpluginlist");
+        String commpluginlist = AgentEngine.config.getStringParams("communication", "commpluginlist");
         String[] commList = commpluginlist.split(",");
         int i = 0;
         while ((i < commList.length) && !hasChannel) {
