@@ -1,7 +1,7 @@
 package core;
 
 import org.apache.commons.configuration.ConfigurationException;
-import shared.MsgEvent;
+import com.researchworx.cresco.library.messaging.MsgEvent;
 import shared.MsgEventType;
 import shared.PluginInterface;
 
@@ -24,7 +24,7 @@ public class CommandExec {
 
         try {
 
-            if ((ce.getMsgType() == MsgEventType.CONFIG) && (ce.getParam("configtype") != null)) //this is only for controller detection
+            if ((ce.getMsgType() == MsgEvent.Type.CONFIG) && (ce.getParam("configtype") != null)) //this is only for controller detection
             {
                 //create for initial discovery
                 //if ((ce.getMsgBody() != null) && (ce.getParam("set_region") != null) && (ce.getParam("set_agent") != null)) {
@@ -138,7 +138,7 @@ public class CommandExec {
 
 
                 }
-            } else if (ce.getMsgType() == MsgEventType.EXEC) {//Execute and respond to execute commands
+            } else if (ce.getMsgType() == MsgEvent.Type.EXEC) {//Execute and respond to execute commands
 
                 if (ce.getParam("cmd").equals("show") || ce.getParam("cmd").equals("?") || ce.getParam("cmd").equals("help")) {
 

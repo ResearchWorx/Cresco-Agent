@@ -12,7 +12,7 @@ public class MsgOutQueue implements Runnable {
 	public void run() 
 	{
 
-		AgentEngine.MsgOutQueueEnabled = true;
+		/*AgentEngine.MsgOutQueueEnabled = true;
 		while(AgentEngine.MsgOutQueueEnabled)
 		{
 			try
@@ -28,7 +28,7 @@ public class MsgOutQueue implements Runnable {
 				System.out.println("Agent : MsgOutQueue Error :" + ex.getMessage());
 			}
 			
-		}
+		}*/
 		//shutdown was called
 		
 	}

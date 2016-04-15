@@ -5,8 +5,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import shared.MsgEvent;
-import shared.MsgEventType;
+import com.researchworx.cresco.library.messaging.MsgEvent;
 
 
 public class WatchDog {
@@ -20,10 +19,10 @@ public class WatchDog {
 		  startTS = System.currentTimeMillis();
 		  timer = new Timer();
 	      timer.scheduleAtFixedRate(new WatchDogTask(), 500, AgentEngine.config.getWatchDogTimer());
-	      wdMap = new HashMap<String,String>(); //for sending future WD messages
+	      wdMap = new HashMap<>(); //for sending future WD messages
 	      
 	      AgentEngine.watchDogActive = true;
-	      MsgEvent le = new MsgEvent(MsgEventType.CONFIG,AgentEngine.config.getRegion(),null,null,"enabled");
+	      MsgEvent le = new MsgEvent(MsgEvent.Type.CONFIG,AgentEngine.config.getRegion(),null,null,"enabled");
 	      le.setParam("src_region", AgentEngine.region);
 		  le.setParam("src_agent", AgentEngine.agent);
 		  le.setParam("dst_region", AgentEngine.region);
@@ -45,7 +44,7 @@ public class WatchDog {
 	    		wdMap.put("runtime", String.valueOf(runTime));
 	    		wdMap.put("timestamp", String.valueOf(System.currentTimeMillis()));
 	    	 
-	    		MsgEvent le = new MsgEvent(MsgEventType.WATCHDOG,AgentEngine.config.getRegion(),null,null,wdMap);
+	    		MsgEvent le = new MsgEvent(MsgEvent.Type.WATCHDOG,AgentEngine.config.getRegion(),null,null,wdMap);
 	    		le.setParam("src_region", AgentEngine.region);
 	  		    le.setParam("src_agent", AgentEngine.agent);
 	  		    le.setParam("dst_region", AgentEngine.region);

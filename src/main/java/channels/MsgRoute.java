@@ -1,86 +1,91 @@
 package channels;
 
 import core.AgentEngine;
-import shared.MsgEvent;
-import shared.PluginInterface;
+import com.researchworx.cresco.library.messaging.MsgEvent;
 
-public class MsgRoute implements Runnable{
+public class MsgRoute implements Runnable {
 
-	private MsgEvent rm;
-	public MsgRoute(MsgEvent rm)
-	{
-		this.rm = rm;
-	}
-	public void run()
-	{
-     try{
-		 if(!getTtl()) { //check ttl
-			 return;
-		 }
+    private MsgEvent rm;
 
+    public MsgRoute(MsgEvent rm) {
+        this.rm = rm;
+    }
 
-         int routePath = getRoutePath();
-         String callId = null;
-         MsgEvent re = null;
-         switch (routePath) {
-             case 52:  //System.out.println("AGENT ROUTE TO EXTERNAL VIA ONTROLLER : 52 "  + rm.getParams());
-                       sendToController();
-                 break;
-             case 53:  //System.out.println("AGENT REGIONAL WATCHDOG : 53 "  + rm.getParams());
-                        sendToController();
-                 break;
-             case 56:  //System.out.println("AGENT ROUTE TO COMMANDEXEC : 56 "  + rm.getParams());
-                 re = getCommandExec();
-                 break;
-             case 61:  //System.out.println("AGENT ROUTE TO COMMANDEXEC : 61 "  + rm.getParams());
-                 re = getCommandExec();
-                 break;
-             default: System.out.println("AGENT ROUTE CASE " + routePath + " " + rm.getParams());
-                 break;
-         }
-         if(re != null)
-         {
-             re.setReturn(); //reverse to-from for return
-             AgentEngine.msgInQueue.offer(re);
-         }
-                 //	AgentEngine.commandExec.cmdExec(me);
+    public void run() {
+        try {
+            if (!getTTL()) {
+                return;
+            }
 
-     }
-     catch(Exception ex)
-     {
-         ex.printStackTrace();
-    	 System.out.println("Agent : MsgRoute : Route Failed " + ex.toString());
-     }
+            int routePath = getRoutePath();
+            MsgEvent re = null;
+            switch (routePath) {
+                case 52:  //System.out.println("AGENT ROUTE TO EXTERNAL VIA CONTROLLER : 52 "  + rm.getParams());
+                    sendToController();
+                    break;
+                case 53:  //System.out.println("AGENT REGIONAL WATCHDOG : 53 "  + rm.getParams());
+                    sendToController();
+                    break;
+                case 56:  //System.out.println("AGENT ROUTE TO COMMANDEXEC : 56 "  + rm.getParams());
+                    re = getCommandExec();
+                    break;
+                case 61:  //System.out.println("AGENT ROUTE TO COMMANDEXEC : 61 "  + rm.getParams());
+                    re = getCommandExec();
+                    break;
+                case 62:  //System.out.println("PLUGIN RPC CALL TO HOST AGENT : 62 " + rm.getParams());
+                    sendToPlugin();
+                    break;
+                case 63: //System.out.println("PLUGIN DIRECT MESSAGE TO ANOTHER PLUGIN ON SAME AGENT : 63 " + rm.getParams());
+                    sendToPlugin();
+                    break;
+                default:
+                    System.out.println("AGENT ROUTE CASE " + routePath + " " + rm.getParams());
+                    break;
+            }
+            if (re != null) {
+                re.setReturn(); //reverse to-from for return
+                AgentEngine.msgInQueue.offer(re);
+                //new Thread(new MsgRoute(re)).start();
+            }
 
-	}
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println("Agent : MsgRoute : Route Failed " + ex.toString());
+        }
+
+    }
 
     private MsgEvent getCommandExec() {
         try {
             String callId = "callId-" + AgentEngine.region + "_" + AgentEngine.agent; //calculate callID
-            if(rm.getParam(callId) != null) { //send message to RPC hash
+            if (rm.getParam(callId) != null) { //send message to RPC hash
                 AgentEngine.rpcMap.put(rm.getParam(callId), rm);
-            }
-            else {
+            } else {
                 return AgentEngine.commandExec.cmdExec(rm);
             }
-        }
-        catch(Exception ex) {
+        } catch (Exception ex) {
             System.out.println("AgentEngine : MsgRoute : getCommandExec Error : " + ex.getMessage());
         }
         return null;
     }
 
-    private void sendToController()
-    {
+    private void sendToController() {
         try {
-            PluginInterface pi = AgentEngine.pluginMap.get(AgentEngine.controllerPluginSlot);
-            pi.msgIn(rm); //send msg to plugin
-        }
-        catch(Exception ex) {
+            AgentEngine.pluginMap.get(AgentEngine.controllerPluginSlot).Message(rm);
+        } catch (Exception ex) {
             System.out.println("AgentEngine : MsgRoute Error : " + ex.getMessage());
         }
 
     }
+
+    private void sendToPlugin() {
+        try {
+            AgentEngine.pluginMap.get(rm.getParam("dst_plugin")).Message(rm);
+        } catch (Exception ex) {
+            System.out.println("AgentEngine : sendToPlugin : " + ex.getMessage());
+        }
+    }
+
     private int getRoutePath() {
         int routePath;
         try {
@@ -124,43 +129,38 @@ public class MsgRoute implements Runnable{
 
             String routeString = RXr + TXr + RXa + TXa + RXp + TXp;
             routePath = Integer.parseInt(routeString, 2);
-        }
-        catch(Exception ex)
-        {
+        } catch (Exception ex) {
             System.out.println("AgentEngine : MsgRoute : getRoutePath Error: " + ex.getMessage());
             ex.printStackTrace();
             routePath = -1;
         }
         return routePath;
     }
-	private boolean getTtl() {
-		boolean isValid = true;
-		try {
-			if(rm.getParam("ttl") != null) //loop detection
-			{
-				int ttlCount = Integer.valueOf(rm.getParam("ttl"));
 
-				if(ttlCount > 10)
-				{
-					System.out.println("**Agent : MsgRoute : High Loop Count**");
-					System.out.println("MsgType=" + rm.getMsgType().toString());
-					System.out.println("Region=" + rm.getMsgRegion() + " Agent=" + rm.getMsgAgent() + " plugin=" + rm.getMsgPlugin());
-					System.out.println("params=" + rm.getParamsString());
-					isValid = false;
-				}
+    private boolean getTTL() {
+        boolean isValid = true;
+        try {
+            if (rm.getParam("ttl") != null) //loop detection
+            {
+                int ttlCount = Integer.valueOf(rm.getParam("ttl"));
 
-				ttlCount++;
-				rm.setParam("ttl", String.valueOf(ttlCount));
-			}
-			else
-			{
-				rm.setParam("ttl", "0");
-			}
+                if (ttlCount > 10) {
+                    System.out.println("**Agent : MsgRoute : High Loop Count**");
+                    System.out.println("MsgType=" + rm.getMsgType().toString());
+                    System.out.println("Region=" + rm.getMsgRegion() + " Agent=" + rm.getMsgAgent() + " plugin=" + rm.getMsgPlugin());
+                    System.out.println("params=" + rm.getParams());
+                    isValid = false;
+                }
 
-		}
-		catch(Exception ex) {
-			isValid = false;
-		}
-		return isValid;
-	}
+                ttlCount++;
+                rm.setParam("ttl", String.valueOf(ttlCount));
+            } else {
+                rm.setParam("ttl", "0");
+            }
+
+        } catch (Exception ex) {
+            isValid = false;
+        }
+        return isValid;
+    }
 }

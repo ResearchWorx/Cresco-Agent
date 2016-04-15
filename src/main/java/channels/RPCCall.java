@@ -1,6 +1,6 @@
 package channels;
 
-import shared.MsgEvent;
+import com.researchworx.cresco.library.messaging.MsgEvent;
 import core.AgentEngine;
 
 public class RPCCall {

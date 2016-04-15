@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
@@ -16,16 +18,11 @@ import org.apache.commons.configuration.ConfigurationException;
 
 import channels.MsgInQueue;
 import plugins.ConfigPlugins;
-import plugins.PluginLoader;
-import shared.Clogger;
-import shared.MsgEvent;
-import shared.MsgEventType;
-import shared.PluginInterface;
-//add rand
-
+import plugins.Plugin;
+import com.researchworx.cresco.library.messaging.MsgEvent;
+import com.researchworx.cresco.library.utilities.CLogger;
 
 public class AgentEngine {
-
     public static boolean isActive = false; //agent on/off
     public static WatchDog wd;
     public static boolean hasChannel = false;
@@ -35,15 +32,12 @@ public class AgentEngine {
 
     public static boolean isCommInit = false;
 
+    public static ExecutorService msgInProcessQueue;
+
     public static ConcurrentLinkedQueue<MsgEvent> msgInQueue;
     public static Thread MsgInQueueThread;
     public static boolean MsgInQueueEnabled = false; //control service on/off
     public static boolean MsgInQueueActive = false; //control service on/off
-
-    public static ConcurrentLinkedQueue<MsgEvent> msgOutQueue;
-    public static Thread MsgOutQueueThread;
-    public static boolean MsgOutQueueEnabled = false; //control service on/off
-    public static boolean MsgOutQueueActive = false; //control service on/off
 
     public static boolean ControllerEnabled = false; //control service on/off
     public static boolean ControllerActive = false; //control service on/off
@@ -55,7 +49,7 @@ public class AgentEngine {
     public static boolean watchDogActive = false; //agent watchdog on/off
     public static String agentVersion = null;
 
-    public static Map<String, PluginInterface> pluginMap;
+    public static Map<String, Plugin> pluginMap;
 
     public static Config config;
     public static ConfigPlugins pluginsconfig;
@@ -63,19 +57,22 @@ public class AgentEngine {
     public static String region;
     public static String agent;
 
-    public static Clogger clog;
+    public static CLogger clog;
 
     public static DelayedShutdown ds; //delayed shutdown command
 
     public static void main(String[] args) throws Exception {
+        //Make sure initial input is sane.
+        String configFile = checkConfig(args);
 
         try {
             //create command group
             commandExec = new CommandExec();
 
+            msgInProcessQueue = Executors.newFixedThreadPool(4);
             //create logger and base queue
-            msgInQueue = new ConcurrentLinkedQueue<MsgEvent>();
-            msgOutQueue = new ConcurrentLinkedQueue<MsgEvent>();
+            msgInQueue = new ConcurrentLinkedQueue<>();
+            //msgOutQueue = new ConcurrentLinkedQueue<>();
             rpcMap = new ConcurrentHashMap<>();
 
             //Cleanup on Shutdown
@@ -89,14 +86,12 @@ public class AgentEngine {
                 }
             }, "Shutdown-thread"));
 
-            //Make sure initial input is sane.
-            String configFile = checkConfig(args);
 
             //Make sure config file
             config = new Config(configFile);
 
         	/*
-        	System.out.println("Building MsgOutQueue");
+            System.out.println("Building MsgOutQueue");
     		//start outgoing queue
     		
     		MsgOutQueue moq = new MsgOutQueue();
@@ -136,7 +131,7 @@ public class AgentEngine {
             agent = "init"; //region and agent will come from controller
 
             //Establish  a named map of plugin interfaces
-            pluginMap = new ConcurrentHashMap<String, PluginInterface>();
+            pluginMap = new ConcurrentHashMap<>();
 
             //build initial plugin list
             processPlugins();
@@ -150,10 +145,11 @@ public class AgentEngine {
             LoadControllerPlugin();
 
             //start core watchdog
-            wd = new WatchDog();
+            //wd = new WatchDog();
 
 
             isActive = true;
+            enableStaticPlugins();
 
             Scanner scanner = new Scanner(System.in);
 
@@ -169,7 +165,7 @@ public class AgentEngine {
                         String[] sstr = input.split(",");
                         //System.out.println("region: " + sstr[0] + " agent=" + sstr[1] + " plugin=" + sstr[2]);
                         //System.out.println("controllerPluginSlot=" + controllerPluginSlot);
-                        MsgEvent me = new MsgEvent(MsgEventType.EXEC, region, agent, controllerPluginSlot, "external");
+                        MsgEvent me = new MsgEvent(MsgEvent.Type.EXEC, region, agent, controllerPluginSlot, "external");
                         me.setParam("cmd", "show_name");
                         me.setParam("src_region", region);
                         me.setParam("src_agent", agent);
@@ -207,12 +203,12 @@ public class AgentEngine {
 
 
             //set version name
-            agentVersion = new String(getVersion());
+            agentVersion = getVersion();
             //set region and agent
             agent = config.getAgentName();
             region = config.getRegion();
 
-            clog = new Clogger(msgInQueue, region, agent, null);
+            clog = new CLogger(msgInQueue, region, agent, null, CLogger.Level.Info);
 
             //Establish  a named map of plugin interfaces
             //pluginMap = new ConcurrentHashMap<String,PluginInterface>();
@@ -257,15 +253,15 @@ public class AgentEngine {
         } else {
             MsgInQueueActive = true; //allow incoming message
 
-            PluginInterface pi = AgentEngine.pluginMap.get(controllerPluginSlot);
-            MsgEvent me = new MsgEvent(MsgEventType.CONFIG, region, agent, controllerPluginSlot, "comminit");
-            me.setParam("configtype","comminit");
+            Plugin plugin = AgentEngine.pluginMap.get(controllerPluginSlot);
+            MsgEvent me = new MsgEvent(MsgEvent.Type.CONFIG, region, agent, controllerPluginSlot, "comminit");
+            me.setParam("configtype", "comminit");
             me.setParam("src_region", region);
             me.setParam("src_agent", agent);
             me.setParam("dst_region", region);
             me.setParam("dst_agent", agent);
             me.setParam("dst_plugin", "plugin/0");
-            pi.msgIn(me); //send msg to plugin
+            plugin.Message(me); //send msg to plugin
 
             while (!isCommInit) {
                 Thread.sleep(1000);
@@ -275,8 +271,8 @@ public class AgentEngine {
     }
 
     public static void msgIn(MsgEvent me) {
-
-        new MsgRoute(me).run();
+        msgInProcessQueue.execute(new MsgRoute(me));
+        //new MsgRoute(me).run();
 		/*
 		final MsgEvent ce = me;
 		try
@@ -326,7 +322,7 @@ public class AgentEngine {
 
     public static void getController() throws InterruptedException, ConfigurationException, IOException {
 
-        if (MsgInQueueActive && MsgOutQueueActive) {
+        if (MsgInQueueActive/* && MsgOutQueueActive*/) {
             int tryController = 1;
             int controllerDiscoveryTimeout = config.getControllerDiscoveryTimeout();
             //add random delay on startup
@@ -346,7 +342,7 @@ public class AgentEngine {
                 if (AgentEngine.channelPluginSlot != null) //controller plugin was found
                 {
                     MsgEvent de = clog.getLog("enabled");
-                    de.setMsgType(MsgEventType.CONFIG);
+                    de.setMsgType(MsgEvent.Type.CONFIG);
                     de.setMsgAgent(AgentEngine.agent); //route to this agent
                     de.setMsgPlugin(AgentEngine.channelPluginSlot); //route to controller plugin
                     de.setParam("attempt", String.valueOf(tryController));
@@ -372,7 +368,7 @@ public class AgentEngine {
                             isActive = true;
                             //else if(ce.getParam("cmd").equals("enablelogconsumer"))
                             //enable incoming logs
-                            MsgEvent me = new MsgEvent(MsgEventType.EXEC, region, agent, channelPluginSlot, "Enable Incoming Log");
+                            MsgEvent me = new MsgEvent(MsgEvent.Type.EXEC, region, agent, channelPluginSlot, "Enable Incoming Log");
                             me.setParam("cmd", "enablelogconsumer");
                             me.setSrc(region, agent, null);
                             me.setDst(region, agent, channelPluginSlot);
@@ -437,7 +433,7 @@ public class AgentEngine {
                     } else {
                         //turn on queues and set channel
                         MsgInQueueActive = true;
-                        MsgOutQueueActive = true;
+                        //MsgOutQueueActive = true;
                         hasChannel = true;
                         channelPluginSlot = commPlugin;
                     }
@@ -456,7 +452,7 @@ public class AgentEngine {
         }
     }
 
-    public static void getChannel2() {
+    /*public static void getChannel2() {
         //Try and load some plugins to establish comm
         //while here not explicit names
 
@@ -470,7 +466,7 @@ public class AgentEngine {
                 } else {
                     //turn on queues and set channel
                     MsgInQueueActive = true;
-                    MsgOutQueueActive = true;
+                    //MsgOutQueueActive = true;
                     hasChannel = true;
                     channelPluginSlot = ampqPlugin;
                 }
@@ -491,7 +487,7 @@ public class AgentEngine {
                         System.exit(0);
                     } else {
                         MsgInQueueActive = true;
-                        MsgOutQueueActive = true;
+                        //MsgOutQueueActive = true;
                         hasChannel = true;
                         channelPluginSlot = ampqPlugin;
                     }
@@ -504,7 +500,7 @@ public class AgentEngine {
             System.out.println("Error creating communication channel.. exiting");
             System.exit(0);
         }
-    }
+    }*/
 
     public static String checkConfig(String[] args) {
         String errorMgs = "Cresco-Agent\n" +
@@ -531,7 +527,7 @@ public class AgentEngine {
 
     public static void processPlugins() throws ClassNotFoundException, IOException {
         try {
-            System.out.println("Start process plugins");
+            //System.out.println("Start process plugins");
             String plugin_config_file = config.getPluginConfigFile();
             System.out.println("Start process plugins " + plugin_config_file);
 
@@ -559,7 +555,7 @@ public class AgentEngine {
 
                 for (String pluginName : enabledPlugins) //process list of plugins that should be enabled
                 {
-
+                    if (pluginName.equals(controllerPluginSlot)) continue;
                     boolean isLoaded = enablePlugin(pluginName, false);
                     if (!isLoaded) {
                         System.out.println("Failed Loading Required Plugin: " + pluginName + " " + pluginsconfig.getPluginJar(pluginName) + " exiting..");
@@ -582,10 +578,10 @@ public class AgentEngine {
         try {
             if (pluginMap.containsKey(plugin)) {
                 //PluginNode pn = pluginMap.get(plugin);
-                PluginInterface pi = pluginMap.get(plugin);
-                pi.shutdown();
+                Plugin pi = pluginMap.get(plugin);
+                pi.Stop();
                 String msg = "Plugin Configuration: [" + plugin + "] Removed: (" + pi.getVersion() + ")";
-                pi = null;
+                //pi = null;
                 System.out.println(msg);
                 pluginMap.remove(plugin);
 
@@ -607,69 +603,58 @@ public class AgentEngine {
 
     }
 
-    public static boolean enablePlugin(String plugin, boolean save) //loop through known plugins on agent
-    {
+    public static boolean enablePlugin(String pluginID, boolean save) {
         try {
-            if (!pluginMap.containsKey(plugin)) {
-                PluginLoader pl = new PluginLoader(pluginsconfig.getPluginJar(plugin));
-                PluginInterface pi = pl.getPluginInterface();
-
-                //if(pi.initialize(msgOutQueue,msgInQueue,pluginsconfig.getPluginConfig(plugin),AgentEngine.config.getRegion(),AgentEngine.config.getAgentName(),plugin))
-                if (pi.initialize(msgOutQueue, msgInQueue, pluginsconfig.getPluginConfig(plugin), AgentEngine.region, AgentEngine.agent, plugin)) {
-
-                    boolean versionMatch = pluginsconfig.getPluginName(plugin).equals(pi.getName());
-                    if (versionMatch) {
-                        try {
-                            String msg = "Plugin Configuration: [" + plugin + "] Initialized: (" + pi.getName() + " Version: " + pi.getVersion() + ")";
-                            //clog.log(msg);
-                            System.out.println(msg);
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                            System.out.println("Plugin Configuration: pq.getVersion() Error: " + ex.toString());
-                        }
-
-                        pluginMap.put(plugin, pi);
-
-                        if (save) {
-                            pluginsconfig.setPluginStatus(plugin, 1);
-                        }
-
-                        return true;
-                    } else {
-                        String msg = "Plugin Configuration: Agent=" + AgentEngine.agent + " pluginname=" + pluginsconfig.getPluginName(plugin) + " does not match reported plugin Jar name: " + pi.getName();
-                        pluginMap.put(plugin, pi);
-                        //clog.error(msg);
-                        pl = null;
-                        pi = null;
-                        System.out.println(msg);
-                        return false;
-                    }
-
-                } else {
-                    String msg = "Plugin Failed Initialization: Agent=" + AgentEngine.agent + " pluginname=" + pluginsconfig.getPluginName(plugin) + " does not match Plugin Jar: " + pi.getVersion() + ")";
-                    clog.error(msg);
+            if (!pluginMap.containsKey(pluginID)) {
+                Plugin plugin;
+                try {
+                    plugin = new Plugin(pluginsconfig.getPluginJar(pluginID));
+                } catch (Exception e) {
+                    System.out.println("Plugin Generation: " + e.getMessage());
+                    return false;
+                }
+                if (!pluginsconfig.getPluginName(pluginID).equals(plugin.getName())) {
+                    String msg = "Plugin Configuration: Agent=" + AgentEngine.agent + " pluginname=" + pluginsconfig.getPluginName(pluginID) + " does not match reported plugin Jar name: " + plugin.getName();
+                    //pluginMap.put(pluginID, plugin);
+                    //clog.error(msg);
                     System.out.println(msg);
+                    plugin.Dispose();
+                    plugin = null;
+                    return false;
+                }
+                if (plugin.Start(msgInQueue, pluginsconfig.getPluginConfig(pluginID), AgentEngine.region, AgentEngine.agent, pluginID)) {
+                    String msg = "Plugin Configuration: [" + pluginID + "] Initialized: (" + plugin.getName() + " Version: " + plugin.getVersion() + ")";
+                    //clog.log(msg);
+                    System.out.println(msg);
+                    pluginMap.put(pluginID, plugin);
+                    if (save)
+                        pluginsconfig.setPluginStatus(pluginID, 1);
+                    return true;
+                } else {
+                    String msg = "Plugin Failed Initialization: Agent=" + AgentEngine.agent + " pluginname=" + pluginsconfig.getPluginName(pluginID) + " does not match Plugin Jar: " + plugin.getVersion() + ")";
+                    //clog.error(msg);
+                    System.out.println(msg);
+                    plugin.Dispose();
+                    plugin = null;
                     return false;
                 }
             } else {
-                System.out.println("Plugin " + plugin + " is already active");
+                String msg = "Plugin Failed Initialization: Plugin [" + pluginID + "] is already active";
+                System.out.println(msg);
+                //clog.error(msg);
                 return false;
             }
         } catch (Exception ex) {
             //String msg = "Plugin Failed Initialization: Agent=" + AgentEngine.agent + "pluginname=" + pluginsconfig.getPluginName(plugin) + " Error: " + ex.toString();
-            String msg = "Plugin Failed Initialization: pluginname=" + pluginsconfig.getPluginName(plugin) + " Error: " + ex.getMessage();
-            //clog.error(msg);
+            String msg = "Plugin Failed Initialization: [" + pluginID + "] Error: " + ex.getMessage();
             ex.printStackTrace();
+            //clog.error(msg);
             System.out.println(msg);
-
             return false;
         }
-
-
     }
 
-    public static String getVersion() //This should pull the version information from jar Meta data
-    {
+    public static String getVersion() {
         String version;
         try {
             String jarFile = AgentEngine.class.getProtectionDomain().getCodeSource().getLocation().getPath();
@@ -714,13 +699,11 @@ public class AgentEngine {
 
     }
 
-    //needs to be redone to account for active and configured.
-    public static String listPlugins() //loop through known plugins on agent
-    {
+    public static String listPlugins() {
         StringBuilder sb = new StringBuilder();
 
-        List<String> pluginListEnabled = new ArrayList<String>(AgentEngine.pluginsconfig.getPluginList(1));
-        List<String> pluginListDisabled = new ArrayList<String>(AgentEngine.pluginsconfig.getPluginList(0));
+        List<String> pluginListEnabled = new ArrayList<>(AgentEngine.pluginsconfig.getPluginList(1));
+        List<String> pluginListDisabled = new ArrayList<>(AgentEngine.pluginsconfig.getPluginList(0));
         List<String> pluginListActive = getActivePlugins();
 
         if ((pluginListEnabled.size() > 0) || (pluginListDisabled.size() > 0)) {
@@ -729,12 +712,12 @@ public class AgentEngine {
             }
             for (String pluginName : pluginListEnabled) {
                 if ((AgentEngine.pluginMap.containsKey(pluginName)) && !pluginListActive.contains(pluginName)) {
-                    PluginInterface pi = pluginMap.get(pluginName);
+                    Plugin pi = pluginMap.get(pluginName);
                     sb.append("Plugin: [" + pluginName + "] Name: " + AgentEngine.pluginsconfig.getPluginName(pluginName) + " Initialized: " + pi.getVersion() + "\n");
                 }
             }
             for (String pluginName : pluginListActive) {
-                PluginInterface pi = pluginMap.get(pluginName);
+                Plugin pi = pluginMap.get(pluginName);
 
                 sb.append("Plugin: [" + pluginName + "] Name: " + AgentEngine.pluginsconfig.getPluginName(pluginName) + " Initialized: " + pi.getVersion() + "\n");
             }
@@ -754,7 +737,7 @@ public class AgentEngine {
     }
 
     static List<String> getActivePlugins() {
-        List<String> pluginList = new ArrayList<String>();
+        List<String> pluginList = new ArrayList<>();
         if (pluginMap != null) {
             Iterator it = pluginMap.entrySet().iterator();
             while (it.hasNext()) {
@@ -772,10 +755,10 @@ public class AgentEngine {
     static void cleanup() throws ConfigurationException, IOException, InterruptedException {
         try {
             System.out.println("Shutdown:Cleaning Active Agent Resources");
-            wd.timer.cancel();
+            //wd.timer.cancel();
 
             //MsgEvent de = clog.getLog("disabled");
-            MsgEvent de = new MsgEvent(MsgEventType.CONFIG,AgentEngine.config.getRegion(),null,null,"disabled");
+            MsgEvent de = new MsgEvent(MsgEvent.Type.CONFIG, AgentEngine.config.getRegion(), null, null, "disabled");
             de.setParam("src_region", region);
             de.setParam("src_agent", agent);
             de.setParam("dst_region", region);
@@ -783,23 +766,18 @@ public class AgentEngine {
             AgentEngine.msgInQueue.offer(de);
 
             List<String> pluginList = getActivePlugins();
-	   	   /*
-	       for(String plugin : pluginList)
-	   	   {
-	   		   if(((isController) && (plugin.equals(channelPluginSlot))))
-	   		   {
+	   	    /*
+	        for(String plugin : pluginList) {
+	   		   if(((isController) && (plugin.equals(channelPluginSlot)))) {
 	   			   
-	   		   }
-	   		   else
-	   		   {
+	   		    } else {
 	   			   //disablePlugin(plugin,false);
-	   		   }
-	   	   }
-	   	   */
-	       /*
-	   	   if(pluginMap != null)
-	   	   {
-	   		   Iterator it = pluginMap.entrySet().iterator();
+	   		    }
+	   	    }
+	   	    */
+	        /*
+	   	    if(pluginMap != null) {
+	   		    Iterator it = pluginMap.entrySet().iterator();
 		    	while (it.hasNext()) {
 		        	Map.Entry pairs = (Map.Entry)it.next();
 		        	System.out.println(pairs.getKey() + " = " + pairs.getValue());
@@ -809,16 +787,12 @@ public class AgentEngine {
 		    	}
 	   	    }
 	   	    */
-
-
             if (!isRegionalController) {
-
                 for (String plugin : pluginList) {
                     if (!plugin.equals(channelPluginSlot)) {
                         disablePlugin(plugin, false);
                     }
                 }
-
                 if (msgInQueue != null) {
 
                     //disablePlugin(channelPluginSlot, false);
@@ -866,15 +840,11 @@ public class AgentEngine {
             } else {
                 //cleanup controller here
                 for (String plugin : pluginList) {
-
                     disablePlugin(plugin, false);
-
                 }
 
             }
-        }
-        catch(Exception ex)
-        {
+        } catch (Exception ex) {
             ex.printStackTrace();
             System.out.println("Shutdown Error: " + ex.getMessage());
         }
