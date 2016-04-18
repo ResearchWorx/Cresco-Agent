@@ -111,22 +111,7 @@ public class AgentEngine {
             while (!MsgInQueueEnabled) {
                 Thread.sleep(100);
             }
-        	
-        	/*
-        	//Generate Random Agent String
-        	RandomString rs = new RandomString(4);
-    		if(config.getGenerateName())
-        	{
-        		String AgentName = "agent-" + rs.nextString();
-        		config.setAgentName(AgentName);
-        	}
-    		//Generate Random Region String
-        	if(config.getGenerateRegion())
-        	{
-    			String Region = "region-" + rs.nextString();
-        		config.setRegionName(Region);
-        	}
-        	*/
+
             region = "init"; //set temp setting to allow routing
             agent = "init"; //region and agent will come from controller
 
@@ -143,10 +128,6 @@ public class AgentEngine {
             Thread.sleep(startupdelay);
 
             LoadControllerPlugin();
-
-            //start core watchdog
-            //wd = new WatchDog();
-
 
             isActive = true;
             enableStaticPlugins();
@@ -209,10 +190,6 @@ public class AgentEngine {
             region = config.getRegion();
 
             clog = new CLogger(msgInQueue, region, agent, null, CLogger.Level.Info);
-
-            //Establish  a named map of plugin interfaces
-            //pluginMap = new ConcurrentHashMap<String,PluginInterface>();
-
 
             //if channel was not configured during startup try and establish
             if (!hasChannel) {
@@ -341,7 +318,11 @@ public class AgentEngine {
 
                 if (AgentEngine.channelPluginSlot != null) //controller plugin was found
                 {
-                    MsgEvent de = clog.getLog("enabled");
+                    //MsgEvent de = clog.getLog("enabled");
+                    MsgEvent de = new MsgEvent(MsgEvent.Type.INFO, region, null, null, "enabled");
+                    de.setParam("src_region", region);
+                    de.setParam("src_agent", agent);
+                    de.setParam("dst_region", region);
                     de.setMsgType(MsgEvent.Type.CONFIG);
                     de.setMsgAgent(AgentEngine.agent); //route to this agent
                     de.setMsgPlugin(AgentEngine.channelPluginSlot); //route to controller plugin
@@ -757,7 +738,6 @@ public class AgentEngine {
             System.out.println("Shutdown:Cleaning Active Agent Resources");
             //wd.timer.cancel();
 
-            //MsgEvent de = clog.getLog("disabled");
             MsgEvent de = new MsgEvent(MsgEvent.Type.CONFIG, AgentEngine.config.getRegion(), null, null, "disabled");
             de.setParam("src_region", region);
             de.setParam("src_agent", agent);
@@ -799,7 +779,7 @@ public class AgentEngine {
 
                 /*
                 MsgEvent de = clog.getLog("disabled");
-                de.setMsgType(MsgEventType.CONFIG);
+                de.setMsgType(MsgEvent.Type.CONFIG);
                 de.setMsgAgent(AgentEngine.agent); //route to this agent
                 de.setMsgPlugin(AgentEngine.channelPluginSlot); //route to controller plugin
                 de.setParam("src_region", region);
