@@ -1,15 +1,38 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
 	<groupId>com.researchworx.cresco</groupId>
 	<artifactId>cresco-agent</artifactId>
 	<version>0.5.0-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
 	<name>Cresco Agent</name>
 	<description>Cresco Framework Core Agent</description>
 	<url>https://github.com/researchworx/Cresco-Agent</url>
+
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
 	<scm>
 		<connection>scm:git:git://github.com/researchworx/Cresco-Agent.git</connection>
 	</scm>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<jdk>1.7</jdk>
+		<cresco.plugin.library.version>0.4.0</cresco.plugin.library.version>
+		<maven.source.version>3.0.0</maven.source.version>
+		<maven.javadoc.version>2.10.3</maven.javadoc.version>
+		<maven.compiler.version>3.5.1</maven.compiler.version>
+	</properties>
 
 	<dependencies>
 		<dependency>
@@ -25,7 +48,7 @@
 		<dependency>
 			<groupId>com.researchworx.cresco</groupId>
 			<artifactId>cresco-plugin-library</artifactId>
-			<version>0.3.19</version>
+			<version>${cresco.plugin.library.version}</version>
 		</dependency>
 	</dependencies>
 	<build>

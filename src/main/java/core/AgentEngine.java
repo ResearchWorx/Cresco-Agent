@@ -24,7 +24,8 @@ import com.researchworx.cresco.library.utilities.CLogger;
 
 public class AgentEngine {
     public static boolean isActive = false; //agent on/off
-    public static WatchDog wd;
+    //public static WatchDog wd;
+    public static com.researchworx.cresco.library.core.WatchDog wd;
     public static boolean hasChannel = false;
     public static String channelPluginSlot;
     public static boolean isRegionalController = false;
@@ -90,21 +91,7 @@ public class AgentEngine {
             //Make sure config file
             config = new Config(configFile);
 
-        	/*
-            System.out.println("Building MsgOutQueue");
-    		//start outgoing queue
-    		
-    		MsgOutQueue moq = new MsgOutQueue();
-    		MsgOutQueueThread = new Thread(moq);
-    		MsgOutQueueThread.start();
-        	while(!MsgOutQueueEnabled)
-        	{
-        		Thread.sleep(100);
-        	}
-        	*/
-
             System.out.println("Building MsgInQueue");
-            //start incoming queue
             MsgInQueue miq = new MsgInQueue();
             MsgInQueueThread = new Thread(miq);
             MsgInQueueThread.start();
@@ -202,7 +189,7 @@ public class AgentEngine {
             }
 
             //start core watchdog
-            wd = new WatchDog();
+            //wd = new WatchDog();
 	    	/*
         	while(isActive) 
     	   {
@@ -735,7 +722,7 @@ public class AgentEngine {
 
     static void cleanup() throws ConfigurationException, IOException, InterruptedException {
         try {
-            System.out.println("Shutdown:Cleaning Active Agent Resources");
+            System.out.println("Shutdown: Cleaning Active Agent Resources");
             //wd.timer.cancel();
 
             MsgEvent de = new MsgEvent(MsgEvent.Type.CONFIG, AgentEngine.config.getRegion(), null, null, "disabled");
