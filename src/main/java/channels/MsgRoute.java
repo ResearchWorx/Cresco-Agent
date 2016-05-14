@@ -134,7 +134,7 @@ public class MsgRoute implements Runnable {
             ex.printStackTrace();
             routePath = -1;
         }
-        System.out.println("ROUTEPATH=" + routePath + " MsgType=" + rm.getMsgType() + " Params=" + rm.getParams());
+        System.out.println("AGENT ROUTEPATH=" + routePath + " MsgType=" + rm.getMsgType() + " Params=" + rm.getParams());
 
         return routePath;
     }
