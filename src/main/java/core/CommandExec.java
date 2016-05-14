@@ -2,8 +2,6 @@ package core;
 
 import org.apache.commons.configuration.ConfigurationException;
 import com.researchworx.cresco.library.messaging.MsgEvent;
-import shared.MsgEventType;
-import shared.PluginInterface;
 
 import java.io.File;
 import java.io.FileOutputStream;
