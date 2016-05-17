@@ -99,9 +99,14 @@ public class AgentEngine {
                 Thread.sleep(100);
             }
 
-            region = "init"; //set temp setting to allow routing
-            agent = "init"; //region and agent will come from controller
-
+            if((config.getStringParams("general","agentname") != null) && (config.getStringParams("general","regionname") != null)) {
+                region = config.getStringParams("general","regionname");
+                agent = config.getStringParams("general","agentname");
+            }
+            else {
+                region = "init"; //set temp setting to allow routing
+                agent = "init"; //region and agent will come from controller
+            }
             //Establish  a named map of plugin interfaces
             pluginMap = new ConcurrentHashMap<>();
 
