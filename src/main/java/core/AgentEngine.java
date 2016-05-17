@@ -156,6 +156,7 @@ public class AgentEngine {
                 input = scanner.nextLine();
             }
 
+
 			/*
 			while(isActive)
 			{
