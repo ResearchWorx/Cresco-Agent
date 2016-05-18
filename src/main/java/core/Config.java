@@ -90,7 +90,7 @@ public class Config {
 	public boolean setRegionName(String region) throws ConfigurationException
 	{
 		SubnodeConfiguration sObj = iniConfObj.getSection("general");
-	    sObj.setProperty("region", region);
+	    sObj.setProperty("regionname", region);
 	    return true;
 	}
 	public boolean getGenerateName()
