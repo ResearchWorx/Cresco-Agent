@@ -70,6 +70,7 @@ public class MsgRoute implements Runnable {
     }
 
     private void sendToController() {
+        System.out.println("Sending message to controller");
         try {
             AgentEngine.pluginMap.get(AgentEngine.controllerPluginSlot).Message(rm);
         } catch (Exception ex) {
