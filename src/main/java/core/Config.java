@@ -158,12 +158,12 @@ public class Config {
 	public String getRegion()
 	{
 		SubnodeConfiguration sObj = iniConfObj.getSection("general");
-		return sObj.getString("region");
+		return sObj.getString("regionname");
 	}
 	public boolean setRegion(String region) throws ConfigurationException
 	{
 		SubnodeConfiguration sObj = iniConfObj.getSection("general");
-	    sObj.setProperty("region", region);
+	    sObj.setProperty("regionname", region);
 	    iniConfObj.save();
 	    return true;
 	}
