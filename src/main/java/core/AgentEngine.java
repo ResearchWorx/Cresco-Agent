@@ -125,42 +125,45 @@ public class AgentEngine {
             enableStaticPlugins();
 
             Scanner scanner = new Scanner(System.in);
-
-            System.out.println("Name of Agent to message [q to quit]: ");
             String input = scanner.nextLine();
-
-
-            while (!input.toLowerCase().equals("q")) {
-
-
-                if (input.length() > 0) {
-                    try {
-                        String[] sstr = input.split(",");
-                        //System.out.println("region: " + sstr[0] + " agent=" + sstr[1] + " plugin=" + sstr[2]);
-                        //System.out.println("controllerPluginSlot=" + controllerPluginSlot);
-                        MsgEvent me = new MsgEvent(MsgEvent.Type.EXEC, region, agent, controllerPluginSlot, "external");
-                        me.setParam("cmd", "show_name");
-                        me.setParam("src_region", region);
-                        me.setParam("src_agent", agent);
-                        me.setParam("dst_region", sstr[0]);
-                        me.setParam("dst_agent", sstr[1]);
-                        if (sstr.length == 3) {
-                            me.setParam("dst_plugin", sstr[2]);
-                        }
-                        MsgEvent re = new RPCCall().call(me);
-                        if (re != null) {
-                            System.out.println("MESSAGE RETURNED : " + re.getParams());
-                        }
-
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-
-                }
+            try {
                 System.out.println("Name of Agent to message [q to quit]: ");
-                input = scanner.nextLine();
-            }
 
+
+                while (!input.toLowerCase().equals("q")) {
+
+
+                    if (input.length() > 0) {
+                        try {
+                            String[] sstr = input.split(",");
+                            //System.out.println("region: " + sstr[0] + " agent=" + sstr[1] + " plugin=" + sstr[2]);
+                            //System.out.println("controllerPluginSlot=" + controllerPluginSlot);
+                            MsgEvent me = new MsgEvent(MsgEvent.Type.EXEC, region, agent, controllerPluginSlot, "external");
+                            me.setParam("cmd", "show_name");
+                            me.setParam("src_region", region);
+                            me.setParam("src_agent", agent);
+                            me.setParam("dst_region", sstr[0]);
+                            me.setParam("dst_agent", sstr[1]);
+                            if (sstr.length == 3) {
+                                me.setParam("dst_plugin", sstr[2]);
+                            }
+                            MsgEvent re = new RPCCall().call(me);
+                            if (re != null) {
+                                System.out.println("MESSAGE RETURNED : " + re.getParams());
+                            }
+
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+
+                    }
+                    System.out.println("Name of Agent to message [q to quit]: ");
+                    input = scanner.nextLine();
+                }
+            } catch (java.util.NoSuchElementException nse) {
+                //Ignore if no stdin
+                System.out.println("Agent Startup Complete.");
+            }
 
 			/*
 			while(isActive)
