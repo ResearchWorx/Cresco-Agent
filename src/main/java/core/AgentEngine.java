@@ -125,6 +125,7 @@ public class AgentEngine {
             enableStaticPlugins();
 
             Scanner scanner = new Scanner(System.in);
+            boolean noConsole = false;
             try {
                 String input = scanner.nextLine();
 
@@ -164,17 +165,17 @@ public class AgentEngine {
             } catch (java.util.NoSuchElementException nse) {
                 //Ignore if no stdin
                 System.out.println("Agent Startup Complete.");
+                noConsole = true;
             }
 
-			/*
-			while(isActive)
-			{
-				//just sleep until isActive=false
-				//need to add ability to control other threads here.
-				//need to add upgrade ability
-				Thread.sleep(1000);
-			}
-    		*/
+			if(noConsole) {
+                while (isActive) {
+                    //just sleep until isActive=false
+                    //need to add ability to control other threads here.
+                    //need to add upgrade ability
+                    Thread.sleep(1000);
+                }
+            }
             //Die here
             System.out.println("SYSTEM EXIT");
             System.exit(0);
