@@ -125,8 +125,9 @@ public class AgentEngine {
             enableStaticPlugins();
 
             Scanner scanner = new Scanner(System.in);
-            String input = scanner.nextLine();
             try {
+                String input = scanner.nextLine();
+
                 System.out.println("Name of Agent to message [q to quit]: ");
 
 
