@@ -559,7 +559,7 @@ public class AgentEngine {
                 //PluginNode pn = pluginMap.get(plugin);
                 Plugin pi = pluginMap.get(plugin);
                 pi.Stop();
-                String msg = "Plugin Configuration: [" + plugin + "] Removed: (" + pi.getVersion() + ")";
+                String msg = "Plugin Configuration: [" + plugin + "] Removed: (" + pi.getName() + " Version: " + pi.getVersion() + ")";
                 //pi = null;
                 System.out.println(msg);
                 pluginMap.remove(plugin);
@@ -721,7 +721,7 @@ public class AgentEngine {
             Iterator it = pluginMap.entrySet().iterator();
             while (it.hasNext()) {
                 Map.Entry pairs = (Map.Entry) it.next();
-                System.out.println(pairs.getKey() + " = " + pairs.getValue());
+                //System.out.println(pairs.getKey() + " = " + pairs.getValue());
                 String plugin = pairs.getKey().toString();
                 //disablePlugin(plugin,false);
                 pluginList.add(plugin);
