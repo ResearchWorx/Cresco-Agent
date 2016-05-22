@@ -29,6 +29,9 @@ public class MsgRoute implements Runnable {
                 case 56:  //System.out.println("AGENT ROUTE TO COMMANDEXEC : 56 "  + rm.getParams());
                     re = getCommandExec();
                     break;
+                case 58:  //System.out.println("AGENT ROUTE CASE 58  " + rm.getParams());
+                    sendToPlugin(); //plugin to plugin
+                    break;
                 case 61:  //System.out.println("AGENT ROUTE TO COMMANDEXEC : 61 "  + rm.getParams());
                     re = getCommandExec();
                     break;
