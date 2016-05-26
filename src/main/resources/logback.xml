@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<statusListener class="ch.qos.logback.core.status.NopStatusListener" />
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>
+				%d{yyyy-MM-dd HH:mm:ss} %highlight(%-5level) %7.36logger - %msg%n
+			</Pattern>
+		</layout>
+	</appender>
+
+	<logger name="Engine" level="info" additivity="false">
+		<appender-ref ref="STDOUT" />
+	</logger>
+
+	<logger name="Plugins" level="info" additivity="false">
+		<appender-ref ref="STDOUT" />
+	</logger>
+
+	<logger name="Routing" level="info" additivity="false">
+		<appender-ref ref="STDOUT" />
+	</logger>
+
+	<logger name="Logging" level="info" additivity="false">
+		<appender-ref ref="STDOUT" />
+	</logger>
+
+	<root level="error">
+		<appender-ref ref="STDOUT" />
+	</root>
+
+</configuration>

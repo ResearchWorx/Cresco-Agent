@@ -2,6 +2,8 @@ package core;
 
 import org.apache.commons.configuration.ConfigurationException;
 import com.researchworx.cresco.library.messaging.MsgEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -13,6 +15,7 @@ import java.util.Enumeration;
 import java.util.Map;
 
 public class CommandExec {
+    private static final Logger logMessages = LoggerFactory.getLogger("Logging");
 
     public CommandExec() {
 
@@ -29,16 +32,15 @@ public class CommandExec {
                 if (ce.getParam("configtype").equals("comminit")) {
                     if (Boolean.parseBoolean(ce.getParam("is_active"))) {
                         AgentEngine.region = ce.getParam("set_region");
-                        AgentEngine.config.setRegionName(AgentEngine.region);
+                        if (!AgentEngine.config.getGenerateRegion())
+                            AgentEngine.config.setRegionName(AgentEngine.region);
                         AgentEngine.agent = ce.getParam("set_agent");
-                        AgentEngine.config.setAgentName(AgentEngine.agent);
+                        if (!AgentEngine.config.getGenerateName())
+                            AgentEngine.config.setAgentName(AgentEngine.agent);
                         AgentEngine.isCommInit = true;
                         if (Boolean.parseBoolean(ce.getParam("is_regional_controller"))) {
                             AgentEngine.isRegionalController = true;
                         }
-                        System.out.println("REGION NAME:[" + AgentEngine.config.getRegion() + "]");
-                        System.out.println("REGION CONTROLLER:[" + AgentEngine.isRegionalController + "]");
-                        System.out.println("AGENT NAME:[" + AgentEngine.config.getAgentName() + "]");
 
                     }
                     return null;
@@ -227,12 +229,38 @@ public class CommandExec {
                     }
                     return ce;
                 }
+            } else if (ce.getMsgType() == MsgEvent.Type.LOG) {
+                logMessage(ce);
             }
         } catch (Exception ex) {
             System.out.println("AgentEngine : CommandExec Error : " + ex.getMessage());
             ex.printStackTrace();
         }
         return null;
+    }
+
+    private void logMessage(MsgEvent log) {
+        String logMessage = "[" + log.getParam("src_plugin") + ": " + AgentEngine.pluginsconfig.getPluginName(log.getParam("src_plugin")) + "] - " + log.getMsgBody();
+        switch (log.getParam("log_level")) {
+            case "Error":
+                logMessages.error(logMessage);
+                break;
+            case "Warn":
+                logMessages.warn(logMessage);
+                break;
+            case "Info":
+                logMessages.info(logMessage);
+                break;
+            case "Debug":
+                logMessages.debug(logMessage);
+                break;
+            case "Trace":
+                logMessages.trace(logMessage);
+                break;
+            default:
+                logMessages.error("Unknown log_level [{}]", log.getParam("log_level"));
+                break;
+        }
     }
 
 }

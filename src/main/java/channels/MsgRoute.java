@@ -2,8 +2,13 @@ package channels;
 
 import core.AgentEngine;
 import com.researchworx.cresco.library.messaging.MsgEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.text.SimpleDateFormat;
 
 public class MsgRoute implements Runnable {
+    private static final Logger logger = LoggerFactory.getLogger("Routing");
 
     private MsgEvent rm;
 
@@ -21,10 +26,16 @@ public class MsgRoute implements Runnable {
             MsgEvent re = null;
             switch (routePath) {
                 case 52:  //System.out.println("AGENT ROUTE TO EXTERNAL VIA CONTROLLER : 52 "  + rm.getParams());
-                    sendToController();
+                    if (rm.getMsgType() == MsgEvent.Type.LOG)
+                        re = getCommandExec();
+                    else
+                        sendToController();
                     break;
                 case 53:  //System.out.println("AGENT REGIONAL WATCHDOG : 53 "  + rm.getParams());
-                    sendToController();
+                    if (rm.getMsgType() == MsgEvent.Type.LOG)
+                        re = getCommandExec();
+                    else
+                        sendToController();
                     break;
                 case 56:  //System.out.println("AGENT ROUTE TO COMMANDEXEC : 56 "  + rm.getParams());
                     re = getCommandExec();
@@ -42,7 +53,10 @@ public class MsgRoute implements Runnable {
                     sendToPlugin();
                     break;
                 default:
-                    System.out.println("AGENT ROUTE CASE " + routePath + " " + rm.getParams());
+                    if (rm.getMsgType() == MsgEvent.Type.LOG)
+                        re = getCommandExec();
+                    else
+                        System.out.println("AGENT ROUTE CASE " + routePath + " " + rm.getParams());
                     break;
             }
             if (re != null) {
@@ -57,7 +71,6 @@ public class MsgRoute implements Runnable {
         }
 
     }
-
 
     private MsgEvent getCommandExec() {
         try {
@@ -76,8 +89,8 @@ public class MsgRoute implements Runnable {
     private void sendToController() {
         try {
             AgentEngine.pluginMap.get(AgentEngine.controllerPluginSlot).Message(rm);
-        } catch (Exception ex) {
-            System.out.println("AgentEngine : MsgRoute Error : " + ex.getMessage());
+        } catch (Exception e) {
+            System.out.println("AgentEngine : sendToController Error : " + e.getMessage());
         }
 
     }
@@ -85,8 +98,8 @@ public class MsgRoute implements Runnable {
     private void sendToPlugin() {
         try {
             AgentEngine.pluginMap.get(rm.getParam("dst_plugin")).Message(rm);
-        } catch (Exception ex) {
-            System.out.println("AgentEngine : sendToPlugin : " + ex.getMessage());
+        } catch (Exception e) {
+            System.out.println("AgentEngine : sendToPlugin : " + e.getMessage());
         }
     }
 
