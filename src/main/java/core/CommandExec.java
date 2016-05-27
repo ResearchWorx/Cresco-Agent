@@ -241,20 +241,20 @@ public class CommandExec {
 
     private void logMessage(MsgEvent log) {
         String logMessage = "[" + log.getParam("src_plugin") + ": " + AgentEngine.pluginsconfig.getPluginName(log.getParam("src_plugin")) + "] - " + log.getMsgBody();
-        switch (log.getParam("log_level")) {
-            case "Error":
+        switch (log.getParam("log_level").toLowerCase()) {
+            case "error":
                 logMessages.error(logMessage);
                 break;
-            case "Warn":
+            case "warn":
                 logMessages.warn(logMessage);
                 break;
-            case "Info":
+            case "info":
                 logMessages.info(logMessage);
                 break;
-            case "Debug":
+            case "debug":
                 logMessages.debug(logMessage);
                 break;
-            case "Trace":
+            case "trace":
                 logMessages.trace(logMessage);
                 break;
             default:

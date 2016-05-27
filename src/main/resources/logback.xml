@@ -22,7 +22,7 @@
 		<appender-ref ref="STDOUT" />
 	</logger>
 
-	<logger name="Logging" level="info" additivity="false">
+	<logger name="Logging" level="trace" additivity="false">
 		<appender-ref ref="STDOUT" />
 	</logger>
 

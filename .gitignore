@@ -3,3 +3,5 @@
 *.sh
 *.iml
 .idea/
+*.key
+*.pem*
