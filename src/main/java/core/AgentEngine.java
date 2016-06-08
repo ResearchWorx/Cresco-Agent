@@ -180,7 +180,7 @@ public class AgentEngine {
                 }
             } catch (java.util.NoSuchElementException nse) {
                 //Ignore if no stdin
-                System.out.println("Agent Startup Complete.");
+                coreLogger.info("Agent Startup Complete.");
                 noConsole = true;
             }
 
@@ -192,8 +192,6 @@ public class AgentEngine {
                     Thread.sleep(1000);
                 }
             }
-            //Die here
-            System.out.println("SYSTEM EXIT");
             System.exit(0);
 
 
@@ -359,7 +357,7 @@ public class AgentEngine {
 
             //Notify log that agent has started
             String msg = "Agent Core (" + agentVersion + ") Started";
-            clog.info(msg);
+            coreLogger.info(msg);
 
         } else {
             System.out.println("Agent is a Zombie!\nNo Active Log or Control Channels!\nAgent will now shutdown.");
@@ -488,14 +486,14 @@ public class AgentEngine {
             File f = new File(plugin_config_file);
             if (!f.exists()) {
                 String msg = "The specified configuration file: " + plugin_config_file + " is invalid";
-                clog.error(msg);
+                pluginsLogger.error(msg);
                 System.exit(1);
             }
             pluginsconfig = new ConfigPlugins(plugin_config_file);
 
         } catch (Exception ex) {
             String msg = "Failed to Process Plugins: Agent=" + AgentEngine.agent + " ERROR:" + ex.toString();
-            clog.error(msg);
+            pluginsLogger.error(msg);
         }
     }
 
@@ -517,11 +515,11 @@ public class AgentEngine {
                 }
             } else {
                 String msg = "No static plugins to load!";
-                clog.error(msg);
+                pluginsLogger.error(msg);
             }
         } catch (Exception ex) {
             String msg = "Failed to Process Plugins: Agent=" + AgentEngine.agent + " ERROR:" + ex.toString();
-            clog.error(msg);
+            pluginsLogger.error(msg);
         }
     }
 
