@@ -100,6 +100,8 @@ public class MsgRoute implements Runnable {
             AgentEngine.pluginMap.get(rm.getParam("dst_plugin")).Message(rm);
         } catch (Exception e) {
             System.out.println("AgentEngine : sendToPlugin : " + e.getMessage());
+            e.printStackTrace();
+            System.out.println(rm.getParams());
         }
     }
 

@@ -58,6 +58,9 @@ public class CommandExec {
                         ce.setMsgBody("Added Plugin:" + plugin);
                     }
                     return ce;
+                } else if (ce.getParam("configtype").equals("activeplugininventory")) {
+
+
                 } else if (ce.getParam("configtype").equals("plugininventory")) {
                     String pluginList = "";
                     File jarLocation = new File(AgentEngine.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
