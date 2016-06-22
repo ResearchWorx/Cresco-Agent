@@ -97,7 +97,16 @@ public class MsgRoute implements Runnable {
 
     private void sendToPlugin() {
         try {
-            AgentEngine.pluginMap.get(rm.getParam("dst_plugin")).Message(rm);
+            if(rm.getParam("dst_plugin") != null) {
+                if(AgentEngine.pluginMap.containsKey(rm.getParam("dst_plugin"))) {
+                    AgentEngine.pluginMap.get(rm.getParam("dst_plugin")).Message(rm);
+                } else {
+                    System.out.println("ERROR : sendToPlugin : Plugin=" + rm.getParam("dst_plugin") + " not found");
+                }
+            } else {
+                System.out.println("ERROR : sendToPlugin : no dst_plugin found in MsgEvent");
+            }
+
         } catch (Exception e) {
             System.out.println("AgentEngine : sendToPlugin : " + e.getMessage());
             e.printStackTrace();
