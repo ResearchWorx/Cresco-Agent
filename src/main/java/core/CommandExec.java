@@ -173,7 +173,7 @@ public class CommandExec {
                     String activePluginList = "";
                     List<String> activePlugins = AgentEngine.getActivePlugins();
                     for(String pluginName : activePlugins) {
-                        activePluginList += pluginName +",";
+                        activePluginList += pluginName + "=" + AgentEngine.pluginsconfig.getPluginName(pluginName) +",";
                     }
                     if(activePluginList.length() > 1) {
                         activePluginList = activePluginList.substring(0, activePluginList.length() - 1);
