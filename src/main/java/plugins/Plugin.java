@@ -32,8 +32,8 @@ public class Plugin {
         this.jarPath = jarPath;
         Manifest manifest = new JarInputStream(new FileInputStream(new File(this.jarPath))).getManifest();
         Attributes mainAttributess = manifest.getMainAttributes();
-        this.name = mainAttributess.getValue("artifactId");
-        this.version = mainAttributess.getValue("Implementation-Version");
+        name = mainAttributess.getValue("artifactId");
+        version = mainAttributess.getValue("Implementation-Version");
         URL url = new File(jarPath).toURI().toURL();
         URLClassLoader loader = new URLClassLoader(new URL[] {new File(jarPath).toURI().toURL()}, this.getClass().getClassLoader());
         ResourceFinder finder = new ResourceFinder("META-INF/services", loader, url);
@@ -41,12 +41,32 @@ public class Plugin {
         instance = plugin.newInstance();
     }
 
+    public void PreStart() {
+        String methodName = "preStart";
+        try {
+            Method method = instance.getClass().getMethod(methodName);
+            try {
+                method.invoke(instance);
+            } catch (IllegalArgumentException e) {
+                logger.error("Plugin [{}] Illegal Argument Exception: [{}] method invoked using illegal arguments [{}]", pluginID, methodName, e.getMessage());
+            } catch (IllegalAccessException e) {
+                logger.error("Plugin [{}] Illegal Access Exception: [{}] method invoked without access [{}]", pluginID, methodName, e.getMessage());
+            } catch (InvocationTargetException e) {
+                logger.error("Plugin [{}] Invocation Exception: [{}] method invoked on incorrect target [{}]", pluginID, methodName, e.getMessage());
+            }
+        } catch (SecurityException e) {
+            logger.error("Plugin [{}] Method Exception: [{}] method security level exceeded [{}]", pluginID, methodName, e.getMessage());
+        } catch (NoSuchMethodException e) {
+            logger.error("Plugin [{}] Method Exception: [{}] method not found [{}]", pluginID, methodName, e.getMessage());
+        }
+    }
+
     public boolean Start(ConcurrentLinkedQueue<MsgEvent> msgQueue, SubnodeConfiguration config, String region, String agent, String pluginID) {
         String methodName = "initialize";
         try {
             Method method = instance.getClass().getSuperclass().getDeclaredMethod(methodName, ConcurrentLinkedQueue.class, SubnodeConfiguration.class, String.class, String.class, String.class);
             try {
-                this.active = (boolean) method.invoke(instance, msgQueue, config, region, agent, pluginID);
+                active = (boolean) method.invoke(instance, msgQueue, config, region, agent, pluginID);
                 return active;
             } catch (IllegalArgumentException e) {
                 logger.error("Plugin [{}] Illegal Argument Exception: [{}] method invoked using illegal arguments [{}]", pluginID, methodName, e.getMessage());
@@ -64,6 +84,26 @@ public class Plugin {
         } catch (NoSuchMethodException e) {
             logger.error("Plugin [{}] Method Exception: [{}] method not found [{}]", pluginID, methodName, e.getMessage());
             return false;
+        }
+    }
+
+    public void PostStart() {
+        String methodName = "postStart";
+        try {
+            Method method = instance.getClass().getMethod(methodName);
+            try {
+                method.invoke(instance);
+            } catch (IllegalArgumentException e) {
+                logger.error("Plugin [{}] Illegal Argument Exception: [{}] method invoked using illegal arguments [{}]", pluginID, methodName, e.getMessage());
+            } catch (IllegalAccessException e) {
+                logger.error("Plugin [{}] Illegal Access Exception: [{}] method invoked without access [{}]", pluginID, methodName, e.getMessage());
+            } catch (InvocationTargetException e) {
+                logger.error("Plugin [{}] Invocation Exception: [{}] method invoked on incorrect target [{}]", pluginID, methodName, e.getMessage());
+            }
+        } catch (SecurityException e) {
+            logger.error("Plugin [{}] Method Exception: [{}] method security level exceeded [{}]", pluginID, methodName, e.getMessage());
+        } catch (NoSuchMethodException e) {
+            logger.error("Plugin [{}] Method Exception: [{}] method not found [{}]", pluginID, methodName, e.getMessage());
         }
     }
 
@@ -90,10 +130,10 @@ public class Plugin {
     public void Stop() {
         String methodName = "shutdown";
         try {
-            Method method = instance.getClass().getMethod("shutdown");
+            Method method = instance.getClass().getMethod(methodName);
             try {
                 method.invoke(instance);
-                this.active = false;
+                active = false;
             } catch (IllegalArgumentException e) {
                 logger.error("Plugin [{}] Illegal Argument Exception: [{}] method invoked using illegal arguments [{}]", pluginID, methodName, e.getMessage());
             } catch (IllegalAccessException e) {
@@ -130,5 +170,33 @@ public class Plugin {
 
     public boolean getActive() {
         return active;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+
+        sb.append("\"id\":\"");
+        sb.append(pluginID);
+        sb.append("\",");
+
+        sb.append("\"jar\":\"");
+        sb.append(jarPath);
+        sb.append("\",");
+
+        sb.append("\"name\":\"");
+        sb.append(name);
+        sb.append("\",");
+
+        sb.append("\"version\":\"");
+        sb.append(version);
+        sb.append("\",");
+
+        sb.append("\"active\":");
+        sb.append(active);
+
+        sb.append("}");
+        return sb.toString();
     }
 }

@@ -556,10 +556,20 @@ public class AgentEngine {
                     pluginsLogger.error("Configuration error - plugin name [{}] does not match configuration {}]", plugin.getName(), pluginsconfig.getPluginName(pluginID));
                     return false;
                 }
+                try {
+                    plugin.PreStart();
+                } catch (Exception e) {
+                    pluginsLogger.error("[{}] - PreStart error - [Exception: {}]", pluginID, e.getMessage());
+                }
                 if (!plugin.Start(msgInQueue, pluginsconfig.getPluginConfig(pluginID), region, agent, pluginID)) {
                     return false;
                 }
                 pluginMap.put(pluginID, plugin);
+                try {
+                    plugin.PostStart();
+                } catch (Exception e) {
+                    pluginsLogger.error("[{}] - PostStart error - [Exception: {}]", pluginID, e.getMessage());
+                }
                 if (save)
                     pluginsconfig.setPluginStatus(pluginID, 1);
                 pluginsLogger.info("[{}] enabled. [Name: {}, Version: {}]", pluginID, plugin.getName(), plugin.getVersion());
@@ -573,7 +583,6 @@ public class AgentEngine {
             } catch (IllegalAccessException e) {
                 pluginsLogger.error("Loading failed - Could not access plugin class [{}].", pluginsconfig.getCPluginClass(pluginID));
             }
-            //System.out.println(msg);
             return false;
         } catch (Exception e) {
             pluginsLogger.error("Loading failed - Exception raised on [{}]: [{}]", pluginID, e.getMessage());
