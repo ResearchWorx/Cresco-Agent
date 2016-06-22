@@ -12,6 +12,7 @@ import java.net.*;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
 
 public class CommandExec {
@@ -167,7 +168,20 @@ public class CommandExec {
                 } else if (ce.getParam("cmd").equals("show_plugins")) {
                     ce.setMsgBody(AgentEngine.listPlugins());
                     return ce;
-                } else if (ce.getParam("cmd").equals("show_version")) {
+                } else if (ce.getParam("cmd").equals("getactiveplugins")) {
+                    //getActivePlugins
+                    String activePluginList = "";
+                    List<String> activePlugins = AgentEngine.getActivePlugins();
+                    for(String pluginName : activePlugins) {
+                        activePluginList += pluginName +",";
+                    }
+                    if(activePluginList.length() > 1) {
+                        activePluginList = activePluginList.substring(0, activePluginList.length() - 1);
+                    }
+                    ce.setParam("activepluginlist",activePluginList);
+
+                    return ce;
+                }else if (ce.getParam("cmd").equals("show_version")) {
                     ce.setMsgBody(AgentEngine.agentVersion);
                     return ce;
                 } else if (ce.getParam("cmd").equals("show_address")) {
