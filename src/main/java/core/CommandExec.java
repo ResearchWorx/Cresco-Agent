@@ -257,7 +257,11 @@ public class CommandExec {
     }
 
     private void logMessage(MsgEvent log) {
-        String logMessage = "[" + log.getParam("src_plugin") + ": " + AgentEngine.pluginsconfig.getPluginName(log.getParam("src_plugin")) + "] - " + log.getMsgBody();
+        String className = log.getParam("full_class");
+        String logMessage = "[" + log.getParam("src_plugin") + ": " + AgentEngine.pluginsconfig.getPluginName(log.getParam("src_plugin")) + "]";
+        if (className != null)
+            logMessage = logMessage + "[" + formatClassName(className) + "]";
+        logMessage = logMessage + " - " + log.getMsgBody();
         switch (log.getParam("log_level").toLowerCase()) {
             case "error":
                 logMessages.error(logMessage);
@@ -278,6 +282,18 @@ public class CommandExec {
                 logMessages.error("Unknown log_level [{}]", log.getParam("log_level"));
                 break;
         }
+    }
+
+    private String formatClassName(String className) {
+        String newName = "";
+        int lastIndex = 0;
+        int nextIndex = className.indexOf(".", lastIndex + 1);
+        while (nextIndex != -1) {
+            newName = newName + className.substring(lastIndex, lastIndex + 1) + ".";
+            lastIndex = nextIndex + 1;
+            nextIndex = className.indexOf(".", lastIndex + 1);
+        }
+        return newName + className.substring(lastIndex);
     }
 
 }
