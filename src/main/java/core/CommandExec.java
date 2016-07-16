@@ -261,7 +261,7 @@ public class CommandExec {
         String logMessage = "[" + log.getParam("src_plugin") + ": " + AgentEngine.pluginsconfig.getPluginName(log.getParam("src_plugin")) + "]";
         if (className != null)
             logMessage = logMessage + "[" + formatClassName(className) + "]";
-        logMessage = logMessage + " - " + log.getMsgBody();
+        logMessage = logMessage + " " + log.getMsgBody();
         switch (log.getParam("log_level").toLowerCase()) {
             case "error":
                 logMessages.error(logMessage);
