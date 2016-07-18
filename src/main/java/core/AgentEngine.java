@@ -1,5 +1,16 @@
 package core;
 
+import channels.MsgInQueue;
+import channels.MsgRoute;
+import channels.RPCCall;
+import com.researchworx.cresco.library.messaging.MsgEvent;
+import com.researchworx.cresco.library.utilities.CLogger;
+import org.apache.commons.configuration.ConfigurationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import plugins.ConfigPlugins;
+import plugins.Plugin;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -12,21 +23,9 @@ import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 
-import channels.MsgRoute;
-import channels.RPCCall;
-import org.apache.commons.configuration.ConfigurationException;
-
-import channels.MsgInQueue;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import plugins.ConfigPlugins;
-import plugins.Plugin;
-import com.researchworx.cresco.library.messaging.MsgEvent;
-import com.researchworx.cresco.library.utilities.CLogger;
-
 public class AgentEngine {
-    private static final Logger coreLogger = LoggerFactory.getLogger("Engine");
-    private static final Logger pluginsLogger = LoggerFactory.getLogger("Plugins");
+    private static Logger coreLogger;// = LoggerFactory.getLogger("Engine");
+    private static Logger pluginsLogger;// = LoggerFactory.getLogger("Plugins");
     public static boolean isActive = false; //agent on/off
     //public static WatchDog wd;
     public static WatchDog wd;
@@ -73,6 +72,11 @@ public class AgentEngine {
         try {
             //Make sure config file
             config = new Config(configFile);
+
+            System.setProperty("cresco.logs.path", config.getLogPath());
+
+            coreLogger = LoggerFactory.getLogger("Engine");
+            pluginsLogger = LoggerFactory.getLogger("Plugins");
 
             coreLogger.info("");
             coreLogger.info("       ________   _______      ________   ________   ________   ________");
