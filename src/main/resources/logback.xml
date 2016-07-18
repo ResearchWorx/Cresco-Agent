@@ -12,57 +12,77 @@
 
 	<appender name="FILE-ENGINE" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${cresco.logs.path}/engine.log</file>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<pattern>
+				%d{yyyy-MM-dd HH:mm:ss} %highlight(%-5level) %7.36logger - %msg%n
+			</pattern>
+		</encoder>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<fileNamePattern>${cresco.logs.path}/engine/%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-			<maxHistory>30</maxHistory>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxHistory>30</maxHistory>
+			</timeBasedFileNamingAndTriggeringPolicy>
 		</rollingPolicy>
-		<encoder>
-			<pattern>%d{yyyy-MM-dd HH:mm:ss} %highlight(%-5level) %7.36logger - %msg%n</pattern>
-		</encoder>
 	</appender>
 
 	<appender name="FILE-PLUGINS" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${cresco.logs.path}/plugins.log</file>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<pattern>
+				%d{yyyy-MM-dd HH:mm:ss} %highlight(%-5level) %7.36logger - %msg%n
+			</pattern>
+		</encoder>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<fileNamePattern>${cresco.logs.path}/plugins/%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-			<maxHistory>30</maxHistory>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxHistory>30</maxHistory>
+			</timeBasedFileNamingAndTriggeringPolicy>
 		</rollingPolicy>
-		<encoder>
-			<pattern>%d{yyyy-MM-dd HH:mm:ss} %highlight(%-5level) %7.36logger - %msg%n</pattern>
-		</encoder>
 	</appender>
 
 	<appender name="FILE-ROUTING" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${cresco.logs.path}/routing.log</file>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<pattern>
+				%d{yyyy-MM-dd HH:mm:ss} %highlight(%-5level) %7.36logger - %msg%n
+			</pattern>
+		</encoder>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<fileNamePattern>${cresco.logs.path}/routing/%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-			<maxHistory>30</maxHistory>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxHistory>30</maxHistory>
+			</timeBasedFileNamingAndTriggeringPolicy>
 		</rollingPolicy>
-		<encoder>
-			<pattern>%d{yyyy-MM-dd HH:mm:ss} %highlight(%-5level) %7.36logger - %msg%n</pattern>
-		</encoder>
 	</appender>
 
 	<appender name="FILE-LOGGING" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${cresco.logs.path}/log-messages.log</file>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<pattern>
+				%d{yyyy-MM-dd HH:mm:ss} %highlight(%-5level) %7.36logger - %msg%n
+			</pattern>
+		</encoder>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<fileNamePattern>${cresco.logs.path}/log-messages/%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-			<maxHistory>30</maxHistory>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxHistory>30</maxHistory>
+			</timeBasedFileNamingAndTriggeringPolicy>
 		</rollingPolicy>
-		<encoder>
-			<pattern>%d{yyyy-MM-dd HH:mm:ss} %highlight(%-5level) %7.36logger - %msg%n</pattern>
-		</encoder>
 	</appender>
 
 	<appender name="FILE-AGENT" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${cresco.logs.path}/root.log</file>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<pattern>
+				%d{yyyy-MM-dd HH:mm:ss} %highlight(%-5level) %7.36logger - %msg%n
+			</pattern>
+		</encoder>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<fileNamePattern>${cresco.logs.path}/root/%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-			<maxHistory>30</maxHistory>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxHistory>30</maxHistory>
+			</timeBasedFileNamingAndTriggeringPolicy>
 		</rollingPolicy>
-		<encoder>
-			<pattern>%d{yyyy-MM-dd HH:mm:ss} %highlight(%-5level) %7.36logger - %msg%n</pattern>
-		</encoder>
 	</appender>
 
 	<logger name="Engine" level="info" additivity="false">
