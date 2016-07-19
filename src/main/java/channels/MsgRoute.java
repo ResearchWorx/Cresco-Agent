@@ -21,10 +21,12 @@ public class MsgRoute implements Runnable {
             }
 
             int routePath = getRoutePath();
-            logger.debug("Routing: Path={}, Type={}, Src={}-{}:{}, Dst={}-{}:{}, Params={}", rm.getMsgType().name(),
-                    rm.getParam("src_region"), rm.getParam("src_agent"), rm.getParam("src_plugin"),
-                    rm.getParam("dst_region"), rm.getParam("dst_agent"), rm.getParam("dst_plugin"),
-                    rm.getParams());
+            if (rm.getMsgType() != MsgEvent.Type.WATCHDOG || rm.getMsgType() != MsgEvent.Type.LOG) {
+                logger.debug("Routing: Path={}, Type={}, Src={}-{}:{}, Dst={}-{}:{}, Params={}", rm.getMsgType().name(),
+                        rm.getParam("src_region"), rm.getParam("src_agent"), rm.getParam("src_plugin"),
+                        rm.getParam("dst_region"), rm.getParam("dst_agent"), rm.getParam("dst_plugin"),
+                        rm.getParams());
+            }
             MsgEvent re = null;
             switch (routePath) {
                 case 52:  //System.out.println("AGENT ROUTE TO EXTERNAL VIA CONTROLLER : 52 "  + rm.getParams());
