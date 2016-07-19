@@ -17,8 +17,8 @@ public class MsgRoute implements Runnable {
     public void run() {
         try {
             logger.debug("Routing: Type={},Src={}-{}:{},Dst={}-{}:{},Params={}", rm.getMsgType().name(),
-                    rm.getParam("src-region"), rm.getParam("src-agent"), rm.getParam("src-plugin"),
-                    rm.getParam("dst-region"), rm.getParam("dst-agent"), rm.getParam("dst-plugin"),
+                    rm.getParam("src_region"), rm.getParam("src_agent"), rm.getParam("src_plugin"),
+                    rm.getParam("dst_region"), rm.getParam("dst_agent"), rm.getParam("dst_plugin"),
                     rm.getParams());
             if (!getTTL()) {
                 return;
@@ -63,6 +63,10 @@ public class MsgRoute implements Runnable {
             }
             if (re != null) {
                 re.setReturn(); //reverse to-from for return
+                logger.debug("Forwarding: Type={},Src={}-{}:{},Dst={}-{}:{},Params={}", re.getMsgType().name(),
+                        re.getParam("src_region"), re.getParam("src_agent"), re.getParam("src_plugin"),
+                        re.getParam("dst_region"), re.getParam("dst_agent"), re.getParam("dst_plugin"),
+                        re.getParams());
                 AgentEngine.msgInQueue.offer(re);
                 //new Thread(new MsgRoute(re)).start();
             }
