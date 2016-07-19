@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 public class CommandExec {
+    private static final Logger coreLogger = LoggerFactory.getLogger("Engine");
     private static final Logger logMessages = LoggerFactory.getLogger("Logging");
 
     public CommandExec() {
@@ -172,16 +173,16 @@ public class CommandExec {
                     //getActivePlugins
                     String activePluginList = "";
                     List<String> activePlugins = AgentEngine.getActivePlugins();
-                    for(String pluginName : activePlugins) {
+                    for (String pluginName : activePlugins) {
                         activePluginList += AgentEngine.pluginsconfig.getPluginName(pluginName) + "=" + pluginName + ",";
                     }
-                    if(activePluginList.length() > 1) {
+                    if (activePluginList.length() > 1) {
                         activePluginList = activePluginList.substring(0, activePluginList.length() - 1);
                     }
-                    ce.setParam("activepluginlist",activePluginList);
+                    ce.setParam("activepluginlist", activePluginList);
 
                     return ce;
-                }else if (ce.getParam("cmd").equals("show_version")) {
+                } else if (ce.getParam("cmd").equals("show_version")) {
                     ce.setMsgBody(AgentEngine.agentVersion);
                     return ce;
                 } else if (ce.getParam("cmd").equals("show_address")) {

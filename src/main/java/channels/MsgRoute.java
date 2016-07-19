@@ -1,11 +1,9 @@
 package channels;
 
-import core.AgentEngine;
 import com.researchworx.cresco.library.messaging.MsgEvent;
+import core.AgentEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.text.SimpleDateFormat;
 
 public class MsgRoute implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger("Routing");
@@ -18,6 +16,10 @@ public class MsgRoute implements Runnable {
 
     public void run() {
         try {
+            logger.debug("Routing: Type={},Src={}-{}:{},Dst={}-{}:{},Params={}", rm.getMsgType().name(),
+                    rm.getParam("src-region"), rm.getParam("src-agent"), rm.getParam("src-plugin"),
+                    rm.getParam("dst-region"), rm.getParam("dst-agent"), rm.getParam("dst-plugin"),
+                    rm.getParams());
             if (!getTTL()) {
                 return;
             }
@@ -56,7 +58,7 @@ public class MsgRoute implements Runnable {
                     if (rm.getMsgType() == MsgEvent.Type.LOG)
                         re = getCommandExec();
                     else
-                        System.out.println("AGENT ROUTE CASE " + routePath + " " + rm.getParams());
+                        logger.debug("AGENT ROUTE CASE " + routePath + " " + rm.getParams());
                     break;
             }
             if (re != null) {
