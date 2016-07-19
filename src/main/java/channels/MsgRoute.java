@@ -76,7 +76,7 @@ public class MsgRoute implements Runnable {
 
         } catch (Exception ex) {
             ex.printStackTrace();
-            System.out.println("Agent : MsgRoute : Route Failed " + ex.toString());
+            logger.error("Agent : MsgRoute : Route Failed " + ex.toString());
         }
 
     }
@@ -90,7 +90,7 @@ public class MsgRoute implements Runnable {
                 return AgentEngine.commandExec.cmdExec(rm);
             }
         } catch (Exception ex) {
-            System.out.println("AgentEngine : MsgRoute : getCommandExec Error : " + ex.getMessage());
+            logger.error("getCommandExec : " + ex.getMessage());
         }
         return null;
     }
@@ -99,7 +99,7 @@ public class MsgRoute implements Runnable {
         try {
             AgentEngine.pluginMap.get(AgentEngine.controllerPluginSlot).Message(rm);
         } catch (Exception e) {
-            System.out.println("AgentEngine : sendToController Error : " + e.getMessage());
+            logger.error("sendToController : " + e.getMessage());
         }
 
     }
@@ -110,16 +110,14 @@ public class MsgRoute implements Runnable {
                 if(AgentEngine.pluginMap.containsKey(rm.getParam("dst_plugin"))) {
                     AgentEngine.pluginMap.get(rm.getParam("dst_plugin")).Message(rm);
                 } else {
-                    System.out.println("ERROR : sendToPlugin : Plugin=" + rm.getParam("dst_plugin") + " not found");
+                    logger.error("sendToPlugin : Plugin=" + rm.getParam("dst_plugin") + " not found");
                 }
             } else {
-                System.out.println("ERROR : sendToPlugin : no dst_plugin found in MsgEvent");
+                logger.error("sendToPlugin : no 'dst_plugin' found in MsgEvent");
             }
-
         } catch (Exception e) {
-            System.out.println("AgentEngine : sendToPlugin : " + e.getMessage());
-            e.printStackTrace();
-            System.out.println(rm.getParams());
+            logger.error("sendToPlugin : " + e.getMessage());
+            logger.debug("Message params: {}", rm.getParams());
         }
     }
 
@@ -167,12 +165,9 @@ public class MsgRoute implements Runnable {
             String routeString = RXr + TXr + RXa + TXa + RXp + TXp;
             routePath = Integer.parseInt(routeString, 2);
         } catch (Exception ex) {
-            System.out.println("AgentEngine : MsgRoute : getRoutePath Error: " + ex.getMessage());
-            ex.printStackTrace();
+            logger.error("getRoutePath : " + ex.getMessage());
             routePath = -1;
         }
-        //System.out.println("AGENT ROUTEPATH=" + routePath + " MsgType=" + rm.getMsgType() + " Params=" + rm.getParams());
-
         return routePath;
     }
 
@@ -184,10 +179,10 @@ public class MsgRoute implements Runnable {
                 int ttlCount = Integer.valueOf(rm.getParam("ttl"));
 
                 if (ttlCount > 10) {
-                    System.out.println("**Agent : MsgRoute : High Loop Count**");
-                    System.out.println("MsgType=" + rm.getMsgType().toString());
-                    System.out.println("Region=" + rm.getMsgRegion() + " Agent=" + rm.getMsgAgent() + " plugin=" + rm.getMsgPlugin());
-                    System.out.println("params=" + rm.getParams());
+                    logger.error("**Agent : MsgRoute : High Loop Count**");
+                    logger.error("MsgType=" + rm.getMsgType().toString());
+                    logger.error("Region=" + rm.getMsgRegion() + " Agent=" + rm.getMsgAgent() + " plugin=" + rm.getMsgPlugin());
+                    logger.error("params=" + rm.getParams());
                     isValid = false;
                 }
 
