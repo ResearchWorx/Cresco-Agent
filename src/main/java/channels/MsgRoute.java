@@ -21,7 +21,7 @@ public class MsgRoute implements Runnable {
             }
 
             int routePath = getRoutePath();
-            if (rm.getMsgType() != MsgEvent.Type.WATCHDOG || rm.getMsgType() != MsgEvent.Type.LOG) {
+            if (rm.getMsgType() != MsgEvent.Type.WATCHDOG && rm.getMsgType() != MsgEvent.Type.LOG) {
                 logger.debug("Routing: Path={}, Type={}, Src={}-{}:{}, Dst={}-{}:{}, Params={}", routePath,
                         rm.getMsgType().name(),
                         rm.getParam("src_region"), rm.getParam("src_agent"), rm.getParam("src_plugin"),
