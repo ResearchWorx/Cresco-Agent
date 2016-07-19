@@ -59,6 +59,8 @@ public class CommandExec {
                     } else {
                         ce.setMsgBody("Added Plugin:" + plugin);
                     }
+                    ce.removeParam("configtype");
+                    ce.removeParam("configparams");
                     return ce;
                 } else if (ce.getParam("configtype").equals("activeplugininventory")) {
 
