@@ -134,6 +134,8 @@ public class CommandExec {
                     //remove configuration
                     AgentEngine.pluginsconfig.removePlugin(ce.getParam("plugin"));
                     ce.setMsgBody("Removed Plugin:" + ce.getParam("plugin"));
+                    ce.removeParam("configtype");
+                    ce.removeParam("plugin");
                     return ce;
                 } else if (ce.getParam("configtype").equals("componentstate")) {
                     if (ce.getMsgBody().equals("disabled")) {

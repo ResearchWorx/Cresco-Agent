@@ -82,11 +82,17 @@ public class MsgRoute implements Runnable {
     }
 
     private MsgEvent getCommandExec() {
+        logger.trace("Call to getCommandExec()");
+        logger.debug("getCommandExec() : rm.getParams() = {}", rm.getParams());
         try {
+            logger.trace("Calculating callId");
             String callId = "callId-" + AgentEngine.region + "_" + AgentEngine.agent; //calculate callID
             if (rm.getParam(callId) != null) { //send message to RPC hash
+                logger.debug("callId={}", callId);
+                logger.trace("Putting on RPC map");
                 AgentEngine.rpcMap.put(rm.getParam(callId), rm);
             } else {
+                logger.trace("Executing message");
                 return AgentEngine.commandExec.cmdExec(rm);
             }
         } catch (Exception ex) {
@@ -105,15 +111,18 @@ public class MsgRoute implements Runnable {
     }
 
     private void sendToPlugin() {
+        logger.trace("Call to sendToPlugin()");
+        logger.debug("sendToPlugin() : rm.getParams() = {}", rm.getParams());
         try {
-            if(rm.getParam("dst_plugin") != null) {
-                if(AgentEngine.pluginMap.containsKey(rm.getParam("dst_plugin"))) {
+            if (rm.getParam("dst_plugin") != null) {
+                if (AgentEngine.pluginMap.containsKey(rm.getParam("dst_plugin"))) {
+                    logger.trace("Sending to plugin");
                     AgentEngine.pluginMap.get(rm.getParam("dst_plugin")).Message(rm);
                 } else {
-                    logger.error("sendToPlugin : Plugin=" + rm.getParam("dst_plugin") + " not found");
+                    logger.trace("sendToPlugin : Plugin=" + rm.getParam("dst_plugin") + " not found, dropping");
                 }
             } else {
-                logger.error("sendToPlugin : no 'dst_plugin' found in MsgEvent");
+                logger.debug("sendToPlugin : no 'dst_plugin' found in MsgEvent, dropping");
             }
         } catch (Exception e) {
             logger.error("sendToPlugin : " + e.getMessage());
