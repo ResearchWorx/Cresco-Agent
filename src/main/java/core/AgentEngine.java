@@ -257,7 +257,7 @@ public class AgentEngine {
             plugin.Message(me); //send msg to plugin
 
             while (!isCommInit) {
-                Thread.sleep(1000);
+                Thread.sleep(10);
             }
             if (isRegionalController)
                 coreLogger.info("Region:[" + AgentEngine.config.getRegion() + "] * Regional Controller *");
