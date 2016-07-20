@@ -5,30 +5,26 @@ import core.AgentEngine;
 
 public class RPCCall {
 
-    public RPCCall()
-    {
+    public RPCCall() {
 
     }
-    public MsgEvent call(MsgEvent me)
-    {
-        try
-        {
+
+    public MsgEvent call(MsgEvent me) {
+        try {
 
             String callId = java.util.UUID.randomUUID().toString();
             me.setParam("callId-" + AgentEngine.region + "_" + AgentEngine.agent, callId);
+            me.setParam("is_rpc", "true");
             AgentEngine.msgInQueue.offer(me);
             int count = 0;
             int timeout = 300;
             boolean isWaiting = true;
-            while(count < timeout)
-            {
-                if(AgentEngine.rpcMap.containsKey(callId))
-                {
+            while (count < timeout) {
+                if (AgentEngine.rpcMap.containsKey(callId)) {
                     MsgEvent ce = null;
 
-                    synchronized (AgentEngine.rpcMap)
-                    {
-                        ce =  AgentEngine.rpcMap.get(callId);
+                    synchronized (AgentEngine.rpcMap) {
+                        ce = AgentEngine.rpcMap.get(callId);
                         AgentEngine.rpcMap.remove(callId);
                     }
 
@@ -39,9 +35,7 @@ public class RPCCall {
             }
 
             return null;
-        }
-        catch(Exception ex)
-        {
+        } catch (Exception ex) {
             System.out.println("Controller : RPCCall : RPC failed " + ex.toString());
             return null;
         }
