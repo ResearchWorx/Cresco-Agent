@@ -95,7 +95,7 @@
 		<appender-ref ref="FILE-PLUGINS" />
 	</logger>
 
-	<logger name="Routing" level="info" additivity="false">
+	<logger name="Routing" level="trace" additivity="false">
 		<appender-ref ref="STDOUT" />
 		<appender-ref ref="FILE-ROUTING" />
 	</logger>
