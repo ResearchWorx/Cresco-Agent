@@ -16,6 +16,10 @@ public class MsgRoute implements Runnable {
 
     public void run() {
         try {
+            if (rm.getMsgType() == MsgEvent.Type.LOG) {
+                getCommandExec();
+                return;
+            }
             if (!getTTL()) {
                 return;
             }
@@ -28,52 +32,80 @@ public class MsgRoute implements Runnable {
                         rm.getParam("dst_region"), rm.getParam("dst_agent"), rm.getParam("dst_plugin"),
                         rm.getParams());
             }
-            MsgEvent re = null;
-            switch (routePath) {
-                case 52:  //System.out.println("AGENT ROUTE TO EXTERNAL VIA CONTROLLER : 52 "  + rm.getParams());
-                    if (rm.getMsgType() == MsgEvent.Type.LOG)
-                        re = getCommandExec();
-                    else
+            if (routePath < 56) {
+                sendToController();
+            } else {
+                MsgEvent re = null;
+                switch (routePath) {
+                    /*case 50:
+                        logger.trace("Case 50: Intra-region, from another agent, to another agent's plugin");
                         sendToController();
-                    break;
-                case 53:  //System.out.println("AGENT REGIONAL WATCHDOG : 53 "  + rm.getParams());
-                    if (rm.getMsgType() == MsgEvent.Type.LOG)
-                        re = getCommandExec();
-                    else
+                        break;
+                    case 51:
+                        logger.trace("Case 51: Intra-region, from another agent's plugin, to another agent's plugin");
                         sendToController();
-                    break;
-                case 56:  //System.out.println("AGENT ROUTE TO COMMANDEXEC : 56 "  + rm.getParams());
-                    re = getCommandExec();
-                    break;
-                case 58:  //System.out.println("AGENT ROUTE CASE 58  " + rm.getParams());
-                    sendToPlugin(); //remote plugin to local plugin
-                    break;
-                case 61:  //System.out.println("AGENT ROUTE TO COMMANDEXEC : 61 "  + rm.getParams());
-                    re = getCommandExec();
-                    break;
-                case 62:  //System.out.println("PLUGIN RPC CALL TO HOST AGENT : 62 " + rm.getParams());
-                    sendToPlugin();
-                    break;
-                case 63: //System.out.println("PLUGIN DIRECT MESSAGE TO ANOTHER PLUGIN ON SAME AGENT : 63 " + rm.getParams());
-                    sendToPlugin();
-                    break;
-                default:
-                    if (rm.getMsgType() == MsgEvent.Type.LOG)
+                        break;
+                    case 52:
+                        logger.trace("Case 52: Intra-region, from this agent, to another agent");
+                        sendToController();
+                        break;
+                    case 53:
+                        logger.trace("Case 53: Intra-region, from this agent, to another agent's plugin");
+                        sendToController();
+                        break;
+                    case 54:
+                        logger.trace("Case 54: Intra-region, from this agent, to another agent's plugin");
+                        sendToController();
+                        break;
+                    case 55:
+                        logger.trace("Case 55: Intra-region, from a plugin on this agent, to a plugin on another agent");
+                        sendToController();
+                        break;*/
+                    case 56:
+                        logger.trace("Case 56: Intra-region, from another agent, to this agent");
                         re = getCommandExec();
-                    else
-                        logger.debug("AGENT ROUTE CASE " + routePath + " " + rm.getParams());
-                    break;
+                        break;
+                    case 57:
+                        logger.trace("Case 57: Intra-region, from another agent's plugin, to this agent");
+                        re = getCommandExec();
+                        break;
+                    case 58:
+                        logger.trace("Case 58: Intra-region, from another agent, to a plugin on this agent");
+                        sendToPlugin();
+                        break;
+                    case 59:
+                        logger.trace("Case 59: Intra-region, from another agent's plugin, to a plugin on this agent");
+                        sendToPlugin();
+                        break;
+                    case 60:
+                        logger.trace("Case 60: Intra-region, intra-agent");
+                        re = getCommandExec();
+                        break;
+                    case 61:
+                        logger.trace("Case 61: Intra-region, intra-agent, plugin to agent");
+                        re = getCommandExec();
+                        break;
+                    case 62:
+                        logger.trace("Case 62: Intra-region, intra-agent, agent to plugin");
+                        sendToPlugin();
+                        break;
+                    case 63:
+                        logger.trace("Case 63: Intra-region, intra-agent, plugin to plugin");
+                        sendToPlugin();
+                        break;
+                    default:
+                        logger.error("Case {}: Unknown route. rm.getParams() = {}", routePath, rm.getParams());
+                        break;
+                }
+                if (re != null) {
+                    re.setReturn();
+                    logger.debug("Forwarding: Type={}, Src={}-{}:{}, Dst={}-{}:{}, Params={}", re.getMsgType().name(),
+                            re.getParam("src_region"), re.getParam("src_agent"), re.getParam("src_plugin"),
+                            re.getParam("dst_region"), re.getParam("dst_agent"), re.getParam("dst_plugin"),
+                            re.getParams());
+                    AgentEngine.msgInQueue.offer(re);
+                }
             }
-            if (re != null) {
-                re.setReturn(); //reverse to-from for return
-                logger.debug("Forwarding: Type={}, Src={}-{}:{}, Dst={}-{}:{}, Params={}", re.getMsgType().name(),
-                        re.getParam("src_region"), re.getParam("src_agent"), re.getParam("src_plugin"),
-                        re.getParam("dst_region"), re.getParam("dst_agent"), re.getParam("dst_plugin"),
-                        re.getParams());
-                AgentEngine.msgInQueue.offer(re);
-                //new Thread(new MsgRoute(re)).start();
-            }
-
         } catch (Exception ex) {
             ex.printStackTrace();
             logger.error("Agent : MsgRoute : Route Failed " + ex.toString());

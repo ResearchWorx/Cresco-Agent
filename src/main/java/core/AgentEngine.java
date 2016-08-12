@@ -24,10 +24,9 @@ import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 
 public class AgentEngine {
-    private static Logger coreLogger;// = LoggerFactory.getLogger("Engine");
-    private static Logger pluginsLogger;// = LoggerFactory.getLogger("Plugins");
-    public static boolean isActive = false; //agent on/off
-    //public static WatchDog wd;
+    private static Logger coreLogger;
+    private static Logger pluginsLogger;
+    public static boolean isActive = false;
     public static WatchDog wd;
     public static boolean hasChannel = false;
     public static String channelPluginSlot;
@@ -95,7 +94,6 @@ public class AgentEngine {
             msgInProcessQueue = Executors.newFixedThreadPool(4);
             //create logger and base queue
             msgInQueue = new ConcurrentLinkedQueue<>();
-            //msgOutQueue = new ConcurrentLinkedQueue<>();
             rpcMap = new ConcurrentHashMap<>();
 
             //Cleanup on Shutdown
@@ -531,12 +529,19 @@ public class AgentEngine {
         try {
             if (pluginMap.containsKey(pluginID)) {
                 Plugin plugin = pluginMap.get(pluginID);
-                plugin.Stop();
-                pluginsLogger.info("[{}] disabled. [Name: {}, Version: {}]", pluginID, plugin.getName(), plugin.getVersion());
-                pluginMap.remove(pluginID);
-                if (save)
-                    pluginsconfig.setPluginStatus(pluginID, 0);
-                return true;
+                if (plugin.Stop()) {
+                    pluginsLogger.trace("Starting sleep");
+                    Thread.sleep(1000);
+                    pluginsLogger.trace("Finishing sleep");
+                    pluginsLogger.info("[{}] disabled. [Name: {}, Version: {}]", pluginID, plugin.getName(), plugin.getVersion());
+                    pluginMap.remove(pluginID);
+                    if (save)
+                        pluginsconfig.setPluginStatus(pluginID, 0);
+                    return true;
+                } else {
+                    pluginsLogger.error("[{}] failed to shutdown. [Name: {}, Version: {}]", pluginID, plugin.getName(), plugin.getVersion());
+                    return false;
+                }
             } else {
                 pluginsLogger.error("[{}] is not currently enabled.", pluginID);
                 return false;
@@ -725,11 +730,12 @@ public class AgentEngine {
 		        	it.remove(); // avoids a ConcurrentModificationException
 		    	}
 	   	    }
-	   	    */
+
             if (!isRegionalController) {
                 for (String plugin : pluginList) {
                     if (!plugin.equals(channelPluginSlot)) {
                         disablePlugin(plugin, false);
+                        Thread.sleep(2000);
                     }
                 }
                 if (msgInQueue != null) {
@@ -773,16 +779,17 @@ public class AgentEngine {
 				    		time++;
 				    	}
 			    	}
-			    	*/
+
 
                 }
-            } else {
+            } else {*/
                 //cleanup controller here
                 for (String plugin : pluginList) {
-                    disablePlugin(plugin, false);
+                    if (disablePlugin(plugin, false)) {
+                        pluginsLogger.info("{} is shutdown", plugin);
+                    }
                 }
-
-            }
+            //}
         } catch (Exception ex) {
             ex.printStackTrace();
             System.out.println("Shutdown Error: " + ex.getMessage());
