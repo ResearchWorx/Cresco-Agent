@@ -1,16 +1,11 @@
 package plugins;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
+import core.AgentEngine;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalINIConfiguration;
 import org.apache.commons.configuration.SubnodeConfiguration;
 
-import core.AgentEngine;
+import java.util.*;
 
 public class ConfigPlugins {
 
@@ -80,6 +75,19 @@ public class ConfigPlugins {
             System.out.println("Controller : PluginConfig : buildconfig ERROR : " + ex.toString());
         }
         return configMap;
+    }
+
+    public List<String> getPluginList() {
+        //isEnabled : 0=disabled , 1 enabled
+
+        List<String> enabledPlugins = new ArrayList<>();
+        SubnodeConfiguration sObj = iniConfObj.getSection("plugins");
+        Iterator it = sObj.getKeys();
+        while (it.hasNext()) {
+            Object key = it.next();
+            enabledPlugins.add(key.toString());
+        }
+        return enabledPlugins;
     }
 
     public List<String> getPluginList(int isEnabled) {

@@ -45,6 +45,16 @@
 			<artifactId>logback-classic</artifactId>
 			<version>${logback.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.5.2</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.5</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -85,7 +95,7 @@
 							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
 						</manifest>
 						<manifestEntries>
-							<artifactId>cresco-skeleton-plugin</artifactId>
+							<artifactId>cresco-agent</artifactId>
 							<Implementation-Version>${project.version}.${buildNumber}.${maven.build.timestamp}</Implementation-Version>
 						</manifestEntries>
 					</archive>

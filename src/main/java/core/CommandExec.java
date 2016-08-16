@@ -1,7 +1,7 @@
 package core;
 
-import org.apache.commons.configuration.ConfigurationException;
 import com.researchworx.cresco.library.messaging.MsgEvent;
+import org.apache.commons.configuration.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,8 +12,11 @@ import java.net.*;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import static core.AgentEngine.pluginsconfig;
 
 public class CommandExec {
     private static final Logger coreLogger = LoggerFactory.getLogger("Engine");
@@ -47,15 +50,15 @@ public class CommandExec {
                     }
                     return null;
                 } else if (ce.getParam("configtype").equals("pluginadd")) {
-                    Map<String, String> hm = AgentEngine.pluginsconfig.buildPluginMap(ce.getParam("configparams"));
+                    Map<String, String> hm = pluginsconfig.buildPluginMap(ce.getParam("configparams"));
 
                     hm.remove("configtype");
-                    String plugin = AgentEngine.pluginsconfig.addPlugin(hm);
+                    String plugin = pluginsconfig.addPlugin(hm);
                     ce.setParam("plugin", plugin);
                     boolean isEnabled = AgentEngine.enablePlugin(plugin, false);
                     if (!isEnabled) {
                         ce.setMsgBody("Failed to Add Plugin:" + plugin);
-                        AgentEngine.pluginsconfig.removePlugin(plugin);
+                        pluginsconfig.removePlugin(plugin);
                     } else {
                         ce.setMsgBody("Added Plugin:" + plugin);
                     }
@@ -66,32 +69,44 @@ public class CommandExec {
 
 
                 } else if (ce.getParam("configtype").equals("plugininventory")) {
-                    String pluginList = "";
-                    File jarLocation = new File(AgentEngine.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
-                    String parentDirName = jarLocation.getParent(); // to get the parent dir name
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("[");
+                    int pluginsFound = 0;
+                    for (int i = 0; i < 1000; i++) {
+                        String plugin = "plugin/" + i;
+                        if (AgentEngine.pluginsconfig.getPluginName(plugin) == null)
+                            continue;
 
-                    File folder = new File(parentDirName + "/plugins");
-                    if (folder.exists()) {
-                        File[] listOfFiles = folder.listFiles();
+                        pluginsFound++;
 
-                        for (int i = 0; i < listOfFiles.length; i++) {
-                            if (listOfFiles[i].isFile()) {
-                                System.out.println("Found Plugin: " + listOfFiles[i].getName());
-                                pluginList = pluginList + listOfFiles[i].getName() + ",";
-                            }
+                        sb.append("{\"id\":\"");
+                        sb.append(plugin);
+                        sb.append("\",");
 
+                        sb.append("\"status\":");
+                        sb.append(String.valueOf(AgentEngine.pluginsconfig.getPluginStatus(plugin)));
+                        sb.append(",");
+
+                        sb.append("\"config\":{");
+                        boolean hasKeys = false;
+                        Iterator<String> keys = AgentEngine.pluginsconfig.getPluginConfig(plugin).getKeys();
+                        while (keys.hasNext()) {
+                            hasKeys = true;
+                            String key = keys.next();
+                            sb.append("\"");
+                            sb.append(key);
+                            sb.append("\":\"");
+                            sb.append(AgentEngine.pluginsconfig.getPluginConfig(plugin).getString(key));
+                            sb.append("\",");
                         }
-                        if (pluginList.length() > 0) {
-                            pluginList = pluginList.substring(0, pluginList.length() - 1);
-                            System.out.println("pluginList=" + pluginList);
-                            ce.setParam("pluginlist", pluginList);
-                            ce.setMsgBody("There were " + listOfFiles.length + " plugins found.");
-                        }
-
-                    } else {
-                        ce.setMsgBody("No plugin directory exist to inventory");
+                        if (hasKeys)
+                            sb.deleteCharAt(sb.lastIndexOf(","));
+                        sb.append("}},");
                     }
-
+                    sb.append("]");
+                    if (pluginsFound > 0)
+                        sb.deleteCharAt(sb.lastIndexOf(","));
+                    ce.setParam("pluginlist", sb.toString());
                     return ce;
                 } else if (ce.getParam("configtype").equals("plugindownload")) {
                     try {
@@ -132,7 +147,7 @@ public class CommandExec {
                     //disable if active
                     AgentEngine.disablePlugin(ce.getParam("plugin"), true);
                     //remove configuration
-                    AgentEngine.pluginsconfig.removePlugin(ce.getParam("plugin"));
+                    pluginsconfig.removePlugin(ce.getParam("plugin"));
                     ce.setMsgBody("Removed Plugin:" + ce.getParam("plugin"));
                     ce.removeParam("configtype");
                     ce.removeParam("plugin");
@@ -178,7 +193,7 @@ public class CommandExec {
                     String activePluginList = "";
                     List<String> activePlugins = AgentEngine.getActivePlugins();
                     for (String pluginName : activePlugins) {
-                        activePluginList += AgentEngine.pluginsconfig.getPluginName(pluginName) + "=" + pluginName + ",";
+                        activePluginList += pluginsconfig.getPluginName(pluginName) + "=" + pluginName + ",";
                     }
                     if (activePluginList.length() > 1) {
                         activePluginList = activePluginList.substring(0, activePluginList.length() - 1);
@@ -263,7 +278,7 @@ public class CommandExec {
 
     private void logMessage(MsgEvent log) {
         String className = log.getParam("full_class");
-        String logMessage = "[" + log.getParam("src_plugin") + ": " + AgentEngine.pluginsconfig.getPluginName(log.getParam("src_plugin")) + "]";
+        String logMessage = "[" + log.getParam("src_plugin") + ": " + pluginsconfig.getPluginName(log.getParam("src_plugin")) + "]";
         if (className != null)
             logMessage = logMessage + "[" + formatClassName(className) + "]";
         logMessage = logMessage + " " + log.getMsgBody();

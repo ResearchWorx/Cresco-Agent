@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import plugins.ConfigPlugins;
 import plugins.Plugin;
+import plugins.PluginManager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -63,6 +64,8 @@ public class AgentEngine {
     public static CLogger clog;
 
     public static DelayedShutdown ds; //delayed shutdown command
+
+    public static PluginManager pluginManager;
 
     public static void main(String[] args) throws Exception {
         //Make sure initial input is sane.
@@ -258,10 +261,10 @@ public class AgentEngine {
                 Thread.sleep(10);
             }
             if (isRegionalController)
-                coreLogger.info("Region:[" + AgentEngine.config.getRegion() + "] * Regional Controller *");
+                coreLogger.info("Region: [" + AgentEngine.config.getRegion() + "] * Regional Controller *");
             else
-                coreLogger.info("Region:[" + AgentEngine.config.getRegion() + "]");
-            coreLogger.info("Agent:[" + AgentEngine.config.getAgentName() + "]");
+                coreLogger.info("Region: [" + AgentEngine.config.getRegion() + "]");
+            coreLogger.info(" Agent: [" + AgentEngine.config.getAgentName() + "]");
         }
 
     }
