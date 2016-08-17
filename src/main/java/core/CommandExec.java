@@ -127,7 +127,7 @@ public class CommandExec {
 
                         File pluginFileObject = new File(pluginFile);
                         if (!pluginFileObject.exists() || forceDownload) {
-                            FileOutputStream fos = new FileOutputStream(AgentEngine.config.getPluginPath() + ce.getParam("plugin"));
+                            FileOutputStream fos = new FileOutputStream(pluginFile);
 
                             fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
                             fos.close();
