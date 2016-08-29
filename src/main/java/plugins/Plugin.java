@@ -127,13 +127,12 @@ public class Plugin {
         }
     }
 
-    public boolean Stop() {
+    public void Stop() {
         String methodName = "shutdown";
         try {
             Method method = instance.getClass().getSuperclass().getDeclaredMethod(methodName);
             try {
                 method.invoke(instance);
-                active = false;
             } catch (IllegalArgumentException e) {
                 logger.error("Plugin [{}] Illegal Argument Exception: [{}] method invoked using illegal arguments [{}]", pluginID, methodName, e.getMessage());
             } catch (IllegalAccessException e) {
@@ -146,7 +145,6 @@ public class Plugin {
         } catch (NoSuchMethodException e) {
             logger.error("Plugin [{}] Method Exception: [{}] method not found [{}]", pluginID, methodName, e.getMessage());
         }
-        return active;
     }
 
     public void Dispose() {
