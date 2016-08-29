@@ -132,7 +132,8 @@ public class Plugin {
         try {
             Method method = instance.getClass().getSuperclass().getDeclaredMethod(methodName);
             try {
-                active = (boolean) method.invoke(instance);
+                method.invoke(instance);
+                active = false;
             } catch (IllegalArgumentException e) {
                 logger.error("Plugin [{}] Illegal Argument Exception: [{}] method invoked using illegal arguments [{}]", pluginID, methodName, e.getMessage());
             } catch (IllegalAccessException e) {
