@@ -532,19 +532,17 @@ public class AgentEngine {
         try {
             if (pluginMap.containsKey(pluginID)) {
                 Plugin plugin = pluginMap.get(pluginID);
-                if (plugin.Stop()) {
-                    pluginsLogger.trace("Starting sleep");
-                    Thread.sleep(1000);
-                    pluginsLogger.trace("Finishing sleep");
+                //if (plugin.Stop()) {
+                    plugin.Stop();
                     pluginsLogger.info("[{}] disabled. [Name: {}, Version: {}]", pluginID, plugin.getName(), plugin.getVersion());
                     pluginMap.remove(pluginID);
                     if (save)
                         pluginsconfig.setPluginStatus(pluginID, 0);
                     return true;
-                } else {
+                /*} else {
                     pluginsLogger.error("[{}] failed to shutdown. [Name: {}, Version: {}]", pluginID, plugin.getName(), plugin.getVersion());
                     return false;
-                }
+                }*/
             } else {
                 pluginsLogger.error("[{}] is not currently enabled.", pluginID);
                 return false;
