@@ -22,14 +22,13 @@ public class WatchDog {
 	      wdMap = new HashMap<>(); //for sending future WD messages
 	      
 	      AgentEngine.watchDogActive = true;
-	      MsgEvent le = new MsgEvent(MsgEvent.Type.CONFIG,AgentEngine.config.getRegion(),null,null,"enabled");
-	      le.setParam("src_region", AgentEngine.region);
+	      MsgEvent le = new MsgEvent(MsgEvent.Type.CONFIG,AgentEngine.config.getRegion(),null,null,"enable agent");
+		  le.setParam("src_region", AgentEngine.region);
 		  le.setParam("src_agent", AgentEngine.agent);
 		  le.setParam("dst_region", AgentEngine.region);
-		  le.setParam("watchdogmessage","WatchDog timer set to " + AgentEngine.config.getWatchDogTimer() + " milliseconds");
-		  //AgentEngine.msgIn(le);
-		  //AgentEngine.clog.log(le);
-          AgentEngine.msgInQueue.offer(le);
+		  le.setParam("is_active", Boolean.TRUE.toString());
+		  le.setParam("watchdog_rate",String.valueOf(AgentEngine.config.getWatchDogTimer()));
+		  AgentEngine.msgInQueue.offer(le);
 	  }
 
 
