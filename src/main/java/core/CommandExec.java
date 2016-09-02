@@ -36,16 +36,27 @@ public class CommandExec {
                 //if ((ce.getMsgBody() != null) && (ce.getParam("set_region") != null) && (ce.getParam("set_agent") != null)) {
                 if (ce.getParam("configtype").equals("comminit")) {
                     if (Boolean.parseBoolean(ce.getParam("is_active"))) {
+                        //init startup
                         AgentEngine.region = ce.getParam("set_region");
                         if (!AgentEngine.config.getGenerateRegion())
                             AgentEngine.config.setRegionName(AgentEngine.region);
                         AgentEngine.agent = ce.getParam("set_agent");
                         if (!AgentEngine.config.getGenerateName())
                             AgentEngine.config.setAgentName(AgentEngine.agent);
+                        //IS COMMINIT?
                         AgentEngine.isCommInit = true;
                         if (Boolean.parseBoolean(ce.getParam("is_regional_controller"))) {
                             AgentEngine.isRegionalController = true;
                         }
+                    } else {
+                        //System.out.println("CODY [" + ce.getParams().toString() + "]");
+                        //failover startup
+                        AgentEngine.region = ce.getParam("set_region");
+                        AgentEngine.agent = ce.getParam("set_agent");
+                        if (Boolean.parseBoolean(ce.getParam("is_regional_controller"))) {
+                            AgentEngine.isRegionalController = true;
+                        }
+                        AgentEngine.LoadWatchDog();
 
                     }
                     return null;

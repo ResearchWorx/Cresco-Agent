@@ -142,8 +142,19 @@ public class AgentEngine {
 
             LoadControllerPlugin();
 
+            wd = new WatchDog();
+
+            while(!watchDogActive)
+            {
+                //just sleep until isActive=false
+                //need to add ability to control other threads here.
+                //need to add upgrade ability
+                Thread.sleep(1000);
+            }
+
             isActive = true;
             enableStaticPlugins();
+
 
             Scanner scanner = new Scanner(System.in);
             boolean noConsole = false;
@@ -189,6 +200,8 @@ public class AgentEngine {
                 noConsole = true;
             }
 
+
+
 			if(noConsole) {
                 while (isActive) {
                     //just sleep until isActive=false
@@ -199,42 +212,27 @@ public class AgentEngine {
             }
             System.exit(0);
 
-
-            //set version name
-            agentVersion = getVersion();
-            //set region and agent
-            agent = config.getAgentName();
-            region = config.getRegion();
-
-            clog = new CLogger(msgInQueue, region, agent, null, CLogger.Level.Info);
-
-            //if channel was not configured during startup try and establish
-            if (!hasChannel) {
-                getChannel(); //currently AMPQ and REST plugins
-            }
-
-            //if controller was not configured during startup try and establish
-            if (!ControllerActive) {
-                getController();
-            }
-
-            //start core watchdog
-            //wd = new WatchDog();
-	    	/*
-        	while(isActive) 
-    	   {
-        	   //just sleep until isActive=false
-        		//need to add ability to control other threads here.
-        		//need to add upgrade ability
-        		Thread.sleep(1000);
-    	   }
-        	*/
-            System.exit(0);
-        } catch (Exception e) {
+            } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Error AgentCore: " + e.getMessage());
         } finally {
             System.out.println("Agent : Main :Finally Statement");
+        }
+    }
+
+    public static void LoadWatchDog() {
+        try {
+            if(wd != null) {
+                wd.shutdown(false);
+            }
+            wd = new WatchDog();
+
+            while (!watchDogActive) {
+                Thread.sleep(1000);
+            }
+        }
+        catch(Exception ex) {
+            System.out.println("FAILED TO LOADWatchDog!");
         }
     }
 
@@ -703,12 +701,7 @@ public class AgentEngine {
             coreLogger.info("Shutdown initiated");
             //wd.timer.cancel();
 
-            MsgEvent de = new MsgEvent(MsgEvent.Type.CONFIG, AgentEngine.config.getRegion(), null, null, "disabled");
-            de.setParam("src_region", region);
-            de.setParam("src_agent", agent);
-            de.setParam("dst_region", region);
-            //AgentEngine.commandExec.cmdExec(de);
-            AgentEngine.msgInQueue.offer(de);
+            wd.shutdown(true);
 
             List<String> pluginList = getActivePlugins();
 	   	    /*

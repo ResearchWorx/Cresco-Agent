@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import channels.RPCCall;
 import com.researchworx.cresco.library.messaging.MsgEvent;
 
 
@@ -21,7 +22,6 @@ public class WatchDog {
 	      timer.scheduleAtFixedRate(new WatchDogTask(), 500, AgentEngine.config.getWatchDogTimer());
 	      wdMap = new HashMap<>(); //for sending future WD messages
 	      
-	      AgentEngine.watchDogActive = true;
 	      MsgEvent le = new MsgEvent(MsgEvent.Type.CONFIG,AgentEngine.config.getRegion(),null,null,"enabled");
 		  le.setParam("src_region", AgentEngine.region);
 		  le.setParam("src_agent", AgentEngine.agent);
@@ -29,9 +29,22 @@ public class WatchDog {
 		  le.setParam("is_active", Boolean.TRUE.toString());
 		  le.setParam("watchdog_rate",String.valueOf(AgentEngine.config.getWatchDogTimer()));
 		  AgentEngine.msgInQueue.offer(le);
+          AgentEngine.watchDogActive = true;
+      }
 
-	  }
-
+      public void shutdown(boolean unregister) {
+          if(!AgentEngine.isRegionalController && unregister) {
+              MsgEvent le = new MsgEvent(MsgEvent.Type.CONFIG, AgentEngine.config.getRegion(), null, null, "disabled");
+              le.setParam("src_region", AgentEngine.region);
+              le.setParam("src_agent", AgentEngine.agent);
+              le.setParam("dst_region", AgentEngine.region);
+              le.setParam("is_active", Boolean.FALSE.toString());
+              le.setParam("watchdog_rate", String.valueOf(AgentEngine.config.getWatchDogTimer()));
+              MsgEvent re = new RPCCall().call(le);
+              System.out.println("RPC DISABLE: " + re.getMsgBody() + " [" + re.getParams().toString() + "]");
+          }
+          timer.cancel();
+      }
 
 	class WatchDogTask extends TimerTask 
 	{
