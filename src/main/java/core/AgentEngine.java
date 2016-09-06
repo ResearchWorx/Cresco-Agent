@@ -156,6 +156,7 @@ public class AgentEngine {
             enableStaticPlugins();
 
 
+
             Scanner scanner = new Scanner(System.in);
             boolean noConsole = false;
             try {
