@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import plugins.ConfigPlugins;
 import plugins.Plugin;
 import plugins.PluginManager;
+import sun.management.Agent;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -106,6 +107,7 @@ public class AgentEngine {
                         cleanup();
                     } catch (Exception ex) {
                         coreLogger.error("Exception Shutting Down: {}", ex.getMessage());
+                        ex.printStackTrace();
                     }
                 }
             }, "Shutdown-thread"));
@@ -120,6 +122,7 @@ public class AgentEngine {
                 Thread.sleep(100);
             }
 
+            /*
             if((config.getStringParams("general","agentname") != null) && (config.getStringParams("general","regionname") != null)) {
                 region = config.getStringParams("general","regionname");
                 agent = config.getStringParams("general","agentname");
@@ -128,6 +131,12 @@ public class AgentEngine {
                 region = "init"; //set temp setting to allow routing
                 agent = "init"; //region and agent will come from controller
             }
+            */
+
+            region = "init"; //set temp setting to allow routing
+            agent = "init"; //region and agent will come from controller
+
+
             //Establish  a named map of plugin interfaces
             pluginMap = new ConcurrentHashMap<>();
 
@@ -170,7 +179,7 @@ public class AgentEngine {
 
                     if (input.length() > 0) {
                         try {
-                            String[] sstr = input.split(",");
+                            String[] sstr = input.split("_");
                             //System.out.println("region: " + sstr[0] + " agent=" + sstr[1] + " plugin=" + sstr[2]);
                             //System.out.println("controllerPluginSlot=" + controllerPluginSlot);
                             MsgEvent me = new MsgEvent(MsgEvent.Type.EXEC, region, agent, controllerPluginSlot, "external");
@@ -260,10 +269,10 @@ public class AgentEngine {
                 Thread.sleep(10);
             }
             if (isRegionalController)
-                coreLogger.info("Region: [" + AgentEngine.config.getRegion() + "] * Regional Controller *");
+                coreLogger.info("Region: [" + AgentEngine.region + "] * Regional Controller *");
             else
-                coreLogger.info("Region: [" + AgentEngine.config.getRegion() + "]");
-            coreLogger.info(" Agent: [" + AgentEngine.config.getAgentName() + "]");
+                coreLogger.info("Region: [" + AgentEngine.region + "]");
+            coreLogger.info(" Agent: [" + AgentEngine.agent + "]");
         }
 
     }
@@ -351,9 +360,9 @@ public class AgentEngine {
             }
 
             if (ControllerActive) {
-                System.out.println("Region:" + config.getRegion() + " Controller found:");
+                System.out.println("Region:" + AgentEngine.region + " Controller found:");
             } else {
-                System.out.println("Region:" + config.getRegion() + " *NOT* Controller found:");
+                System.out.println("Region:" + AgentEngine.region + " *NOT* Controller found:");
             }
             //wait until shutdown occures
             isActive = true;
@@ -618,7 +627,8 @@ public class AgentEngine {
             System.err.println(msg);
             version = "Unable to determine Version";
         }
-        return config.getAgentName() + "." + version;
+        //return config.getAgentName() + "." + version;
+        return AgentEngine.agent + "." + version;
     }
 
     //This needs to be redone to account for active but not configured

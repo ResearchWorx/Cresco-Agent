@@ -22,7 +22,7 @@ public class WatchDog {
 	      timer.scheduleAtFixedRate(new WatchDogTask(), 500, AgentEngine.config.getWatchDogTimer());
 	      wdMap = new HashMap<>(); //for sending future WD messages
 	      
-	      MsgEvent le = new MsgEvent(MsgEvent.Type.CONFIG,AgentEngine.config.getRegion(),null,null,"enabled");
+	      MsgEvent le = new MsgEvent(MsgEvent.Type.CONFIG,AgentEngine.region,null,null,"enabled");
 		  le.setParam("src_region", AgentEngine.region);
 		  le.setParam("src_agent", AgentEngine.agent);
 		  le.setParam("dst_region", AgentEngine.region);
@@ -34,7 +34,7 @@ public class WatchDog {
 
       public void shutdown(boolean unregister) {
           if(!AgentEngine.isRegionalController && unregister) {
-              MsgEvent le = new MsgEvent(MsgEvent.Type.CONFIG, AgentEngine.config.getRegion(), null, null, "disabled");
+              MsgEvent le = new MsgEvent(MsgEvent.Type.CONFIG, AgentEngine.region, null, null, "disabled");
               le.setParam("src_region", AgentEngine.region);
               le.setParam("src_agent", AgentEngine.agent);
               le.setParam("dst_region", AgentEngine.region);
@@ -57,7 +57,7 @@ public class WatchDog {
 	    		wdMap.put("runtime", String.valueOf(runTime));
 	    		wdMap.put("timestamp", String.valueOf(System.currentTimeMillis()));
 	    	 
-	    		MsgEvent le = new MsgEvent(MsgEvent.Type.WATCHDOG,AgentEngine.config.getRegion(),null,null,wdMap);
+	    		MsgEvent le = new MsgEvent(MsgEvent.Type.WATCHDOG,AgentEngine.region,null,null,wdMap);
 	    		le.setParam("src_region", AgentEngine.region);
 	  		    le.setParam("src_agent", AgentEngine.agent);
 	  		    le.setParam("dst_region", AgentEngine.region);

@@ -12,7 +12,7 @@ public class DelayedShutdown {
 	  public DelayedShutdown(long delay) {
 		  timer = new Timer();
 	      timer.scheduleAtFixedRate(new ShutdownTasks(), delay, delay);
-	      String msg = "Agent=" + AgentEngine.config.getAgentName() + "Time-delayed Shutdown Started in " + delay + " ms";
+	      String msg = "Agent=" + AgentEngine.agent + "Time-delayed Shutdown Started in " + delay + " ms";
 		  AgentEngine.clog.info(msg);
 	  }
 

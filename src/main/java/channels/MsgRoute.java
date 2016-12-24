@@ -28,18 +28,32 @@ public class MsgRoute implements Runnable {
             int routePath = getRoutePath();
             logger.trace("msgType: [" + rm.getMsgType().toString() + "] routepath: " + routePath + "[" + rm.getParams().toString() + "]");
             if (rm.getMsgType() != MsgEvent.Type.WATCHDOG && rm.getMsgType() != MsgEvent.Type.LOG && rm.getMsgType() != MsgEvent.Type.KPI && rm.getMsgType() != MsgEvent.Type.INFO) {
-                logger.debug("Routing: Path={}, Type={}, Src={}-{}:{}, Dst={}-{}:{}, Params={}", routePath,
+                logger.trace("Routing: Path={}, Type={}, Src={}-{}:{}, Dst={}-{}:{}, Params={}", routePath,
                         rm.getMsgType().name(),
                         rm.getParam("src_region"), rm.getParam("src_agent"), rm.getParam("src_plugin"),
                         rm.getParam("dst_region"), rm.getParam("dst_agent"), rm.getParam("dst_plugin"),
                         rm.getParams());
             }
+            /*
             if (routePath < 56) {
                 sendToController();
             } else {
+              */
                 MsgEvent re = null;
                 switch (routePath) {
-                    /*case 50:
+                    case 0:
+                        logger.trace("Case 0: COMMINIT Message to Controller");
+                        sendToController();
+                        break;
+                    case 20:
+                        logger.trace("Case 20: Inter-region, inter-agent");
+                        re = getCommandExec();
+                        break;
+                    case 48:
+                        logger.trace("Case 48: Agent Message to Controller");
+                        sendToController();
+                        break;
+                    case 50:
                         logger.trace("Case 50: Intra-region, from another agent, to another agent's plugin");
                         sendToController();
                         break;
@@ -62,7 +76,7 @@ public class MsgRoute implements Runnable {
                     case 55:
                         logger.trace("Case 55: Intra-region, from a plugin on this agent, to a plugin on another agent");
                         sendToController();
-                        break;*/
+                        break;
                     case 56:
                         logger.trace("Case 56: Intra-region, from another agent, to this agent");
                         re = getCommandExec();
@@ -107,7 +121,7 @@ public class MsgRoute implements Runnable {
                             re.getParams());
                     AgentEngine.msgInQueue.offer(re);
                 }
-            }
+            //}
         } catch (Exception ex) {
             ex.printStackTrace();
             logger.error("Agent : MsgRoute : Route Failed " + ex.toString());
@@ -137,6 +151,7 @@ public class MsgRoute implements Runnable {
 
     private void sendToController() {
         try {
+            logger.trace("Sending Message To Controller : Slot = " + AgentEngine.controllerPluginSlot);
             AgentEngine.pluginMap.get(AgentEngine.controllerPluginSlot).Message(rm);
         } catch (Exception e) {
             logger.error("sendToController : " + e.getMessage());

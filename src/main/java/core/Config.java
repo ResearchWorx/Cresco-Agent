@@ -76,6 +76,79 @@ public class Config {
         return new File(logPath).getAbsolutePath();
     }
 
+
+    public int getWatchDogTimer() {
+        SubnodeConfiguration sObj = iniConfObj.getSection("general");
+        return sObj.getInt("watchdogtimer");
+    }
+
+    public int getControllerDiscoveryTimeout() {
+        SubnodeConfiguration sObj = iniConfObj.getSection("general");
+        int tmpTime = Math.round(sObj.getInt("controllerdiscoverytimeout"));
+        return tmpTime;
+    }
+
+    public int getLogProducerTimeout() {
+        SubnodeConfiguration sObj = iniConfObj.getSection("general");
+        int tmpTime = Math.round(sObj.getInt("logproducertimeout") / 1000);
+        return tmpTime;
+    }
+
+    public String getPluginConfigFile() {
+        SubnodeConfiguration sObj = iniConfObj.getSection("general");
+        return sObj.getString("plugin_config_file");
+    }
+
+    public String getAMPQControlHost() {
+        SubnodeConfiguration sObj = iniConfObj.getSection("general");
+        return sObj.getString("ampq_control_host");
+    }
+
+    public boolean setAMPQControlHost(String host) throws ConfigurationException {
+        SubnodeConfiguration sObj = iniConfObj.getSection("general");
+        sObj.setProperty("ampq_control_host", host);
+        iniConfObj.save();
+        return true;
+    }
+
+    public String getAMPQControlUser() {
+        SubnodeConfiguration sObj = iniConfObj.getSection("general");
+        return sObj.getString("ampq_control_username");
+    }
+
+    public boolean setAMPQControlUser(String userName) throws ConfigurationException {
+        SubnodeConfiguration sObj = iniConfObj.getSection("general");
+        sObj.setProperty("ampq_control_username", userName);
+        iniConfObj.save();
+        return true;
+    }
+
+    public String getAMPQControlPassword() {
+        SubnodeConfiguration sObj = iniConfObj.getSection("general");
+        return sObj.getString("ampq_control_password");
+    }
+
+    public boolean setAMPQControlPassword(String password) throws ConfigurationException {
+        SubnodeConfiguration sObj = iniConfObj.getSection("general");
+        sObj.setProperty("ampq_control_password", password);
+        iniConfObj.save();
+        return true;
+    }
+
+     /*
+    public String getRegion() {
+        SubnodeConfiguration sObj = iniConfObj.getSection("general");
+        return sObj.getString("regionname");
+    }
+
+    public boolean setRegion(String region) throws ConfigurationException {
+        SubnodeConfiguration sObj = iniConfObj.getSection("general");
+        sObj.setProperty("regionname", region);
+        iniConfObj.save();
+        return true;
+    }
+
+
     public String getAgentName() {
         SubnodeConfiguration sObj = iniConfObj.getSection("general");
         return sObj.getString("agentname");
@@ -122,75 +195,5 @@ public class Config {
         }
         return true;
     }
-
-    public int getWatchDogTimer() {
-        SubnodeConfiguration sObj = iniConfObj.getSection("general");
-        return sObj.getInt("watchdogtimer");
-    }
-
-    public int getControllerDiscoveryTimeout() {
-        SubnodeConfiguration sObj = iniConfObj.getSection("general");
-        int tmpTime = Math.round(sObj.getInt("controllerdiscoverytimeout"));
-        return tmpTime;
-    }
-
-    public int getLogProducerTimeout() {
-        SubnodeConfiguration sObj = iniConfObj.getSection("general");
-        int tmpTime = Math.round(sObj.getInt("logproducertimeout") / 1000);
-        return tmpTime;
-    }
-
-    public String getPluginConfigFile() {
-        SubnodeConfiguration sObj = iniConfObj.getSection("general");
-        return sObj.getString("plugin_config_file");
-    }
-
-    public String getRegion() {
-        SubnodeConfiguration sObj = iniConfObj.getSection("general");
-        return sObj.getString("regionname");
-    }
-
-    public boolean setRegion(String region) throws ConfigurationException {
-        SubnodeConfiguration sObj = iniConfObj.getSection("general");
-        sObj.setProperty("regionname", region);
-        iniConfObj.save();
-        return true;
-    }
-
-    public String getAMPQControlHost() {
-        SubnodeConfiguration sObj = iniConfObj.getSection("general");
-        return sObj.getString("ampq_control_host");
-    }
-
-    public boolean setAMPQControlHost(String host) throws ConfigurationException {
-        SubnodeConfiguration sObj = iniConfObj.getSection("general");
-        sObj.setProperty("ampq_control_host", host);
-        iniConfObj.save();
-        return true;
-    }
-
-    public String getAMPQControlUser() {
-        SubnodeConfiguration sObj = iniConfObj.getSection("general");
-        return sObj.getString("ampq_control_username");
-    }
-
-    public boolean setAMPQControlUser(String userName) throws ConfigurationException {
-        SubnodeConfiguration sObj = iniConfObj.getSection("general");
-        sObj.setProperty("ampq_control_username", userName);
-        iniConfObj.save();
-        return true;
-    }
-
-    public String getAMPQControlPassword() {
-        SubnodeConfiguration sObj = iniConfObj.getSection("general");
-        return sObj.getString("ampq_control_password");
-    }
-
-    public boolean setAMPQControlPassword(String password) throws ConfigurationException {
-        SubnodeConfiguration sObj = iniConfObj.getSection("general");
-        sObj.setProperty("ampq_control_password", password);
-        iniConfObj.save();
-        return true;
-    }
-
+*/
 }

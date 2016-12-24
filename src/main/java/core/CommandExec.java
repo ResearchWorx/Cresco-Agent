@@ -36,17 +36,25 @@ public class CommandExec {
                 //if ((ce.getMsgBody() != null) && (ce.getParam("set_region") != null) && (ce.getParam("set_agent") != null)) {
                 if (ce.getParam("configtype").equals("comminit")) {
                     if (Boolean.parseBoolean(ce.getParam("is_active"))) {
+
                         //init startup
                         AgentEngine.region = ce.getParam("set_region");
+                        /*
                         if (!AgentEngine.config.getGenerateRegion())
                             AgentEngine.config.setRegionName(AgentEngine.region);
+                        */
                         AgentEngine.agent = ce.getParam("set_agent");
+                        /*
                         if (!AgentEngine.config.getGenerateName())
                             AgentEngine.config.setAgentName(AgentEngine.agent);
+                        */
                         //IS COMMINIT?
                         AgentEngine.isCommInit = true;
                         if (Boolean.parseBoolean(ce.getParam("is_regional_controller"))) {
                             AgentEngine.isRegionalController = true;
+                        }
+                        else {
+                            AgentEngine.isRegionalController = false;
                         }
                     } else {
                         //System.out.println("CODY [" + ce.getParams().toString() + "]");
@@ -55,6 +63,9 @@ public class CommandExec {
                         AgentEngine.agent = ce.getParam("set_agent");
                         if (Boolean.parseBoolean(ce.getParam("is_regional_controller"))) {
                             AgentEngine.isRegionalController = true;
+                        }
+                        else {
+                            AgentEngine.isRegionalController = false;
                         }
                         AgentEngine.LoadWatchDog();
 
@@ -178,7 +189,7 @@ public class CommandExec {
                 if (ce.getParam("cmd").equals("show") || ce.getParam("cmd").equals("?") || ce.getParam("cmd").equals("help")) {
 
                     StringBuilder sb = new StringBuilder();
-                    sb.append("\nAgent " + AgentEngine.config.getAgentName() + " Help\n");
+                    sb.append("\nAgent " + AgentEngine.agent + " Help\n");
                     sb.append("-\n");
                     sb.append("help\t\t\t\t Shows This Message\n");
                     sb.append("show address\t\t\t\t Shows IP address of local host\n");
