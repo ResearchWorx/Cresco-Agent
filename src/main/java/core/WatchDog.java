@@ -27,7 +27,7 @@ public class WatchDog {
 		  le.setParam("src_agent", AgentEngine.agent);
 		  le.setParam("dst_region", AgentEngine.region);
 		  le.setParam("is_active", Boolean.TRUE.toString());
-		  le.setParam("watchdog_rate",String.valueOf(AgentEngine.config.getWatchDogTimer()));
+		  le.setParam("watchdogtimer",String.valueOf(AgentEngine.config.getWatchDogTimer()));
 		  AgentEngine.msgInQueue.offer(le);
           AgentEngine.watchDogActive = true;
       }
@@ -39,7 +39,7 @@ public class WatchDog {
               le.setParam("src_agent", AgentEngine.agent);
               le.setParam("dst_region", AgentEngine.region);
               le.setParam("is_active", Boolean.FALSE.toString());
-              le.setParam("watchdog_rate", String.valueOf(AgentEngine.config.getWatchDogTimer()));
+              le.setParam("watchdogtimer", String.valueOf(AgentEngine.config.getWatchDogTimer()));
               MsgEvent re = new RPCCall().call(le);
               System.out.println("RPC DISABLE: " + re.getMsgBody() + " [" + re.getParams().toString() + "]");
           }
