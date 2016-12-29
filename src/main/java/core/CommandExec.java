@@ -95,10 +95,22 @@ public class CommandExec {
                     ce.removeParam("configtype");
                     ce.removeParam("configparams");
                     return ce;
+                } else if (ce.getParam("configtype").equals("plugininventory")) {
+                       //dirty.. fake message from plugin.. so bad
+                       //This needs to be change on the Cresco Library
+                       if(ce.getParam("plugin") != null) {
+                           //send enable message from agent for plugin with configParams
+                           String configParams = pluginsconfig.getPluginConfigParams(ce.getParam("plugin"));
+                           ce.setParam("configparams",configParams);
+                           ce.setParam("dst_plugin",ce.getParam("plugin"));
+                           return ce;
+                       }
+
+
                 } else if (ce.getParam("configtype").equals("activeplugininventory")) {
 
 
-                } else if (ce.getParam("configtype").equals("plugininventory")) {
+                } else if (ce.getParam("configtype").equals("plugininventoryfull")) {
                     StringBuilder sb = new StringBuilder();
                     sb.append("[");
                     int pluginsFound = 0;

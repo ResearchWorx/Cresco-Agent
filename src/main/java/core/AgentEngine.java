@@ -189,7 +189,19 @@ public class AgentEngine {
                         }
 
                     }
+
+                    System.out.println("Plugins:");
+                    List<String> pluginList = pluginsconfig.getPluginList();
+                    for(String pluginId : pluginList) {
+                        System.out.println("PluginId: " + pluginId);
+                        System.out.println("Config: " +  pluginsconfig.getPluginConfigParams(pluginId));
+                    }
+
+
                     System.out.println("Name of Agent to message [q to quit]: ");
+
+
+
                     input = scanner.nextLine();
                 }
             } catch (java.util.NoSuchElementException nse) {

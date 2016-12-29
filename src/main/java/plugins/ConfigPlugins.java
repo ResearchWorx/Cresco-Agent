@@ -106,6 +106,20 @@ public class ConfigPlugins {
         }
         return enabledPlugins;
     }
+    //String configParams = "pluginname=MD5Plugin,jarfile=/opt/Cresco/plugins/cresco-agent-MD5processor-plugin-0.5.0-SNAPSHOT-jar-with-dependencies.jar,ampq_control_host=" + server + ",ampq_control_username=cresco,ampq_control_password=u$cresco01,watchdogtimer=5000,dataqueuedelay=" + delay + ",perfapp=MD5out,dataqueue=md5data,dataqueuedelay=1000,md5producerrate=" + rate + ",enablemd5consumer=1,enablemd5producer=0";
+
+    public String getPluginConfigParams(String pluginID) {
+        StringBuilder sb = new StringBuilder();
+        SubnodeConfiguration sObj = iniConfObj.getSection(pluginID);
+        Iterator it = sObj.getKeys();
+        while (it.hasNext()) {
+            String key = (String)it.next();
+            String value = sObj.getString(key);
+            sb.append(key + "=" + value + ",");
+
+        }
+        return sb.toString().substring(0,sb.length()-1);
+    }
 
     public String getPluginName(String pluginID) {
         SubnodeConfiguration sObj = iniConfObj.getSection(pluginID);
