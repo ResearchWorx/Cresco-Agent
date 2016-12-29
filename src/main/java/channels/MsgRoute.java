@@ -45,6 +45,12 @@ public class MsgRoute implements Runnable {
                         logger.trace("Case 0: COMMINIT Message to Controller");
                         sendToController();
                         break;
+                    /*
+                    case 16:
+                        logger.trace("Case 16: Region to Region message via Controller");
+                        sendToController();
+                        break;
+                    */
                     case 20:
                         logger.trace("Case 20: Inter-region, inter-agent");
                         re = getCommandExec();
@@ -110,7 +116,7 @@ public class MsgRoute implements Runnable {
                         sendToPlugin();
                         break;
                     default:
-                        logger.error("Case {}: Unknown route. rm.getParams() = {}", routePath, rm.getParams());
+                        logger.error("Case {}: Agent Unknown route. rm.getParams() = {}", routePath, rm.getParams());
                         break;
                 }
                 if (re != null) {

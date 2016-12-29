@@ -33,6 +33,8 @@ public class AgentEngine {
     public static boolean hasChannel = false;
     public static String channelPluginSlot;
     public static boolean isRegionalController = false;
+    public static boolean isGlobalController = false;
+
     public static String controllerPluginSlot;
 
     public static boolean isCommInit = false;
@@ -253,6 +255,9 @@ public class AgentEngine {
 
             while (!isCommInit) {
                 Thread.sleep(10);
+            }
+            if(isGlobalController) {
+                coreLogger.info("* Global Controller *");
             }
             if (isRegionalController)
                 coreLogger.info("Region: [" + AgentEngine.region + "] * Regional Controller *");

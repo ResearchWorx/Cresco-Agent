@@ -56,6 +56,14 @@ public class CommandExec {
                         else {
                             AgentEngine.isRegionalController = false;
                         }
+                        if (Boolean.parseBoolean(ce.getParam("is_global_controller"))) {
+                            AgentEngine.isGlobalController = true;
+                        }
+                        else {
+                            AgentEngine.isGlobalController = false;
+                        }
+
+
                     } else {
                         //System.out.println("CODY [" + ce.getParams().toString() + "]");
                         //failover startup

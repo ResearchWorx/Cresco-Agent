@@ -29,7 +29,9 @@ public class WatchDog {
 		  le.setParam("is_active", Boolean.TRUE.toString());
 		  le.setParam("watchdogtimer",String.valueOf(AgentEngine.config.getWatchDogTimer()));
 		  AgentEngine.msgInQueue.offer(le);
-          AgentEngine.watchDogActive = true;
+		  //MsgEvent re = new RPCCall().call(le);
+		  //System.out.println("RPC ENABLE: " + re.getMsgBody() + " [" + re.getParams().toString() + "]");
+		  AgentEngine.watchDogActive = true;
       }
 
       public void shutdown(boolean unregister) {
