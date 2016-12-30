@@ -121,6 +121,12 @@ public class ConfigPlugins {
         return sb.toString().substring(0,sb.length()-1);
     }
 
+    public String getPluginConfigParam(String pluginID, String param) {
+        StringBuilder sb = new StringBuilder();
+        SubnodeConfiguration sObj = iniConfObj.getSection(pluginID);
+        return sObj.getString(param);
+    }
+
     public String getPluginName(String pluginID) {
         SubnodeConfiguration sObj = iniConfObj.getSection(pluginID);
         return sObj.getString("pluginname");

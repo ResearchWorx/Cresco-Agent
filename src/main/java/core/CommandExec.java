@@ -103,6 +103,14 @@ public class CommandExec {
                            String configParams = pluginsconfig.getPluginConfigParams(ce.getParam("plugin"));
                            ce.setParam("configparams",configParams);
                            ce.setParam("dst_plugin",ce.getParam("plugin"));
+                           ce.setParam("is_active", Boolean.TRUE.toString());
+                           String watchdogtimer = pluginsconfig.getPluginConfigParam(ce.getParam("plugin"),"watchdogtimer");
+                           if(watchdogtimer !=null) {
+                               ce.setParam("watchdogtimer",watchdogtimer);
+                           }
+                           else {
+                               ce.setParam("watchdogtimer","5000");
+                           }
                            return ce;
                        }
 
