@@ -55,6 +55,10 @@ public class MsgRoute implements Runnable {
                         logger.trace("Case 20: Inter-region, inter-agent");
                         re = getCommandExec();
                         break;
+                    case 40:
+                        logger.trace("Case 40: Inter-region, inter-agent");
+                        re = getCommandExec();
+                        break;
                     case 48:
                         logger.trace("Case 48: Agent Message to Controller");
                         sendToController();
