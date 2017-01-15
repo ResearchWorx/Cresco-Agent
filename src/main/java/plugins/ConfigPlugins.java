@@ -5,6 +5,7 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalINIConfiguration;
 import org.apache.commons.configuration.SubnodeConfiguration;
 
+import java.net.URLDecoder;
 import java.util.*;
 
 public class ConfigPlugins {
@@ -119,6 +120,44 @@ public class ConfigPlugins {
 
         }
         return sb.toString().substring(0,sb.length()-1);
+    }
+
+    public Map<String,String> getMapFromString(String param, boolean isRestricted) {
+        Map<String,String> paramMap = null;
+
+
+        try{
+            String[] sparam = param.split(",");
+
+            paramMap = new HashMap<String,String>();
+
+            for(String str : sparam)
+            {
+                String[] sstr = str.split(":");
+
+                if(isRestricted)
+                {
+                    paramMap.put(URLDecoder.decode(sstr[0], "UTF-8"), "");
+                }
+                else
+                {
+                    if(sstr.length > 1)
+                    {
+                        paramMap.put(URLDecoder.decode(sstr[0], "UTF-8"), URLDecoder.decode(sstr[1], "UTF-8"));
+                    }
+                    else
+                    {
+                        paramMap.put(URLDecoder.decode(sstr[0], "UTF-8"), "");
+                    }
+                }
+            }
+        }
+        catch(Exception ex)
+        {
+            System.out.println("getMapFromString Error: " + ex.toString());
+        }
+
+        return paramMap;
     }
 
     public String getPluginConfigParam(String pluginID, String param) {
