@@ -83,6 +83,9 @@ public class CommandExec {
                     //Map<String, String> hm = pluginsconfig.buildPluginMap(ce.getParam("configparams"));
                     Map<String, String> hm = pluginsconfig.getMapFromString(ce.getParam("configparams"),false);
 
+                    if(hm.containsKey("inode_id")) {
+
+                    }
                     hm.remove("configtype");
                     String plugin = pluginsconfig.addPlugin(hm);
                     ce.setParam("plugin", plugin);
@@ -96,6 +99,7 @@ public class CommandExec {
                     ce.removeParam("configtype");
                     ce.removeParam("configparams");
                     return ce;
+
                 } else if (ce.getParam("configtype").equals("plugininventory")) {
                        //dirty.. fake message from plugin.. so bad
                        //This needs to be change on the Cresco Library
