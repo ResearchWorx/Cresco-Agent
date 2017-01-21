@@ -15,15 +15,18 @@ public class WatchDog {
 	  private long startTS;
 	  private Map<String,String> wdMap;
 
-	  private int watchDogTimer;
+	  private String watchDogTimerString;
 	  
 	  public WatchDog() {
 		  startTS = System.currentTimeMillis();
 		  timer = new Timer();
-          watchDogTimer = AgentEngine.config.getIntParams("watchdogtimer","5000");
+          watchDogTimerString = AgentEngine.config.getStringParams("general","watchdogtimer");
+          if(watchDogTimerString == null) {
+              watchDogTimerString = "5000";
+          }
 
 
-	      timer.scheduleAtFixedRate(new WatchDogTask(), 500, watchDogTimer);
+	      timer.scheduleAtFixedRate(new WatchDogTask(), 500, Long.parseLong(watchDogTimerString));
 	      wdMap = new HashMap<>(); //for sending future WD messages
 	      
 	      MsgEvent le = new MsgEvent(MsgEvent.Type.CONFIG,AgentEngine.region,null,null,"enabled");
@@ -31,7 +34,7 @@ public class WatchDog {
 		  le.setParam("src_agent", AgentEngine.agent);
 		  le.setParam("dst_region", AgentEngine.region);
 		  le.setParam("is_active", Boolean.TRUE.toString());
-		  le.setParam("watchdogtimer",String.valueOf(watchDogTimer));
+		  le.setParam("watchdogtimer",watchDogTimerString);
 		  AgentEngine.msgInQueue.offer(le);
 		  //MsgEvent re = new RPCCall().call(le);
 		  //System.out.println("RPC ENABLE: " + re.getMsgBody() + " [" + re.getParams().toString() + "]");
@@ -45,7 +48,7 @@ public class WatchDog {
               le.setParam("src_agent", AgentEngine.agent);
               le.setParam("dst_region", AgentEngine.region);
               le.setParam("is_active", Boolean.FALSE.toString());
-              le.setParam("watchdogtimer", String.valueOf(watchDogTimer));
+              le.setParam("watchdogtimer", watchDogTimerString);
               MsgEvent re = new RPCCall().call(le);
               System.out.println("RPC DISABLE: " + re.getMsgBody() + " [" + re.getParams().toString() + "]");
           }
