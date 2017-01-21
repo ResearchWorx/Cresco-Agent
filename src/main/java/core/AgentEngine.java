@@ -134,8 +134,10 @@ public class AgentEngine {
             processPlugins();
 
             //delay and waiting for network init.
-            int startupdelay = Integer.parseInt(config.getStringParams("general", "startupdelay"));
-            Thread.sleep(startupdelay);
+            if(config.getStringParams("general", "startupdelay") != null) {
+                int startupdelay = Integer.parseInt(config.getStringParams("general", "startupdelay"));
+                Thread.sleep(startupdelay);
+            }
 
             LoadControllerPlugin();
 
@@ -246,37 +248,42 @@ public class AgentEngine {
         }
     }
 
-    public static void LoadControllerPlugin() throws InterruptedException {
-        controllerPluginSlot = "plugin/0";
+    public static void LoadControllerPlugin()  {
+        try {
+            controllerPluginSlot = "plugin/0";
 
-        boolean isComm = enablePlugin(controllerPluginSlot, false);
-        if (!isComm) {
-            System.out.println("failed to load");
-            System.exit(0);
-        } else {
-            MsgInQueueActive = true; //allow incoming message
+            boolean isComm = enablePlugin(controllerPluginSlot, false);
+            if (!isComm) {
+                System.out.println("failed to load");
+                System.exit(0);
+            } else {
+                MsgInQueueActive = true; //allow incoming message
 
-            Plugin plugin = AgentEngine.pluginMap.get(controllerPluginSlot);
-            MsgEvent me = new MsgEvent(MsgEvent.Type.CONFIG, region, agent, controllerPluginSlot, "comminit");
-            me.setParam("configtype", "comminit");
-            me.setParam("src_region", region);
-            me.setParam("src_agent", agent);
-            me.setParam("dst_region", region);
-            me.setParam("dst_agent", agent);
-            me.setParam("dst_plugin", "plugin/0");
-            plugin.Message(me); //send msg to plugin
+                Plugin plugin = AgentEngine.pluginMap.get(controllerPluginSlot);
+                MsgEvent me = new MsgEvent(MsgEvent.Type.CONFIG, region, agent, controllerPluginSlot, "comminit");
+                me.setParam("configtype", "comminit");
+                me.setParam("src_region", region);
+                me.setParam("src_agent", agent);
+                me.setParam("dst_region", region);
+                me.setParam("dst_agent", agent);
+                me.setParam("dst_plugin", "plugin/0");
+                plugin.Message(me); //send msg to plugin
 
-            while (!isCommInit) {
-                Thread.sleep(10);
+                while (!isCommInit) {
+                    Thread.sleep(10);
+                }
+                if (isGlobalController) {
+                    coreLogger.info("* Global Controller *");
+                }
+                if (isRegionalController)
+                    coreLogger.info("Region: [" + AgentEngine.region + "] * Regional Controller *");
+                else
+                    coreLogger.info("Region: [" + AgentEngine.region + "]");
+                coreLogger.info(" Agent: [" + AgentEngine.agent + "]");
             }
-            if(isGlobalController) {
-                coreLogger.info("* Global Controller *");
-            }
-            if (isRegionalController)
-                coreLogger.info("Region: [" + AgentEngine.region + "] * Regional Controller *");
-            else
-                coreLogger.info("Region: [" + AgentEngine.region + "]");
-            coreLogger.info(" Agent: [" + AgentEngine.agent + "]");
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
         }
 
     }
