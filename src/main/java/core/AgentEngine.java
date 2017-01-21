@@ -249,11 +249,6 @@ public class AgentEngine {
     public static void LoadControllerPlugin() throws InterruptedException {
         controllerPluginSlot = "plugin/0";
 
-        //THIS NEEDS TO BE MOVED CODY !!!
-        String globalControllerHost = System.getenv("CRESCO_GC_HOST");
-        pluginsconfig.getPluginConfig("plugin/0").addProperty("gc_host",globalControllerHost);
-        //THIS NEEDS TO BE MOVED CODY !!
-
         boolean isComm = enablePlugin(controllerPluginSlot, false);
         if (!isComm) {
             System.out.println("failed to load");
