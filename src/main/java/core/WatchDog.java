@@ -19,7 +19,10 @@ public class WatchDog {
 	  public WatchDog() {
 		  startTS = System.currentTimeMillis();
 		  timer = new Timer();
-	      timer.scheduleAtFixedRate(new WatchDogTask(), 500, AgentEngine.config.getWatchDogTimer());
+
+
+
+	      timer.scheduleAtFixedRate(new WatchDogTask(), 500, AgentEngine.config.getIntParams("watchdogtimer","5000"));
 	      wdMap = new HashMap<>(); //for sending future WD messages
 	      
 	      MsgEvent le = new MsgEvent(MsgEvent.Type.CONFIG,AgentEngine.region,null,null,"enabled");

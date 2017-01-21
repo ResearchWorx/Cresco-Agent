@@ -76,12 +76,6 @@ public class Config {
         return new File(logPath).getAbsolutePath();
     }
 
-
-    public int getWatchDogTimer() {
-        SubnodeConfiguration sObj = iniConfObj.getSection("general");
-        return sObj.getInt("watchdogtimer");
-    }
-
     public int getControllerDiscoveryTimeout() {
         SubnodeConfiguration sObj = iniConfObj.getSection("general");
         int tmpTime = Math.round(sObj.getInt("controllerdiscoverytimeout"));
