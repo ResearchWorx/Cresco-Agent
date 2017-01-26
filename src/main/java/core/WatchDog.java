@@ -35,6 +35,16 @@ public class WatchDog {
 		  le.setParam("dst_region", AgentEngine.region);
 		  le.setParam("is_active", Boolean.TRUE.toString());
 		  le.setParam("watchdogtimer",watchDogTimerString);
+
+		  String location = System.getenv("CRESCO_LOCATION");
+		  if(location == null) {
+			  location = AgentEngine.config.getStringParams("general", "location");
+		  	if(location == null) {
+		  		location = "unknown";
+			}
+		  }
+		  le.setParam("location", location);
+
 		  AgentEngine.msgInQueue.offer(le);
 		  //MsgEvent re = new RPCCall().call(le);
 		  //System.out.println("RPC ENABLE: " + re.getMsgBody() + " [" + re.getParams().toString() + "]");
