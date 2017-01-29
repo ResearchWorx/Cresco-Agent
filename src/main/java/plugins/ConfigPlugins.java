@@ -38,12 +38,12 @@ public class ConfigPlugins {
                 pluginID = "plugin/" + String.valueOf(pluginNum);
                 SubnodeConfiguration sObj = iniConfObj.getSection(pluginID);
                 if (sObj.isEmpty()) {
-                    if (!AgentEngine.pluginMap.containsKey(pluginID)) {
+                    //if (!AgentEngine.pluginMap.containsKey(pluginID)) {
                         isFound = true;
                         iniConfObj.addProperty("plugins." + pluginID, "0");
                         //System.out.println("added plugin record for:" + pluginID);
                         iniConfObj.save(); //problems with duplicates
-                    }
+                    //}
 
                 }
                 pluginNum++;

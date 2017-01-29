@@ -5,16 +5,20 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+import java.math.BigInteger;
 import java.net.*;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.security.MessageDigest;
+import java.util.*;
+import java.util.jar.Attributes;
+import java.util.jar.JarInputStream;
+import java.util.jar.Manifest;
 
 import static core.AgentEngine.pluginsconfig;
 
@@ -80,18 +84,30 @@ public class CommandExec {
                     }
                     return null;
                 } else if (ce.getParam("configtype").equals("pluginadd")) {
+
                     //Map<String, String> hm = pluginsconfig.buildPluginMap(ce.getParam("configparams"));
                     Map<String, String> hm = pluginsconfig.getMapFromString(ce.getParam("configparams"),false);
+                    String hostAddressString = ce.getParam("http_host");
+                    //String pluginName = ce.getParam("pluginname");
+                    String pluginName = hm.get("pluginname");
+                    String jarFile = hm.get("jarfile");
+                    String jarMD5 = ce.getParam("jarmd5");
 
-                    hm.remove("configtype");
-                    String plugin = pluginsconfig.addPlugin(hm);
-                    ce.setParam("plugin", plugin);
-                    boolean isEnabled = AgentEngine.enablePlugin(plugin, false);
-                    if (!isEnabled) {
-                        ce.setMsgBody("Failed to Add Plugin:" + plugin);
-                        pluginsconfig.removePlugin(plugin);
-                    } else {
-                        ce.setMsgBody("Added Plugin:" + plugin);
+                    if(getPlugin(hostAddressString,pluginName,jarFile,jarMD5)) {
+                        hm.remove("configtype");
+                        String plugin = pluginsconfig.addPlugin(hm);
+
+                        ce.setParam("plugin", plugin);
+                        boolean isEnabled = AgentEngine.enablePlugin(plugin, false);
+                        if (!isEnabled) {
+                            ce.setMsgBody("Failed to Add Plugin:" + plugin);
+                            pluginsconfig.removePlugin(plugin);
+                        } else {
+                            ce.setMsgBody("Added Plugin:" + plugin);
+                        }
+                    }
+                    else {
+                        ce.setMsgBody("Failed to Download Plugin: " + pluginName);
                     }
                     ce.removeParam("configtype");
                     ce.removeParam("configparams");
@@ -354,6 +370,187 @@ public class CommandExec {
                 logMessages.error("Unknown log_level [{}]", log.getParam("log_level"));
                 break;
         }
+    }
+
+    public List<String> getPluginInventory() {
+        List<String> pluginFiles = null;
+        try
+        {
+            String pluginDirectory = AgentEngine.config.getPluginPath();
+
+            File folder = new File(pluginDirectory);
+            if(folder.exists())
+            {
+                pluginFiles = new ArrayList<String>();
+                File[] listOfFiles = folder.listFiles();
+
+                for (int i = 0; i < listOfFiles.length; i++)
+                {
+                    if (listOfFiles[i].isFile())
+                    {
+                        pluginFiles.add(listOfFiles[i].getAbsolutePath());
+                    }
+
+                }
+                if(pluginFiles.isEmpty())
+                {
+                    pluginFiles = null;
+                }
+            }
+        }
+        catch(Exception ex)
+        {
+            pluginFiles = null;
+        }
+        return pluginFiles;
+    }
+
+    public String getPluginName(String jarFile) {
+        String version = null;
+        try{
+            //String jarFile = AgentEngine.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+            //logger.debug("JARFILE:" + jarFile);
+            //File file = new File(jarFile.substring(5, (jarFile.length() )));
+            File file = new File(jarFile);
+
+            boolean calcHash = true;
+            BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+            long fileTime = attr.creationTime().toMillis();
+
+            FileInputStream fis = new FileInputStream(file);
+            @SuppressWarnings("resource")
+            JarInputStream jarStream = new JarInputStream(fis);
+            Manifest mf = jarStream.getManifest();
+
+            Attributes mainAttribs = mf.getMainAttributes();
+            version = mainAttribs.getValue("artifactId");
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+
+        }
+        return version;
+    }
+
+    public String getJarMD5(String pluginFile) {
+        String jarString = null;
+        try
+        {
+            Path path = Paths.get(pluginFile);
+            byte[] data = Files.readAllBytes(path);
+
+            MessageDigest m= MessageDigest.getInstance("MD5");
+            m.update(data);
+            jarString = new BigInteger(1,m.digest()).toString(16);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        return jarString;
+    }
+
+    private String verifyPlugin(String requestedPlugin) {
+        String returnPluginfile = null;
+        //String requestedPlugin = ce.getParam("pluginname");
+        List<String> pluginMap = getPluginInventory();
+        for(String pluginfile : pluginMap) {
+        //    logger.debug("plugin = " + pluginfile);
+        //    logger.debug("plugin name = " + getPluginName(pluginfile));
+            String pluginName = getPluginName(pluginfile);
+            if(pluginName != null) {
+                if (requestedPlugin.equals(pluginName)) {
+                    returnPluginfile = pluginfile;
+                }
+            }
+        }
+
+        return returnPluginfile;
+    }
+
+    private boolean getPlugin(String hostAddressString, String pluginName, String jarFile, String pluginMD5) {
+        boolean isFound = false;
+        try {
+
+            String pluginFile = verifyPlugin(pluginName);
+            if(pluginFile != null) {
+                String jarMD5 = getJarMD5(pluginFile);
+
+                if(pluginMD5.equals(jarMD5)) {
+                    //isFound = true;
+                }
+            }
+
+            if(!isFound) {
+                String[] hostAddresses = null;
+                if (hostAddressString.contains(",")) {
+                    hostAddresses = hostAddressString.split(",");
+                } else {
+                    hostAddresses = new String[1];
+                    hostAddresses[0] = hostAddressString;
+                }
+
+                for(String hostAddress : hostAddresses) {
+
+                    try{
+                        String downloadFile = pluginFile + "/" + jarFile + ".test";
+                        URL website = new URL(hostAddress + jarFile);
+                        ReadableByteChannel rbc = Channels.newChannel(website.openStream());
+                        File pluginFileObject = new File(downloadFile);
+                        FileOutputStream fos = new FileOutputStream(pluginFileObject);
+                        fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+                        fos.close();
+
+                        String jarMD5 = getJarMD5(pluginFile);
+
+                        if(pluginMD5.equals(jarMD5)) {
+                            //isFound = true;
+                            return true;
+                        }
+                    }
+                    catch(Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+
+            }
+            /*
+            String baseUrl = ce.getParam("pluginurl");
+            if (!baseUrl.endsWith("/")) {
+                baseUrl = baseUrl + "/";
+            }
+
+            URL website = new URL(baseUrl + ce.getParam("plugin"));
+            ReadableByteChannel rbc = Channels.newChannel(website.openStream());
+
+            String pluginFile = AgentEngine.config.getPluginPath() + ce.getParam("plugin");
+            boolean forceDownload = false;
+            if (ce.getParam("forceplugindownload") != null) {
+                forceDownload = true;
+                System.out.println("Forcing Plugin Download");
+            }
+
+            File pluginFileObject = new File(pluginFile);
+            if (!pluginFileObject.exists() || forceDownload) {
+                FileOutputStream fos = new FileOutputStream(pluginFile);
+
+                fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+                fos.close();
+
+                ce.setMsgBody("Downloaded Plugin:" + ce.getParam("plugin"));
+                System.out.println("Downloaded Plugin:" + ce.getParam("plugin"));
+            } else {
+                ce.setMsgBody("Plugin already exists:" + ce.getParam("plugin"));
+                System.out.println("Plugin already exists:" + ce.getParam("plugin"));
+            }
+            */
+        }
+        catch(Exception ex) {
+            //System.out.println("getPlugin " + ex.getMessage());
+            ex.printStackTrace();
+        }
+        return isFound;
     }
 
     private String formatClassName(String className) {
