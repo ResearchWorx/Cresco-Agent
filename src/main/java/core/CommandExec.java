@@ -478,7 +478,7 @@ public class CommandExec {
                 String jarMD5 = getJarMD5(pluginFile);
 
                 if(pluginMD5.equals(jarMD5)) {
-                    //isFound = true;
+                    isFound = true;
                 }
             }
 
@@ -494,11 +494,21 @@ public class CommandExec {
                 for(String hostAddress : hostAddresses) {
 
                     try{
-                        String downloadFile = pluginFile + "/" + jarFile + ".test";
+                        String pluginDirectory = AgentEngine.config.getPluginPath();
+                        if(pluginDirectory.endsWith("/")) {
+                            pluginDirectory = pluginDirectory.substring(0,pluginDirectory.length() -1);
+                        }
+                        String downloadFile = pluginDirectory + "/" + jarFile + ".test";
                         URL website = new URL(hostAddress + jarFile);
                         ReadableByteChannel rbc = Channels.newChannel(website.openStream());
                         File pluginFileObject = new File(downloadFile);
-                        FileOutputStream fos = new FileOutputStream(pluginFileObject);
+                        if(pluginFileObject.exists()) {
+                            pluginFileObject.delete();
+                        }
+                        else {
+                            pluginFileObject.createNewFile();
+                        }
+                        FileOutputStream fos = new FileOutputStream(downloadFile);
                         fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
                         fos.close();
 
