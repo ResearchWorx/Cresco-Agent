@@ -122,7 +122,7 @@ public class ConfigPlugins {
         return sb.toString().substring(0,sb.length()-1);
     }
 
-    public Map<String,String> getMapFromString2(String param, boolean isRestricted) {
+    public Map<String,String> getMapFromString(String param, boolean isRestricted) {
         Map<String,String> paramMap = null;
 
 
@@ -160,7 +160,7 @@ public class ConfigPlugins {
         return paramMap;
     }
 
-    public Map<String,String> getMapFromString(String param, boolean isRestricted) {
+    public Map<String,String> getMapFromString2(String param, boolean isRestricted) {
         Map<String,String> paramMap = null;
 
 
