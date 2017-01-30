@@ -85,6 +85,7 @@ public class CommandExec {
                     return null;
                 } else if (ce.getParam("configtype").equals("pluginadd")) {
 
+                    System.out.println("ADD PLUGIN!!!");
                     //Map<String, String> hm = pluginsconfig.buildPluginMap(ce.getParam("configparams"));
                     Map<String, String> hm = pluginsconfig.getMapFromString(ce.getParam("configparams"),false);
                     String hostAddressString = ce.getParam("http_host");
@@ -92,11 +93,10 @@ public class CommandExec {
                     String pluginName = hm.get("pluginname");
                     String jarFile = hm.get("jarfile");
                     String jarMD5 = ce.getParam("jarmd5");
-
                     if(getPlugin(hostAddressString,pluginName,jarFile,jarMD5)) {
+
                         hm.remove("configtype");
                         String plugin = pluginsconfig.addPlugin(hm);
-
                         ce.setParam("plugin", plugin);
                         boolean isEnabled = AgentEngine.enablePlugin(plugin, false);
                         if (!isEnabled) {
@@ -104,9 +104,11 @@ public class CommandExec {
                             pluginsconfig.removePlugin(plugin);
                         } else {
                             ce.setMsgBody("Added Plugin:" + plugin);
+                            ce.setParam("status_code","10");
                         }
                     }
                     else {
+                        System.out.println("plugin add failed getPlugin");
                         ce.setMsgBody("Failed to Download Plugin: " + pluginName);
                     }
                     ce.removeParam("configtype");
@@ -472,7 +474,6 @@ public class CommandExec {
     private boolean getPlugin(String hostAddressString, String pluginName, String jarFile, String pluginMD5) {
         boolean isFound = false;
         try {
-
             String pluginFile = verifyPlugin(pluginName);
             if(pluginFile != null) {
                 String jarMD5 = getJarMD5(pluginFile);
@@ -492,35 +493,53 @@ public class CommandExec {
                 }
 
                 for(String hostAddress : hostAddresses) {
+                    if (serverListening(hostAddress)) {
+                        try {
 
-                    try{
-                        String pluginDirectory = AgentEngine.config.getPluginPath();
-                        if(pluginDirectory.endsWith("/")) {
-                            pluginDirectory = pluginDirectory.substring(0,pluginDirectory.length() -1);
-                        }
-                        String downloadFile = pluginDirectory + "/" + jarFile + ".test";
-                        URL website = new URL(hostAddress + jarFile);
-                        ReadableByteChannel rbc = Channels.newChannel(website.openStream());
-                        File pluginFileObject = new File(downloadFile);
-                        if(pluginFileObject.exists()) {
-                            pluginFileObject.delete();
-                        }
-                        else {
-                            pluginFileObject.createNewFile();
-                        }
-                        FileOutputStream fos = new FileOutputStream(downloadFile);
-                        fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-                        fos.close();
+                            String pluginDirectory = AgentEngine.config.getPluginPath();
+                            if (pluginDirectory.endsWith("/")) {
+                                pluginDirectory = pluginDirectory.substring(0, pluginDirectory.length() - 1);
+                            }
 
-                        String jarMD5 = getJarMD5(pluginFile);
+                            String downloadFile = pluginDirectory + "/" + jarFile + ".test";
+                            URL website = new URL(hostAddress + jarFile);
 
-                        if(pluginMD5.equals(jarMD5)) {
-                            //isFound = true;
-                            return true;
+
+                            //ReadableByteChannel rbc = Channels.newChannel(website.openStream());
+
+                            File pluginFileObject = new File(downloadFile);
+                            if (pluginFileObject.exists()) {
+                                pluginFileObject.delete();
+                            } else {
+                                pluginFileObject.createNewFile();
+                            }
+
+                            //FileOutputStream fos = new FileOutputStream(downloadFile);
+
+                            //fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+
+                            //fos.close();
+                            System.out.println(website.toString());
+                            java.io.BufferedInputStream in = new java.io.BufferedInputStream(website.openStream());
+                            java.io.FileOutputStream fos = new java.io.FileOutputStream(downloadFile);
+                            java.io.BufferedOutputStream bout = new BufferedOutputStream(fos);
+                            byte data[] = new byte[1024];
+                            int read;
+                            while((read = in.read(data,0,1024))>=0)
+                            {
+                                bout.write(data, 0, read);
+                            }
+                            bout.close();
+                            in.close();
+
+                            String jarMD5 = getJarMD5(pluginFile);
+
+                            if (pluginMD5.equals(jarMD5)) {
+                                return true;
+                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
                         }
-                    }
-                    catch(Exception ex) {
-                        ex.printStackTrace();
                     }
                 }
 
@@ -561,6 +580,36 @@ public class CommandExec {
             ex.printStackTrace();
         }
         return isFound;
+    }
+
+    public static boolean serverListening(String hosturl)
+    {
+        Socket s = null;
+        //http://address:port
+        try
+        {
+
+            String[] tmphosturl = hosturl.split(":");
+            int port = Integer.parseInt(tmphosturl[2].substring(0,tmphosturl[2].indexOf("/")));
+            String host = tmphosturl[1].substring(tmphosturl[1].lastIndexOf("/") + 1,tmphosturl[1].length());
+            s = new Socket();
+            s.connect(new InetSocketAddress(host,port),2000);
+            //s = new Socket(host, port);
+
+            return true;
+        }
+        catch (Exception e)
+        {
+            //System.out.println("serverlistening error " + e.getMessage());
+            //e.printStackTrace();
+            return false;
+        }
+        finally
+        {
+            if(s != null)
+                try {s.close();}
+                catch(Exception e){}
+        }
     }
 
     private String formatClassName(String className) {
