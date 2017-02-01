@@ -420,6 +420,7 @@ public class AgentEngine {
                 return true;
             } catch (IOException e) {
                 pluginsLogger.error("Loading failed - Could not read plugin jar file. [Jar: {}]", pluginsconfig.getPluginJar(pluginID));
+                e.printStackTrace();
             } catch (ClassNotFoundException e) {
                 pluginsLogger.error("Loading failed - Plugin class [{}] not found.", pluginsconfig.getCPluginClass(pluginID));
             } catch (InstantiationException e) {
