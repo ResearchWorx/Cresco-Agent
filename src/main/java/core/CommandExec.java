@@ -84,7 +84,7 @@ public class CommandExec {
                     }
                     return null;
                 } else if (ce.getParam("configtype").equals("pluginadd")) {
-
+//
                     //Map<String, String> hm = pluginsconfig.buildPluginMap(ce.getParam("configparams"));
                     Map<String, String> hm = pluginsconfig.getMapFromString(ce.getParam("configparams"),false);
                     String hostAddressString = ce.getParam("http_host");
