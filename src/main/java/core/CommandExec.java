@@ -54,18 +54,8 @@ public class CommandExec {
                         */
                         //IS COMMINIT?
                         AgentEngine.isCommInit = true;
-                        if (Boolean.parseBoolean(ce.getParam("is_regional_controller"))) {
-                            AgentEngine.isRegionalController = true;
-                        }
-                        else {
-                            AgentEngine.isRegionalController = false;
-                        }
-                        if (Boolean.parseBoolean(ce.getParam("is_global_controller"))) {
-                            AgentEngine.isGlobalController = true;
-                        }
-                        else {
-                            AgentEngine.isGlobalController = false;
-                        }
+                        AgentEngine.isRegionalController = Boolean.parseBoolean(ce.getParam("is_regional_controller"));
+                        AgentEngine.isGlobalController = Boolean.parseBoolean(ce.getParam("is_global_controller"));
 
 
                     } else {
@@ -73,12 +63,7 @@ public class CommandExec {
                         //failover startup
                         AgentEngine.region = ce.getParam("set_region");
                         AgentEngine.agent = ce.getParam("set_agent");
-                        if (Boolean.parseBoolean(ce.getParam("is_regional_controller"))) {
-                            AgentEngine.isRegionalController = true;
-                        }
-                        else {
-                            AgentEngine.isRegionalController = false;
-                        }
+                        AgentEngine.isRegionalController = Boolean.parseBoolean(ce.getParam("is_regional_controller"));
                         AgentEngine.LoadWatchDog();
 
                     }
