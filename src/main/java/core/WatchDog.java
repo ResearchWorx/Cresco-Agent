@@ -33,7 +33,8 @@ public class WatchDog {
 		  le.setParam("src_region", AgentEngine.region);
 		  le.setParam("src_agent", AgentEngine.agent);
 		  le.setParam("dst_region", AgentEngine.region);
-		  le.setParam("is_active", Boolean.TRUE.toString());
+		  //le.setParam("is_active", Boolean.TRUE.toString());
+		  le.setParam("action", "enable");
 		  le.setParam("watchdogtimer",watchDogTimerString);
 
 		  String location = System.getenv("CRESCO_LOCATION");
@@ -45,9 +46,9 @@ public class WatchDog {
 		  }
 		  le.setParam("location", location);
 
-		  //AgentEngine.msgInQueue.offer(le);
-		  MsgEvent re = new RPCCall().call(le);
-		  System.out.println("RPC ENABLE: " + re.getMsgBody() + " [" + re.getParams().toString() + "]");
+		  AgentEngine.msgInQueue.offer(le);
+		  //MsgEvent re = new RPCCall().call(le);
+		  //System.out.println("RPC ENABLE: " + re.getMsgBody() + " [" + re.getParams().toString() + "]");
 		  AgentEngine.watchDogActive = true;
       }
 
@@ -57,10 +58,12 @@ public class WatchDog {
               le.setParam("src_region", AgentEngine.region);
               le.setParam("src_agent", AgentEngine.agent);
               le.setParam("dst_region", AgentEngine.region);
-              le.setParam("is_active", Boolean.FALSE.toString());
+              //le.setParam("is_active", Boolean.FALSE.toString());
+			  le.setParam("action", "disable");
               le.setParam("watchdogtimer", watchDogTimerString);
-              MsgEvent re = new RPCCall().call(le);
-              System.out.println("RPC DISABLE: " + re.getMsgBody() + " [" + re.getParams().toString() + "]");
+			  AgentEngine.msgInQueue.offer(le);
+              //MsgEvent re = new RPCCall().call(le);
+              //System.out.println("RPC DISABLE: " + re.getMsgBody() + " [" + re.getParams().toString() + "]");
           }
           timer.cancel();
       }
