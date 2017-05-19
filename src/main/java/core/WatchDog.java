@@ -45,9 +45,9 @@ public class WatchDog {
 		  }
 		  le.setParam("location", location);
 
-		  AgentEngine.msgInQueue.offer(le);
-		  //MsgEvent re = new RPCCall().call(le);
-		  //System.out.println("RPC ENABLE: " + re.getMsgBody() + " [" + re.getParams().toString() + "]");
+		  //AgentEngine.msgInQueue.offer(le);
+		  MsgEvent re = new RPCCall().call(le);
+		  System.out.println("RPC ENABLE: " + re.getMsgBody() + " [" + re.getParams().toString() + "]");
 		  AgentEngine.watchDogActive = true;
       }
 
