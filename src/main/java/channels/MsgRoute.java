@@ -34,6 +34,12 @@ public class MsgRoute implements Runnable {
                         rm.getParam("dst_region"), rm.getParam("dst_agent"), rm.getParam("dst_plugin"),
                         rm.getParams());
             }
+
+/*
+            if(rm.getMsgType() == MsgEvent.Type.EXEC) {
+                logger.error("Agent msgType: [" + rm.getMsgType().toString() + "] routepath: " + routePath + "[" + rm.getParams().toString() + "]");
+            }
+*/
             /*
             if (routePath < 56) {
                 sendToController();
