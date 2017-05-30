@@ -291,7 +291,6 @@ public class AgentEngine {
         msgInProcessQueue.execute(new MsgRoute(me));
     }
 
-
     public static String checkConfig(String[] args) {
         String errorMgs = "Cresco-Agent\n" +
                 "Usage: java -jar Cresco-Agent.jar" +

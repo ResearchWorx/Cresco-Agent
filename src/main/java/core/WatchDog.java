@@ -37,7 +37,26 @@ public class WatchDog {
 		  le.setParam("action", "enable");
 		  le.setParam("watchdogtimer",watchDogTimerString);
 
-		  String location = System.getenv("CRESCO_LOCATION");
+          String platform = System.getenv("CRESCO_PLATFORM");
+          if(platform == null) {
+              platform = AgentEngine.config.getStringParams("general", "platform");
+              if(platform == null) {
+                  platform = "unknown";
+              }
+          }
+          le.setParam("platform", platform);
+
+          String environment = System.getenv("CRESCO_ENVIRONMENT");
+          if(environment == null) {
+              environment = AgentEngine.config.getStringParams("general", "environment");
+              if(environment == null) {
+                  environment = "unknown";
+              }
+          }
+          le.setParam("environment", environment);
+
+
+          String location = System.getenv("CRESCO_LOCATION");
 		  if(location == null) {
 			  location = AgentEngine.config.getStringParams("general", "location");
 		  	if(location == null) {
@@ -46,7 +65,12 @@ public class WatchDog {
 		  }
 		  le.setParam("location", location);
 
-		  AgentEngine.msgInQueue.offer(le);
+
+
+          //public String[] aNodeIndexParams = {"platform","environment","location"};
+
+
+          AgentEngine.msgInQueue.offer(le);
 		  //MsgEvent re = new RPCCall().call(le);
 		  //System.out.println("RPC ENABLE: " + re.getMsgBody() + " [" + re.getParams().toString() + "]");
 		  AgentEngine.watchDogActive = true;
