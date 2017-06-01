@@ -97,8 +97,8 @@ public class CommandExec {
                     }
                     ce.removeParam("configtype");
                     ce.removeParam("configparams");
-                    return ce;
-
+                    //return ce;
+                    return null;
                 } else if (ce.getParam("configtype").equals("plugininventory")) {
                        //dirty.. fake message from plugin.. so bad
                        //This needs to be change on the Cresco Library
@@ -202,10 +202,23 @@ public class CommandExec {
                     AgentEngine.disablePlugin(ce.getParam("plugin"), true);
                     //remove configuration
                     pluginsconfig.removePlugin(ce.getParam("plugin"));
+
+                    /*
                     ce.setMsgBody("Removed Plugin:" + ce.getParam("plugin"));
                     ce.removeParam("configtype");
                     ce.removeParam("plugin");
-                    return ce;
+                    */
+
+                    /*
+                    MsgEvent le = new MsgEvent(MsgEvent.Type.CONFIG, AgentEngine.region, null, null, "disabled");
+                    le.setParam("src_region", AgentEngine.region);
+                    le.setParam("src_agent", AgentEngine.agent);
+                    le.setParam("dst_region", AgentEngine.region);
+                    //le.setParam("is_active", Boolean.FALSE.toString());
+                    le.setParam("action", "disable");
+                    */
+                    return null;
+                    //return ce;
                 } else if (ce.getParam("configtype").equals("componentstate")) {
                     if (ce.getMsgBody().equals("disabled")) {
                         //System.exit(0);//shutdown agent

@@ -365,6 +365,7 @@ public class AgentEngine {
             if (pluginMap.containsKey(pluginID)) {
                 Plugin plugin = pluginMap.get(pluginID);
                 //if (plugin.Stop()) {
+
                     plugin.Stop();
                     pluginsLogger.info("[{}] disabled. [Name: {}, Version: {}]", pluginID, plugin.getName(), plugin.getVersion());
                     pluginMap.remove(pluginID);
