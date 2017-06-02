@@ -127,6 +127,26 @@ public class Plugin {
         }
     }
 
+    public void PreStop() {
+        String methodName = "preShutdown";
+        try {
+            Method method = instance.getClass().getMethod(methodName);
+            try {
+                method.invoke(instance);
+            } catch (IllegalArgumentException e) {
+                logger.error("Plugin [{}] Illegal Argument Exception: [{}] method invoked using illegal arguments [{}]", pluginID, methodName, e.getMessage());
+            } catch (IllegalAccessException e) {
+                logger.error("Plugin [{}] Illegal Access Exception: [{}] method invoked without access [{}]", pluginID, methodName, e.getMessage());
+            } catch (InvocationTargetException e) {
+                logger.error("Plugin [{}] Invocation Exception: [{}] method invoked on incorrect target [{}]", pluginID, methodName, e.getMessage());
+            }
+        } catch (SecurityException e) {
+            logger.error("Plugin [{}] Method Exception: [{}] method security level exceeded [{}]", pluginID, methodName, e.getMessage());
+        } catch (NoSuchMethodException e) {
+            logger.error("Plugin [{}] Method Exception: [{}] method not found [{}]", pluginID, methodName, e.getMessage());
+        }
+    }
+
     public void Stop() {
         String methodName = "shutdown";
         try {

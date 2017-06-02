@@ -365,8 +365,16 @@ public class AgentEngine {
             if (pluginMap.containsKey(pluginID)) {
                 Plugin plugin = pluginMap.get(pluginID);
                 //if (plugin.Stop()) {
-
-                    plugin.Stop();
+                    try {
+                        plugin.PreStop();
+                    } catch (Exception e) {
+                        pluginsLogger.error("[{}] - PreShutdown error - [Exception: {}]", pluginID, e.getMessage());
+                    }
+                    try {
+                        plugin.Stop();
+                    } catch (Exception e) {
+                        pluginsLogger.error("[{}] - Shutdown error - [Exception: {}]", pluginID, e.getMessage());
+                    }
                     pluginsLogger.info("[{}] disabled. [Name: {}, Version: {}]", pluginID, plugin.getName(), plugin.getVersion());
                     pluginMap.remove(pluginID);
                     if (save)
