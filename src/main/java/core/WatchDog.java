@@ -3,6 +3,7 @@ package core;
 import channels.RPCCall;
 import com.researchworx.cresco.library.messaging.MsgEvent;
 
+import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
@@ -50,7 +51,11 @@ public class WatchDog {
           if(environment == null) {
               environment = AgentEngine.config.getStringParams("general", "environment");
               if(environment == null) {
-                  environment = "unknown";
+				  try {
+					  environment = System.getProperty("os.name");
+				  } catch (Exception ex) {
+					  environment = "unknown";
+				  }
               }
           }
           le.setParam("environment", environment);
@@ -60,11 +65,14 @@ public class WatchDog {
 		  if(location == null) {
 			  location = AgentEngine.config.getStringParams("general", "location");
 		  	if(location == null) {
-		  		location = "unknown";
+		  		try {
+					location = InetAddress.getLocalHost().getHostName();
+				} catch(Exception ex) {
+					location = "unknown";
+				}
 			}
 		  }
 		  le.setParam("location", location);
-
 
 
           //public String[] aNodeIndexParams = {"platform","environment","location"};
