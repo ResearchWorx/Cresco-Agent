@@ -62,15 +62,28 @@ public class WatchDog {
 
 
           String location = System.getenv("CRESCO_LOCATION");
-		  if(location == null) {
+          if(location == null) {
 			  location = AgentEngine.config.getStringParams("general", "location");
-		  	if(location == null) {
+
+			  if(location == null) {
 		  		try {
 					location = InetAddress.getLocalHost().getHostName();
 				} catch(Exception ex) {
-					location = "unknown";
+		  			try {
+						String osType = System.getProperty("os.name").toLowerCase();
+						if(osType.equals("windows")) {
+							location = System.getenv("COMPUTERNAME");
+						} else if(osType.equals("linux")) {
+							location = System.getenv("HOSTNAME");
+						}
+					} catch(Exception exx) {
+		  				//do nothing
+					}
 				}
 			}
+		  }
+		  if(location == null) {
+		  	location = "unknown";
 		  }
 		  le.setParam("location", location);
 
