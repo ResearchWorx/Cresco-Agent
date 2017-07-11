@@ -76,7 +76,7 @@ public class WatchDog {
 						} else if(osType.equals("linux")) {
 							location = System.getenv("HOSTNAME");
 						}
-					} catch(Exception exx) {
+						} catch(Exception exx) {
 		  				//do nothing
 					}
 				}
