@@ -27,6 +27,10 @@ public class Plugin {
     private Object instance;
     private boolean active = false;
     private int status = 3;
+    private long watchdog_ts = 0;
+    private long watchdogtimer = 0;
+    private long runtime = 0;
+
 
     public Plugin(String pluginID, String jarPath) throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException {
         this.pluginID = pluginID;
@@ -195,6 +199,30 @@ public class Plugin {
 
     public String getVersion() {
         return version;
+    }
+
+    public long getWatchdogTimer() {
+        return watchdogtimer;
+    }
+
+    public void setWatchDogTS(long watchdog_ts) {
+        this.watchdog_ts = watchdog_ts;
+    }
+
+    public long getWatchdogTS() {
+        return watchdog_ts;
+    }
+
+    public void setWatchDogTimer(long watchdogtimer) {
+        this.watchdogtimer = watchdogtimer;
+    }
+
+    public long getRuntime() {
+        return runtime;
+    }
+
+    public void setRuntime(long runtime) {
+        this.runtime = runtime;
     }
 
     public int getStatus() {return status;}

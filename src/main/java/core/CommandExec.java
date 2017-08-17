@@ -66,8 +66,7 @@ public class CommandExec {
                 }
 
             } else if(ce.getMsgType() == MsgEvent.Type.WATCHDOG) {
-                //todo EAT WATCHDOG
-
+                watchdogUpdate(ce);
             }
 
         } catch (Exception ex) {
@@ -77,6 +76,19 @@ public class CommandExec {
         return null;
     }
 
+    void watchdogUpdate(MsgEvent ce) {
+        String src_agent = ce.getParam("src_agent");
+        String src_region = ce.getParam("src_region");
+        String src_plugin = ce.getParam("src_plugin");
+        if(src_agent.equals(AgentEngine.agent) && src_region.equals(AgentEngine.region)) {
+            AgentEngine.pluginMap.get(src_plugin).setWatchDogTS(System.currentTimeMillis());
+            AgentEngine.pluginMap.get(src_plugin).setRuntime(Long.parseLong(ce.getParam("runtime")));
+            logger.debug("Plugin {} status {}",src_plugin, AgentEngine.pluginMap.get(src_plugin).getStatus());
+        } else {
+            logger.error("Can't update watchdog plugin: {} for remote host: {} {} on {} {}",src_plugin, src_region, src_agent, AgentEngine.region, AgentEngine.agent);
+        }
+    }
+
     void enablePlugin(MsgEvent ce) {
         String src_agent = ce.getParam("src_agent");
         String src_region = ce.getParam("src_region");
@@ -84,6 +96,8 @@ public class CommandExec {
         if(src_agent.equals(AgentEngine.agent) && src_region.equals(AgentEngine.region)) {
             //status = 10, plugin enabled
             AgentEngine.pluginMap.get(src_plugin).setStatus(10);
+            AgentEngine.pluginMap.get(src_plugin).setWatchDogTimer(Long.parseLong(ce.getParam("watchdogtimer")));
+            AgentEngine.pluginMap.get(src_plugin).setWatchDogTS(System.currentTimeMillis());
             logger.debug("Plugin {} status {}",src_plugin, AgentEngine.pluginMap.get(src_plugin).getStatus());
         } else {
             logger.error("Can't enable plugin: {} for remote host: {} {} on {} {}",src_plugin, src_region, src_agent, AgentEngine.region, AgentEngine.agent);

@@ -144,6 +144,11 @@ public class AgentEngine {
 
             LoadControllerPlugin();
 
+            isActive = true;
+
+
+            enableStaticPlugins();
+
             wd = new WatchDog();
 
             while(!watchDogActive)
@@ -154,8 +159,6 @@ public class AgentEngine {
                 Thread.sleep(1000);
             }
 
-            isActive = true;
-            enableStaticPlugins();
 
             //todo send inventory now to controller
 
