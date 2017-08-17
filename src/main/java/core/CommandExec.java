@@ -67,6 +67,8 @@ public class CommandExec {
 
             } else if(ce.getMsgType() == MsgEvent.Type.WATCHDOG) {
                 watchdogUpdate(ce);
+            } else if (ce.getMsgType() == MsgEvent.Type.LOG) {
+                logMessage(ce);
             }
 
         } catch (Exception ex) {
