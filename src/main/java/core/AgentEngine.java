@@ -96,7 +96,9 @@ public class AgentEngine {
             //create command group
             commandExec = new CommandExec();
 
-            msgInProcessQueue = Executors.newFixedThreadPool(4);
+            //msgInProcessQueue = Executors.newFixedThreadPool(4);
+            msgInProcessQueue = Executors.newCachedThreadPool();
+
             //create logger and base queue
             msgInQueue = new ConcurrentLinkedQueue<>();
             rpcMap = new ConcurrentHashMap<>();
