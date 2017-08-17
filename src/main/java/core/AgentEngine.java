@@ -123,8 +123,10 @@ public class AgentEngine {
                 Thread.sleep(100);
             }
 
-            region = "init"; //set temp setting to allow routing
-            agent = "init"; //region and agent will come from controller
+            //region and agent names might be changed by the controller
+            region = "region-" + java.util.UUID.randomUUID().toString();
+            agent = "agent-" + java.util.UUID.randomUUID().toString();
+
 
             //Establish  a named map of plugin interfaces
             pluginMap = new ConcurrentHashMap<>();
@@ -153,6 +155,7 @@ public class AgentEngine {
             isActive = true;
             enableStaticPlugins();
 
+            //todo send inventory now to controller
 
 
             Scanner scanner = new Scanner(System.in);
@@ -243,12 +246,14 @@ public class AgentEngine {
             }
         }
         catch(Exception ex) {
-            System.out.println("FAILED TO LOADWatchDog!");
+            System.out.println("FAILED TO LOAD WatchDog!");
         }
     }
 
     public static void LoadControllerPlugin()  {
         try {
+            MsgInQueueActive = true; //allow incoming message
+
             controllerPluginSlot = "plugin/0";
 
             boolean isComm = enablePlugin(controllerPluginSlot, false);
@@ -256,11 +261,11 @@ public class AgentEngine {
                 System.out.println("failed to load");
                 System.exit(0);
             } else {
-                MsgInQueueActive = true; //allow incoming message
+
 
                 Plugin plugin = AgentEngine.pluginMap.get(controllerPluginSlot);
                 MsgEvent me = new MsgEvent(MsgEvent.Type.CONFIG, region, agent, controllerPluginSlot, "comminit");
-                me.setParam("configtype", "comminit");
+                me.setParam("action", "comminit");
                 me.setParam("src_region", region);
                 me.setParam("src_agent", agent);
                 me.setParam("dst_region", region);
@@ -269,7 +274,7 @@ public class AgentEngine {
                 plugin.Message(me); //send msg to plugin
 
                 while (!isCommInit) {
-                    Thread.sleep(10);
+                    Thread.sleep(500);
                 }
                 if (isGlobalController) {
                     coreLogger.info("* Global Controller *");
@@ -375,10 +380,17 @@ public class AgentEngine {
                     } catch (Exception e) {
                         pluginsLogger.error("[{}] - Shutdown error - [Exception: {}]", pluginID, e.getMessage());
                     }
+                    int status = pluginMap.get(pluginID).getStatus();
+                    while(status != 8) {
+                        pluginsLogger.debug("Waiting on disable for plugin {} current status: {}", pluginID, status);
+                        Thread.sleep(500);
+                        status = pluginMap.get(pluginID).getStatus();
+                    }
                     pluginsLogger.info("[{}] disabled. [Name: {}, Version: {}]", pluginID, plugin.getName(), plugin.getVersion());
                     pluginMap.remove(pluginID);
                     if (save)
                         pluginsconfig.setPluginStatus(pluginID, 0);
+
                     return true;
                 /*} else {
                     pluginsLogger.error("[{}] failed to shutdown. [Name: {}, Version: {}]", pluginID, plugin.getName(), plugin.getVersion());
@@ -423,8 +435,16 @@ public class AgentEngine {
                 }
                 if (save)
                     pluginsconfig.setPluginStatus(pluginID, 1);
+
+                int status = pluginMap.get(pluginID).getStatus();
+                while(status != 10) {
+                    pluginsLogger.debug("Waiting on enable for plugin {} current status: {}", pluginID, status);
+                    Thread.sleep(500);
+                    status = pluginMap.get(pluginID).getStatus();
+                }
                 pluginsLogger.info("[{}] enabled. [Name: {}, Version: {}]", pluginID, plugin.getName(), plugin.getVersion());
                 return true;
+
             } catch (IOException e) {
                 pluginsLogger.error("Loading failed - Could not read plugin jar file. [Jar: {}]", pluginsconfig.getPluginJar(pluginID));
                 e.printStackTrace();

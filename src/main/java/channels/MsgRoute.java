@@ -26,7 +26,7 @@ public class MsgRoute implements Runnable {
 
 
             int routePath = getRoutePath();
-            logger.debug("msgType: [" + rm.getMsgType().toString() + "] routepath: " + routePath + "[" + rm.getParams().toString() + "]");
+            //logger.info("msgType: [" + rm.getMsgType().toString() + "] routepath: " + routePath + "[" + rm.getParams().toString() + "]");
             if (rm.getMsgType() != MsgEvent.Type.WATCHDOG && rm.getMsgType() != MsgEvent.Type.LOG && rm.getMsgType() != MsgEvent.Type.KPI && rm.getMsgType() != MsgEvent.Type.INFO) {
                 logger.trace("Routing: Path={}, Type={}, Src={}-{}:{}, Dst={}-{}:{}, Params={}", routePath,
                         rm.getMsgType().name(),
@@ -263,6 +263,7 @@ public class MsgRoute implements Runnable {
                 if (ttlCount > 10) {
                     logger.error("**Agent : MsgRoute : High Loop Count**");
                     logger.error("MsgType=" + rm.getMsgType().toString());
+                    logger.error("RoutePath=" + getRoutePath());
                     logger.error("Region=" + rm.getMsgRegion() + " Agent=" + rm.getMsgAgent() + " plugin=" + rm.getMsgPlugin());
                     logger.error("params=" + rm.getParams());
                     isValid = false;

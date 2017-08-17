@@ -4,6 +4,8 @@ import com.researchworx.cresco.library.messaging.MsgEvent;
 import org.apache.commons.configuration.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import plugins.Plugin;
+import sun.management.Agent;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -20,10 +22,11 @@ import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 
+import static core.AgentEngine.main;
 import static core.AgentEngine.pluginsconfig;
 
 public class CommandExec {
-    private static final Logger coreLogger = LoggerFactory.getLogger("Engine");
+    private static final Logger logger = LoggerFactory.getLogger("Engine");
     private static final Logger logMessages = LoggerFactory.getLogger("Logging");
 
     public CommandExec() {
@@ -31,6 +34,101 @@ public class CommandExec {
     }
 
     public MsgEvent cmdExec(MsgEvent ce) throws IOException, ConfigurationException {
+
+        try {
+            if(ce.getMsgType() == MsgEvent.Type.EXEC) {
+
+                switch (ce.getParam("action")) {
+                    default:
+                        logger.error("Unknown configtype found {} for {}:", ce.getParam("action"), ce.getMsgType().toString());
+                        return null;
+                }
+
+            } else if(ce.getMsgType() == MsgEvent.Type.CONFIG) {
+
+                switch (ce.getParam("action")) {
+
+                    case "comminit":
+                        commInit(ce);
+                        break;
+
+                    case "enable":
+                        enablePlugin(ce);
+                        break;
+
+                    case "disable":
+                        disablePlugin(ce);
+                        break;
+
+                    default:
+                        logger.error("Unknown configtype found {} for {}:", ce.getParam("action"), ce.getMsgType().toString());
+                        break;
+                }
+
+            } else if(ce.getMsgType() == MsgEvent.Type.WATCHDOG) {
+                //todo EAT WATCHDOG
+
+            }
+
+        } catch (Exception ex) {
+            System.out.println("AgentEngine : CommandExec Error : " + ex.getMessage());
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    void enablePlugin(MsgEvent ce) {
+        String src_agent = ce.getParam("src_agent");
+        String src_region = ce.getParam("src_region");
+        String src_plugin = ce.getParam("src_plugin");
+        if(src_agent.equals(AgentEngine.agent) && src_region.equals(AgentEngine.region)) {
+            //status = 10, plugin enabled
+            AgentEngine.pluginMap.get(src_plugin).setStatus(10);
+            logger.debug("Plugin {} status {}",src_plugin, AgentEngine.pluginMap.get(src_plugin).getStatus());
+        } else {
+            logger.error("Can't enable plugin: {} for remote host: {} {} on {} {}",src_plugin, src_region, src_agent, AgentEngine.region, AgentEngine.agent);
+        }
+    }
+
+    void disablePlugin(MsgEvent ce) {
+        String src_agent = ce.getParam("src_agent");
+        String src_region = ce.getParam("src_region");
+        String src_plugin = ce.getParam("src_plugin");
+        if(src_agent.equals(AgentEngine.agent) && src_region.equals(AgentEngine.region)) {
+            //status = 10, plugin enabled
+            AgentEngine.pluginMap.get(src_plugin).setStatus(8);
+            logger.debug("Plugin {} status {}",src_plugin, AgentEngine.pluginMap.get(src_plugin).getStatus());
+        } else {
+            logger.error("Can't enable plugin: {} for remote host: {} {} on {} {}",src_plugin, src_region, src_agent, AgentEngine.region, AgentEngine.agent);
+        }
+    }
+
+    void commInit(MsgEvent ce) {
+        logger.debug("comminit message type found");
+        if (Boolean.parseBoolean(ce.getParam("is_active"))) {
+
+            //init startup
+            AgentEngine.region = ce.getParam("set_region");
+            AgentEngine.agent = ce.getParam("set_agent");
+
+            //IS COMMINIT?
+            AgentEngine.isCommInit = true;
+            AgentEngine.isRegionalController = Boolean.parseBoolean(ce.getParam("is_regional_controller"));
+            AgentEngine.isGlobalController = Boolean.parseBoolean(ce.getParam("is_global_controller"));
+
+
+        } else {
+            //failover startup
+            AgentEngine.region = ce.getParam("set_region");
+            AgentEngine.agent = ce.getParam("set_agent");
+            AgentEngine.isRegionalController = Boolean.parseBoolean(ce.getParam("is_regional_controller"));
+            AgentEngine.LoadWatchDog();
+
+        }
+    }
+
+
+    public MsgEvent cmdExec2(MsgEvent ce) throws IOException, ConfigurationException {
 
         try {
 
@@ -579,8 +677,7 @@ public class CommandExec {
         return isFound;
     }
 
-    public static boolean serverListening(String hosturl)
-    {
+    public static boolean serverListening(String hosturl) {
         Socket s = null;
         //http://address:port
         try

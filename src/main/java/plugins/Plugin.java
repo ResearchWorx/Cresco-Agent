@@ -26,6 +26,7 @@ public class Plugin {
     private String version;
     private Object instance;
     private boolean active = false;
+    private int status = 3;
 
     public Plugin(String pluginID, String jarPath) throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException {
         this.pluginID = pluginID;
@@ -67,6 +68,7 @@ public class Plugin {
             Method method = instance.getClass().getSuperclass().getDeclaredMethod(methodName, ConcurrentLinkedQueue.class, SubnodeConfiguration.class, String.class, String.class, String.class);
             try {
                 active = (boolean) method.invoke(instance, msgQueue, config, region, agent, pluginID);
+                status = 4;
                 return active;
             } catch (IllegalArgumentException e) {
                 logger.error("Plugin [{}] Illegal Argument Exception: [{}] method invoked using illegal arguments [{}]", pluginID, methodName, e.getMessage());
@@ -149,10 +151,12 @@ public class Plugin {
 
     public void Stop() {
         String methodName = "shutdown";
+        boolean isStopped = false;
         try {
             Method method = instance.getClass().getSuperclass().getDeclaredMethod(methodName);
             try {
                 method.invoke(instance);
+                isStopped = true;
             } catch (IllegalArgumentException e) {
                 logger.error("Plugin [{}] Illegal Argument Exception: [{}] method invoked using illegal arguments [{}]", pluginID, methodName, e.getMessage());
             } catch (IllegalAccessException e) {
@@ -164,6 +168,12 @@ public class Plugin {
             logger.error("Plugin [{}] Method Exception: [{}] method security level exceeded [{}]", pluginID, methodName, e.getMessage());
         } catch (NoSuchMethodException e) {
             logger.error("Plugin [{}] Method Exception: [{}] method not found [{}]", pluginID, methodName, e.getMessage());
+        }
+
+        if(isStopped) {
+            status = 7;
+        } else {
+            status = 90;
         }
     }
 
@@ -185,6 +195,16 @@ public class Plugin {
 
     public String getVersion() {
         return version;
+    }
+
+    public int getStatus() {return status;}
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public void setActive(Boolean isActive) {
+        active = isActive;
     }
 
     public boolean getActive() {
