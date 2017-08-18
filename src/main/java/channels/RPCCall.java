@@ -19,18 +19,19 @@ public class RPCCall {
             int count = 0;
             int timeout = 300;
             boolean isWaiting = true;
+            // = null;
+            MsgEvent ce = null;
             while (count < timeout) {
                 if (AgentEngine.rpcMap.containsKey(callId)) {
-                    MsgEvent ce = null;
 
-                    synchronized (AgentEngine.rpcMap) {
-                        ce = AgentEngine.rpcMap.get(callId);
-                        AgentEngine.rpcMap.remove(callId);
-                    }
+                    //synchronized (AgentEngine.rpcMap) {
+                    ce = AgentEngine.rpcMap.get(callId);
+                    AgentEngine.rpcMap.remove(callId);
 
+                    //}
                     return ce;
                 }
-                Thread.sleep(100);
+                //Thread.sleep(10);
                 count++;
             }
 

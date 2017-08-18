@@ -3,6 +3,10 @@ package core;
 import channels.MsgInQueue;
 import channels.MsgRoute;
 import channels.RPCCall;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.collect.MapMaker;
 import com.researchworx.cresco.library.messaging.MsgEvent;
 import com.researchworx.cresco.library.utilities.CLogger;
 import org.apache.commons.configuration.ConfigurationException;
@@ -16,10 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
@@ -98,10 +99,23 @@ public class AgentEngine {
 
             //msgInProcessQueue = Executors.newFixedThreadPool(4);
             msgInProcessQueue = Executors.newCachedThreadPool();
+            //msgInProcessQueue = Executors.newSingleThreadExecutor();
 
             //create logger and base queue
             msgInQueue = new ConcurrentLinkedQueue<>();
-            rpcMap = new ConcurrentHashMap<>();
+
+            //rpcMap = new java.util.WeakHashMap<>();
+            //rpcMap = new ConcurrentHashMap<>();
+
+            rpcMap = new MapMaker()
+                    .concurrencyLevel(4)
+                    .weakValues()
+                    .weakKeys()
+                    .makeMap();
+
+                    //.expiration(10, TimeUnit.SECONDS)
+                    //.makeMap();
+
 
             //Cleanup on Shutdown
             Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
@@ -176,6 +190,48 @@ public class AgentEngine {
 
                     if (input.length() > 0) {
                         try {
+
+                            //do a pong!
+
+                            long starttime = System.currentTimeMillis();
+                            int count = 1;
+
+                            int samples = Integer.parseInt(input);
+
+                            RPCCall rpc = new RPCCall();
+
+                            while(count < samples) {
+                                MsgEvent me = new MsgEvent(MsgEvent.Type.EXEC, region, agent, controllerPluginSlot, "external");
+                                me.setParam("action","ping");
+                                //me.setParam("action","noop");
+                                me.setParam("src_region", region);
+                                me.setParam("src_agent", agent);
+                                me.setParam("dst_region", region);
+                                me.setParam("dst_agent", agent);
+                                me.setParam("dst_plugin", controllerPluginSlot);
+
+                                me.setParam("count",String.valueOf(count));
+                                //msgIn(me);
+                                //System.out.print(".");
+                                MsgEvent re = rpc.call(me);
+                                //System.out.println(re.getParams());
+                                //AgentEngine.msgInQueue.offer(me);
+                                //AgentEngine.pluginMap.get(AgentEngine.controllerPluginSlot) .Message(me);
+                                count++;
+                            }
+
+                            System.out.println("RPC SIZE: " + AgentEngine.rpcMap.size());
+
+                            //System.out.println(".");
+                            long endtime = System.currentTimeMillis();
+                            long elapsed = (endtime - starttime);
+                            float timemp = elapsed/samples;
+                            float mps = samples/((endtime - starttime)/1000);
+                            System.out.println("elapsed time: " + elapsed);
+                            System.out.println("time per message: " + timemp);
+                            System.out.println("Samples: " + samples + " MPS: " + mps);
+
+                            /*
                             String[] sstr = input.split("_");
                             //System.out.println("region: " + sstr[0] + " agent=" + sstr[1] + " plugin=" + sstr[2]);
                             //System.out.println("controllerPluginSlot=" + controllerPluginSlot);
@@ -192,9 +248,11 @@ public class AgentEngine {
                             if (re != null) {
                                 System.out.println("MESSAGE RETURNED : " + re.getParams());
                             }
+                            */
 
                         } catch (Exception ex) {
                             ex.printStackTrace();
+
                         }
 
                     }

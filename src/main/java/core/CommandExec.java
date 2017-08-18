@@ -39,8 +39,13 @@ public class CommandExec {
             if(ce.getMsgType() == MsgEvent.Type.EXEC) {
 
                 switch (ce.getParam("action")) {
+
+                    case "ping":
+                        return pingReply(ce);
+
                     default:
                         logger.error("Unknown configtype found {} for {}:", ce.getParam("action"), ce.getMsgType().toString());
+                        logger.error("Unknown message {}",ce.getParams());
                         return null;
                 }
 
@@ -76,6 +81,14 @@ public class CommandExec {
             ex.printStackTrace();
         }
         return null;
+    }
+
+    private MsgEvent pingReply(MsgEvent msg) {
+        logger.debug("ping message type found");
+        msg.setParam("action","pong");
+        msg.setParam("remote_ts", String.valueOf(System.currentTimeMillis()));
+        logger.debug("Returning communication details to Cresco agent");
+        return msg;
     }
 
     void watchdogUpdate(MsgEvent ce) {
