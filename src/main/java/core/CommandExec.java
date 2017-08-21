@@ -1,5 +1,6 @@
 package core;
 
+import channels.RPCCall;
 import com.researchworx.cresco.library.messaging.MsgEvent;
 import org.apache.commons.configuration.ConfigurationException;
 import org.slf4j.Logger;
@@ -84,12 +85,50 @@ public class CommandExec {
     }
 
     private MsgEvent pingReply(MsgEvent msg) {
-        logger.debug("ping message type found");
+
+        if(msg.getParam("reversecount") != null) {
+
+            long starttime = System.currentTimeMillis();
+            int count = 1;
+
+            int samples = Integer.parseInt(msg.getParam("reversecount"));
+
+            while(count < samples) {
+                MsgEvent me = new MsgEvent(MsgEvent.Type.EXEC, AgentEngine.region, AgentEngine.agent, null, "external");
+                me.setParam("action","ping");
+                //me.setParam("action","noop");
+                me.setParam("src_region", AgentEngine.region);
+                me.setParam("src_agent", AgentEngine.agent);
+                me.setParam("dst_region", me.getParam("src_region"));
+                me.setParam("dst_agent", me.getParam("src_agent"));
+                if(msg.getParam("src_plugin") != null) {
+                    me.setParam("dst_plugin", msg.getParam("src_plugin"));
+                }
+                me.setParam("count",String.valueOf(count));
+                //msgIn(me);
+                //System.out.print(".");
+                MsgEvent re = new RPCCall().call(me);
+                logger.error("REC MESSAGE FROM CONTROLLER : " + re.getParams());
+                count++;
+            }
+
+            long endtime = System.currentTimeMillis();
+            long elapsed = (endtime - starttime);
+            float timemp = elapsed/samples;
+            float mps = samples/((endtime - starttime)/1000);
+            msg.setParam("elapsedtime",String.valueOf(elapsed));
+            msg.setParam("timepermessage",String.valueOf(timemp));
+            msg.setParam("mps",String.valueOf(mps));
+            msg.setParam("samples",String.valueOf(samples));
+        }
+
         msg.setParam("action","pong");
+        logger.debug("ping message type found");
         msg.setParam("remote_ts", String.valueOf(System.currentTimeMillis()));
-        logger.debug("Returning communication details to Cresco agent");
+        msg.setParam("type", "agent");
         return msg;
     }
+
 
     void watchdogUpdate(MsgEvent ce) {
         String src_agent = ce.getParam("src_agent");

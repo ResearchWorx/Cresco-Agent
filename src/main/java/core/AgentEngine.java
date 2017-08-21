@@ -3,9 +3,6 @@ package core;
 import channels.MsgInQueue;
 import channels.MsgRoute;
 import channels.RPCCall;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import com.google.common.collect.MapMaker;
 import com.researchworx.cresco.library.messaging.MsgEvent;
 import com.researchworx.cresco.library.utilities.CLogger;
@@ -41,6 +38,7 @@ public class AgentEngine {
 
     public static ExecutorService msgInProcessQueue;
 
+    //todo replace this queue with a blocking queue
     public static ConcurrentLinkedQueue<MsgEvent> msgInQueue;
     public static Thread MsgInQueueThread;
     public static boolean MsgInQueueEnabled = false; //control service on/off
@@ -105,18 +103,16 @@ public class AgentEngine {
             msgInQueue = new ConcurrentLinkedQueue<>();
 
             //rpcMap = new java.util.WeakHashMap<>();
-            //rpcMap = new ConcurrentHashMap<>();
-
+            rpcMap = new ConcurrentHashMap<>();
+            //rpcMap = Collections.synchronizedMap(new HashMap());
+            //todo there is still a problem with entries not being removed under load #memoryleak
+            /*
             rpcMap = new MapMaker()
-                    .concurrencyLevel(4)
+                    //.concurrencyLevel(1)
                     .weakValues()
                     .weakKeys()
                     .makeMap();
-
-                    //.expiration(10, TimeUnit.SECONDS)
-                    //.makeMap();
-
-
+            */
             //Cleanup on Shutdown
             Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
                 public void run() {
@@ -136,7 +132,7 @@ public class AgentEngine {
             MsgInQueueThread = new Thread(miq);
             MsgInQueueThread.start();
             while (!MsgInQueueEnabled) {
-                Thread.sleep(100);
+                Thread.sleep(1000);
             }
 
             //region and agent names might be changed by the controller
@@ -194,11 +190,11 @@ public class AgentEngine {
                             //do a pong!
 
                             long starttime = System.currentTimeMillis();
-                            int count = 1;
+                            int count = 0;
 
                             int samples = Integer.parseInt(input);
 
-                            RPCCall rpc = new RPCCall();
+                            //RPCCall rpc = new RPCCall();
 
                             while(count < samples) {
                                 MsgEvent me = new MsgEvent(MsgEvent.Type.EXEC, region, agent, controllerPluginSlot, "external");
@@ -209,12 +205,15 @@ public class AgentEngine {
                                 me.setParam("dst_region", region);
                                 me.setParam("dst_agent", agent);
                                 me.setParam("dst_plugin", controllerPluginSlot);
-
+                                //me.setParam("reversecount","10");
                                 me.setParam("count",String.valueOf(count));
                                 //msgIn(me);
                                 //System.out.print(".");
-                                MsgEvent re = rpc.call(me);
+
+                                MsgEvent re = new RPCCall().call(me);
+
                                 //System.out.println(re.getParams());
+
                                 //AgentEngine.msgInQueue.offer(me);
                                 //AgentEngine.pluginMap.get(AgentEngine.controllerPluginSlot) .Message(me);
                                 count++;
@@ -223,6 +222,7 @@ public class AgentEngine {
                             System.out.println("RPC SIZE: " + AgentEngine.rpcMap.size());
 
                             //System.out.println(".");
+
                             long endtime = System.currentTimeMillis();
                             long elapsed = (endtime - starttime);
                             float timemp = elapsed/samples;
@@ -230,6 +230,7 @@ public class AgentEngine {
                             System.out.println("elapsed time: " + elapsed);
                             System.out.println("time per message: " + timemp);
                             System.out.println("Samples: " + samples + " MPS: " + mps);
+
 
                             /*
                             String[] sstr = input.split("_");

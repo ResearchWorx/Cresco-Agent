@@ -13,6 +13,8 @@ public class MsgInQueue implements Runnable {
         commandExec = new CommandExec();
     }
 
+
+
     public void run() {
         AgentEngine.MsgInQueueEnabled = true;
         while (AgentEngine.MsgInQueueEnabled) {
@@ -22,11 +24,14 @@ public class MsgInQueue implements Runnable {
                         while ((!AgentEngine.msgInQueue.isEmpty()) && AgentEngine.MsgInQueueEnabled) {
                             MsgEvent me = AgentEngine.msgInQueue.poll(); //get logevent
                             //new MsgRoute(me).run(); //route messages in new thread
-                            AgentEngine.msgIn(me);
+                            //if(me != null) {
+                                AgentEngine.msgIn(me);
+                            //}
                         }
                     }
                 }
-                Thread.sleep(100);
+                Thread.sleep(10);
+                //Thread.yield();
             } catch (Exception ex) {
                 System.out.println("Agent : MsgInQueue Error :" + ex.getMessage());
             }
@@ -34,4 +39,5 @@ public class MsgInQueue implements Runnable {
         }
         //shutdown was called
     }
+
 }
