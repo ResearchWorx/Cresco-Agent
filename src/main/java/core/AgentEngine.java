@@ -205,7 +205,7 @@ public class AgentEngine {
                                 me.setParam("dst_region", region);
                                 me.setParam("dst_agent", agent);
                                 me.setParam("dst_plugin", controllerPluginSlot);
-                                //me.setParam("reversecount","10");
+                                me.setParam("reversecount","10");
                                 me.setParam("count",String.valueOf(count));
                                 //msgIn(me);
                                 //System.out.print(".");
