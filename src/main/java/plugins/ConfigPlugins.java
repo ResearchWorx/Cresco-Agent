@@ -122,6 +122,24 @@ public class ConfigPlugins {
         return sb.toString().substring(0,sb.length()-1);
     }
 
+    public Map<String,String> getPluginConfigMap(String pluginID) {
+        Map<String,String> confMap = null;
+        try {
+            confMap = new HashMap<>();
+            SubnodeConfiguration sObj = iniConfObj.getSection(pluginID);
+            Iterator it = sObj.getKeys();
+            while (it.hasNext()) {
+                String key = (String)it.next();
+                String value = sObj.getString(key);
+                confMap.put(key,value);
+            }
+
+        } catch(Exception ex) {
+            System.out.println("ConfigPlugins getPluginConfigMap() Error " + ex.getMessage());
+        }
+        return confMap;
+    }
+
     public Map<String,String> getMapFromString(String param, boolean isRestricted) {
         Map<String,String> paramMap = null;
 

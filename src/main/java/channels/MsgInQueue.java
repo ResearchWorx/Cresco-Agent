@@ -20,7 +20,7 @@ public class MsgInQueue implements Runnable {
         while (AgentEngine.MsgInQueueEnabled) {
             try {
                 if (AgentEngine.MsgInQueueActive) {
-                    synchronized (AgentEngine.msgInQueue) {
+                    //synchronized (AgentEngine.msgInQueue) {
                         while ((!AgentEngine.msgInQueue.isEmpty()) && AgentEngine.MsgInQueueEnabled) {
                             MsgEvent me = AgentEngine.msgInQueue.poll(); //get logevent
                             //new MsgRoute(me).run(); //route messages in new thread
@@ -28,9 +28,9 @@ public class MsgInQueue implements Runnable {
                                 AgentEngine.msgIn(me);
                             //}
                         }
-                    }
+                    //}
                 }
-                Thread.sleep(10);
+                Thread.sleep(1);
                 //Thread.yield();
             } catch (Exception ex) {
                 System.out.println("Agent : MsgInQueue Error :" + ex.getMessage());

@@ -36,6 +36,7 @@ public class WatchDog {
 		  le.setParam("dst_region", AgentEngine.region);
 		  //le.setParam("is_active", Boolean.TRUE.toString());
 		  le.setParam("action", "enable");
+		  le.setParam("pluginconfigs", AgentEngine.pluginexport.getPluginExport());
 		  le.setParam("watchdogtimer",watchDogTimerString);
 
           String platform = System.getenv("CRESCO_PLATFORM");
@@ -128,6 +129,9 @@ public class WatchDog {
 	    		le.setParam("src_region", AgentEngine.region);
 	  		    le.setParam("src_agent", AgentEngine.agent);
 	  		    le.setParam("dst_region", AgentEngine.region);
+	  		    if(AgentEngine.regionUpdate) {
+					le.setParam("pluginconfigs", AgentEngine.pluginexport.getPluginExport());
+				}
 	  		    //AgentEngine.clog.log(le);
 				AgentEngine.msgInQueue.offer(le);
 	    	}

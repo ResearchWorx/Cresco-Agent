@@ -3,24 +3,24 @@ package core;
 import channels.MsgInQueue;
 import channels.MsgRoute;
 import channels.RPCCall;
-import com.google.common.collect.MapMaker;
 import com.researchworx.cresco.library.messaging.MsgEvent;
 import com.researchworx.cresco.library.utilities.CLogger;
 import org.apache.commons.configuration.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import plugins.ConfigPlugins;
-import plugins.Plugin;
-import plugins.PluginManager;
+import plugins.*;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
+import java.util.zip.GZIPOutputStream;
 
 public class AgentEngine {
     private static Logger coreLogger;
@@ -31,6 +31,9 @@ public class AgentEngine {
     public static String channelPluginSlot;
     public static boolean isRegionalController = false;
     public static boolean isGlobalController = false;
+    public static PluginExport pluginexport;
+
+    public static boolean regionUpdate = false;
 
     public static String controllerPluginSlot;
 
@@ -50,6 +53,7 @@ public class AgentEngine {
     public static CommandExec commandExec;
     public static Map<String, MsgEvent> rpcMap;
 
+    public static PluginHealthWatcher phw;
 
     public static boolean watchDogActive = false; //agent watchdog on/off
     public static String agentVersion = null;
@@ -138,6 +142,8 @@ public class AgentEngine {
             //region and agent names might be changed by the controller
             region = "region-" + java.util.UUID.randomUUID().toString();
             agent = "agent-" + java.util.UUID.randomUUID().toString();
+            //region = "init";
+            //agent = "init";
 
 
             //Establish  a named map of plugin interfaces
@@ -145,6 +151,9 @@ public class AgentEngine {
 
             //build initial plugin list
             processPlugins();
+
+            //class to export plugin configs
+            pluginexport = new PluginExport();
 
             //delay and waiting for network init.
             if(config.getStringParams("general", "startupdelay") != null) {
@@ -163,15 +172,10 @@ public class AgentEngine {
 
             while(!watchDogActive)
             {
-                //just sleep until isActive=false
-                //need to add ability to control other threads here.
-                //need to add upgrade ability
                 Thread.sleep(1000);
             }
 
-
-            //todo send inventory now to controller
-
+            phw = new PluginHealthWatcher();
 
             Scanner scanner = new Scanner(System.in);
             boolean noConsole = false;
@@ -625,10 +629,47 @@ public class AgentEngine {
         return pluginList;
     }
 
+    public static byte[] stringCompress(String str) {
+        byte[] dataToCompress = str.getBytes(StandardCharsets.UTF_8);
+        byte[] compressedData = null;
+        try
+        {
+            ByteArrayOutputStream byteStream =
+                    new ByteArrayOutputStream(dataToCompress.length);
+            try
+            {
+                GZIPOutputStream zipStream =
+                        new GZIPOutputStream(byteStream);
+                try
+                {
+                    zipStream.write(dataToCompress);
+                }
+                finally
+                {
+                    zipStream.close();
+                }
+            }
+            finally
+            {
+                byteStream.close();
+            }
+
+            compressedData = byteStream.toByteArray();
+
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        return compressedData;
+    }
+
     static void cleanup() throws ConfigurationException, IOException, InterruptedException {
         try {
             coreLogger.info("Shutdown initiated");
             //wd.timer.cancel();
+
+            phw.timer.cancel();
 
             wd.shutdown(true);
 

@@ -45,6 +45,8 @@ public class RPCCall {
                     AgentEngine.rpcMap.remove(callId);
                     //}
                     return ce;
+                } else {
+                    Thread.sleep(1);
                 }
 
             }
