@@ -33,7 +33,7 @@ public class RPCCall {
             me.setParam("callId-" + AgentEngine.region + "_" + AgentEngine.agent, callId);
             me.setParam("is_rpc", "true");
 
-            AgentEngine.msgInQueue.offer(me);
+            AgentEngine.msgInQueue.add(me);
 
             MsgEvent ce = null;
             while (timerActive) {

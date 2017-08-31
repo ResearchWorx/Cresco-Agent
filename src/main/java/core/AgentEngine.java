@@ -41,8 +41,8 @@ public class AgentEngine {
 
     public static ExecutorService msgInProcessQueue;
 
-    //todo replace this queue with a blocking queue
-    public static ConcurrentLinkedQueue<MsgEvent> msgInQueue;
+    public static BlockingQueue<MsgEvent> msgInQueue;
+
     public static Thread MsgInQueueThread;
     public static boolean MsgInQueueEnabled = false; //control service on/off
     public static boolean MsgInQueueActive = false; //control service on/off
@@ -104,7 +104,7 @@ public class AgentEngine {
             //msgInProcessQueue = Executors.newSingleThreadExecutor();
 
             //create logger and base queue
-            msgInQueue = new ConcurrentLinkedQueue<>();
+            msgInQueue = new LinkedBlockingQueue<>();
 
             //rpcMap = new java.util.WeakHashMap<>();
             rpcMap = new ConcurrentHashMap<>();
@@ -218,7 +218,7 @@ public class AgentEngine {
 
                                 //System.out.println(re.getParams());
 
-                                //AgentEngine.msgInQueue.offer(me);
+                                //AgentEngine.msgInQueue.add(me);
                                 //AgentEngine.pluginMap.get(AgentEngine.controllerPluginSlot) .Message(me);
                                 count++;
                             }
@@ -716,7 +716,7 @@ public class AgentEngine {
                 de.setParam("dst_region", region);
 
                 //AgentEngine.commandExec.cmdExec(de);
-                AgentEngine.msgInQueue.offer(de);
+                AgentEngine.msgInQueue.add(de);
                 Thread.sleep(5000);
                 disablePlugin(channelPluginSlot, false);
                 */

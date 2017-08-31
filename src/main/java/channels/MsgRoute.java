@@ -150,7 +150,7 @@ public class MsgRoute implements Runnable {
                             re.getParam("src_region"), re.getParam("src_agent"), re.getParam("src_plugin"),
                             re.getParam("dst_region"), re.getParam("dst_agent"), re.getParam("dst_plugin"),
                             re.getParams());
-                    AgentEngine.msgInQueue.offer(re);
+                    AgentEngine.msgInQueue.add(re);
                 }
             //}
         } catch (Exception ex) {

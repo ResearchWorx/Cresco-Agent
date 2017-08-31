@@ -92,7 +92,7 @@ public class WatchDog {
           //public String[] aNodeIndexParams = {"platform","environment","location"};
 
 
-          AgentEngine.msgInQueue.offer(le);
+          AgentEngine.msgInQueue.add(le);
 		  //MsgEvent re = new RPCCall().call(le);
 		  //System.out.println("RPC ENABLE: " + re.getMsgBody() + " [" + re.getParams().toString() + "]");
 		  AgentEngine.watchDogActive = true;
@@ -107,7 +107,7 @@ public class WatchDog {
               //le.setParam("is_active", Boolean.FALSE.toString());
 			  le.setParam("action", "disable");
               le.setParam("watchdogtimer", watchDogTimerString);
-			  AgentEngine.msgInQueue.offer(le);
+			  AgentEngine.msgInQueue.add(le);
               //MsgEvent re = new RPCCall().call(le);
               //System.out.println("RPC DISABLE: " + re.getMsgBody() + " [" + re.getParams().toString() + "]");
           }
@@ -133,7 +133,7 @@ public class WatchDog {
 					le.setParam("pluginconfigs", AgentEngine.pluginexport.getPluginExport());
 				}
 	  		    //AgentEngine.clog.log(le);
-				AgentEngine.msgInQueue.offer(le);
+				AgentEngine.msgInQueue.add(le);
 	    	}
 	    }
 	  }

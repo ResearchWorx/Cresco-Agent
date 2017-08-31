@@ -13,7 +13,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
@@ -66,10 +67,10 @@ public class Plugin {
         }
     }
 
-    public boolean Start(ConcurrentLinkedQueue<MsgEvent> msgQueue, SubnodeConfiguration config, String region, String agent, String pluginID) {
+    public boolean Start(BlockingQueue<MsgEvent> msgQueue, SubnodeConfiguration config, String region, String agent, String pluginID) {
         String methodName = "initialize";
         try {
-            Method method = instance.getClass().getSuperclass().getDeclaredMethod(methodName, ConcurrentLinkedQueue.class, SubnodeConfiguration.class, String.class, String.class, String.class);
+            Method method = instance.getClass().getSuperclass().getDeclaredMethod(methodName, BlockingQueue.class, SubnodeConfiguration.class, String.class, String.class, String.class);
             try {
                 active = (boolean) method.invoke(instance, msgQueue, config, region, agent, pluginID);
                 status = 4;
