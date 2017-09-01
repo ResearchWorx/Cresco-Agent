@@ -5,6 +5,9 @@ import core.AgentEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 public class MsgRoute implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger("Routing");
 
@@ -169,13 +172,29 @@ public class MsgRoute implements Runnable {
             if (rm.getParam(callId) != null) { //send message to RPC hash
                 logger.debug("callId={}", callId);
                 logger.trace("Putting on RPC map");
+
+                //synchronized(AgentEngine.rpcReceipts) {
+
                 AgentEngine.rpcMap.put(rm.getParam(callId), rm);
+                //Object receipt = AgentEngine.rpcReceipts.get(rm.getParam(callId));
+                    //receipt.notifyAll();
+                //synchronized(receipt) {
+                //receipt.notify();
+                //}
+                //synchronized (AgentEngine.rpcMap) {
+                    //AgentEngine.rpcMap.put(rm.getParam(callId), rm);
+                    //AgentEngine.rpcMap.notifyAll();
+                //}
             } else {
                 logger.trace("Executing message");
                 return AgentEngine.commandExec.cmdExec(rm);
             }
         } catch (Exception ex) {
             logger.error("getCommandExec : " + ex.getMessage());
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            logger.error("getCommandExec : " + errors);
+
         }
         return null;
     }

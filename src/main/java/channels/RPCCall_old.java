@@ -6,13 +6,13 @@ import core.AgentEngine;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class RPCCall {
+public class RPCCall_old {
 
     private Timer timer;
     private long timeout = 15000L;
     private boolean timerActive = false;
 
-    public RPCCall() {
+    public RPCCall_old() {
         timer = new Timer();
 
     }
@@ -23,38 +23,6 @@ public class RPCCall {
         }
     }
 
-    public MsgEvent call2(MsgEvent msg) {
-        try {
-            int MAX_INTERVALS = 10;
-
-            String callId = java.util.UUID.randomUUID().toString();
-            msg.setParam("callId-" + AgentEngine.region + "_" + AgentEngine.agent, callId);
-            msg.setParam("is_rpc", "true");
-            AgentEngine.msgInQueue.add(msg);
-
-            Object receipt = new Object();
-            AgentEngine.rpcReceipts.put(callId, receipt);
-
-            int count = 0;
-            while (count++ < MAX_INTERVALS) {
-                synchronized(receipt) {
-                    receipt.wait();
-                }
-                    if (AgentEngine.rpcMap.containsKey(callId)) {
-                        MsgEvent callBack;
-                        callBack = AgentEngine.rpcMap.get(callId);
-                        AgentEngine.rpcMap.remove(callId);
-                        return callBack;
-                    }
-
-            }
-        } catch (Exception ex) {
-            System.out.println("Controller : RPCCall : RPC failed " + ex.toString());
-        }
-        return null;
-    }
-
-    //todo find blocking method for rpc to prevent high cpu during wait on mesage return
     public MsgEvent call(MsgEvent me) {
         try {
 

@@ -51,7 +51,9 @@ public class AgentEngine {
     public static boolean ControllerActive = false; //control service on/off
 
     public static CommandExec commandExec;
-    public static Map<String, MsgEvent> rpcMap;
+    public static ConcurrentMap<String, MsgEvent> rpcMap;
+
+    public static ConcurrentMap<String, Object> rpcReceipts;
 
     public static PluginHealthWatcher phw;
 
@@ -73,6 +75,7 @@ public class AgentEngine {
     public static PluginManager pluginManager;
 
     public static void main(String[] args) throws Exception {
+
         //Make sure initial input is sane.
         String configFile = checkConfig(args);
 
@@ -108,6 +111,8 @@ public class AgentEngine {
 
             //rpcMap = new java.util.WeakHashMap<>();
             rpcMap = new ConcurrentHashMap<>();
+            rpcReceipts = new ConcurrentHashMap<>();
+
             //rpcMap = Collections.synchronizedMap(new HashMap());
             //todo there is still a problem with entries not being removed under load #memoryleak
             /*
@@ -209,10 +214,11 @@ public class AgentEngine {
                                 me.setParam("dst_region", region);
                                 me.setParam("dst_agent", agent);
                                 me.setParam("dst_plugin", controllerPluginSlot);
-                                me.setParam("reversecount","10");
+                                //me.setParam("reversecount","10");
                                 me.setParam("count",String.valueOf(count));
                                 //msgIn(me);
-                                //System.out.print(".");
+
+                                System.out.print(" " + count + " ");
 
                                 MsgEvent re = new RPCCall().call(me);
 
@@ -273,7 +279,7 @@ public class AgentEngine {
                     System.out.println("Name of Agent to message [q to quit]: ");
 
 
-
+                    //Thread.sleep(1);
                     input = scanner.nextLine();
                 }
             } catch (java.util.NoSuchElementException nse) {

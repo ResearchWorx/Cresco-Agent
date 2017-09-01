@@ -1,6 +1,5 @@
 package core;
 
-import channels.RPCCall;
 import com.researchworx.cresco.library.messaging.MsgEvent;
 
 import java.net.InetAddress;

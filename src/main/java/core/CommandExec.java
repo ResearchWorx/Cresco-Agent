@@ -5,8 +5,6 @@ import com.researchworx.cresco.library.messaging.MsgEvent;
 import org.apache.commons.configuration.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import plugins.Plugin;
-import sun.management.Agent;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -23,7 +21,6 @@ import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 
-import static core.AgentEngine.main;
 import static core.AgentEngine.pluginsconfig;
 
 public class CommandExec {
