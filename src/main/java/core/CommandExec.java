@@ -21,6 +21,7 @@ import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 
+import static core.AgentEngine.isCommInit;
 import static core.AgentEngine.pluginsconfig;
 
 public class CommandExec {
@@ -143,7 +144,7 @@ public class CommandExec {
         String src_agent = ce.getParam("src_agent");
         String src_region = ce.getParam("src_region");
         String src_plugin = ce.getParam("src_plugin");
-        if(src_agent.equals(AgentEngine.agent) && src_region.equals(AgentEngine.region)) {
+        if((src_agent.equals(AgentEngine.agent) && src_region.equals(AgentEngine.region)) || !isCommInit) {
             //status = 10, plugin enabled
             AgentEngine.pluginMap.get(src_plugin).setStatus(10);
             AgentEngine.pluginMap.get(src_plugin).setWatchDogTimer(Long.parseLong(ce.getParam("watchdogtimer")));
@@ -179,7 +180,6 @@ public class CommandExec {
             AgentEngine.isCommInit = true;
             AgentEngine.isRegionalController = Boolean.parseBoolean(ce.getParam("is_regional_controller"));
             AgentEngine.isGlobalController = Boolean.parseBoolean(ce.getParam("is_global_controller"));
-
 
         } else {
             //failover startup

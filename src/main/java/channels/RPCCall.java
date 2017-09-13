@@ -87,7 +87,6 @@ public class RPCCall {
                 }
 
             }
-
             return null;
         } catch (Exception ex) {
             System.out.println("Controller : RPCCall : RPC failed " + ex.toString());

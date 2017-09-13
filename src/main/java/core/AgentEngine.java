@@ -145,10 +145,10 @@ public class AgentEngine {
             }
 
             //region and agent names might be changed by the controller
-            region = "region-" + java.util.UUID.randomUUID().toString();
-            agent = "agent-" + java.util.UUID.randomUUID().toString();
-            //region = "init";
-            //agent = "init";
+            //region = "region-" + java.util.UUID.randomUUID().toString();
+            //agent = "agent-" + java.util.UUID.randomUUID().toString();
+            region = "init";
+            agent = "init";
 
 
             //Establish  a named map of plugin interfaces
@@ -218,7 +218,7 @@ public class AgentEngine {
                                 me.setParam("count",String.valueOf(count));
                                 //msgIn(me);
 
-                                System.out.print(" " + count + " ");
+                                //System.out.print(" " + count + " ");
 
                                 MsgEvent re = new RPCCall().call(me);
 
@@ -235,10 +235,10 @@ public class AgentEngine {
 
                             long endtime = System.currentTimeMillis();
                             long elapsed = (endtime - starttime);
-                            float timemp = elapsed/samples;
-                            float mps = samples/((endtime - starttime)/1000);
+                            //float timemp = elapsed/samples;
+                            float mps = (samples/elapsed)*1000;
                             System.out.println("elapsed time: " + elapsed);
-                            System.out.println("time per message: " + timemp);
+                            //System.out.println("time per message: " + timemp);
                             System.out.println("Samples: " + samples + " MPS: " + mps);
 
 

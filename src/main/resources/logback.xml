@@ -95,12 +95,12 @@
 		<appender-ref ref="FILE-PLUGINS" />
 	</logger>
 
-	<logger name="Routing" level="info" additivity="false">
+	<logger name="MsgRoute" level="info" additivity="false">
 		<appender-ref ref="STDOUT" />
 		<appender-ref ref="FILE-ROUTING" />
 	</logger>
 
-	<logger name="Logging" level="trace" additivity="false">
+	<logger name="Logging" level="info" additivity="false">
 		<appender-ref ref="STDOUT" />
 		<appender-ref ref="FILE-LOGGING" />
 	</logger>

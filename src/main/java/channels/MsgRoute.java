@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 public class MsgRoute implements Runnable {
-    private static final Logger logger = LoggerFactory.getLogger("Routing");
+    private static final Logger logger = LoggerFactory.getLogger("MsgRoute");
 
     private MsgEvent rm;
 
@@ -59,7 +59,8 @@ public class MsgRoute implements Runnable {
                 switch (routePath) {
                     case 0:
                         logger.trace("Case 0: COMMINIT Message to Controller");
-                        sendToController();
+                        //sendToController();
+                        getCommandExec();
                         break;
 
                     case 16:
@@ -290,7 +291,7 @@ public class MsgRoute implements Runnable {
                     logger.error("**Agent : MsgRoute : High Loop Count**");
                     logger.error("MsgType=" + rm.getMsgType().toString());
                     logger.error("RoutePath=" + getRoutePath());
-                    logger.error("Region=" + rm.getMsgRegion() + " Agent=" + rm.getMsgAgent() + " plugin=" + rm.getMsgPlugin());
+                    //logger.error("Region=" + rm.getMsgRegion() + " Agent=" + rm.getMsgAgent() + " plugin=" + rm.getMsgPlugin());
                     logger.error("params=" + rm.getParams());
                     isValid = false;
                 }
