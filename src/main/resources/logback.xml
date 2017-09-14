@@ -100,7 +100,7 @@
 		<appender-ref ref="FILE-ROUTING" />
 	</logger>
 
-	<logger name="Logging" level="info" additivity="false">
+	<logger name="Logging" level="trace" additivity="false">
 		<appender-ref ref="STDOUT" />
 		<appender-ref ref="FILE-LOGGING" />
 	</logger>

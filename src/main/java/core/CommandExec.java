@@ -136,7 +136,9 @@ public class CommandExec {
             AgentEngine.pluginMap.get(src_plugin).setRuntime(Long.parseLong(ce.getParam("runtime")));
             logger.debug("Plugin {} status {}",src_plugin, AgentEngine.pluginMap.get(src_plugin).getStatus());
         } else {
-            logger.error("Can't update watchdog plugin: {} for remote host: {} {} on {} {}",src_plugin, src_region, src_agent, AgentEngine.region, AgentEngine.agent);
+            if (AgentEngine.isCommInit) {
+                logger.error("Can't update watchdog plugin: {} for remote host: {} {} on {} {}", src_plugin, src_region, src_agent, AgentEngine.region, AgentEngine.agent);
+            }
         }
     }
 
