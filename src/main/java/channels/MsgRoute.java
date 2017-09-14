@@ -60,7 +60,12 @@ public class MsgRoute implements Runnable {
                     case 0:
                         logger.trace("Case 0: COMMINIT Message to Controller");
                         //sendToController();
-                        getCommandExec();
+                        if(!AgentEngine.isCommInit) {
+                            //during init this is needed to change name agent/region name
+                            getCommandExec();
+                        } else {
+                            logger.error("Case 0: This should not happen! " + rm.getParams());
+                        }
                         break;
 
                     case 16:

@@ -2,6 +2,7 @@ package plugins;
 
 import com.researchworx.cresco.library.messaging.MsgEvent;
 import com.researchworx.cresco.library.plugin.core.CPlugin;
+import core.AgentEngine;
 import org.apache.commons.configuration.SubnodeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,7 +74,21 @@ public class Plugin {
             Method method = instance.getClass().getSuperclass().getDeclaredMethod(methodName, BlockingQueue.class, SubnodeConfiguration.class, String.class, String.class, String.class);
             try {
                 active = (boolean) method.invoke(instance, msgQueue, config, region, agent, pluginID);
-                status = 4;
+                //status = 4;
+                if(!AgentEngine.isCommInit) {
+                    status = 10;
+                } else {
+                    try {
+                        int count = 0;
+                        while ((status != 10) && (count < 120)) {
+                            logger.info("Waiting on enable for plugin {} current status: {}", pluginID, status);
+                            Thread.sleep(500);
+                            count++;
+                        }
+                    } catch(Exception ex) {
+                        status = 80; //failed to start
+                    }
+                }
                 return active;
             } catch (IllegalArgumentException e) {
                 logger.error("Plugin [{}] Illegal Argument Exception: [{}] method invoked using illegal arguments [{}]", pluginID, methodName, e.getMessage());
@@ -176,9 +191,22 @@ public class Plugin {
         }
 
         if(isStopped) {
-            status = 7;
+
+            try {
+                int count = 0;
+                while((status != 8) && (count < 10)) { //if plugin can't be confirmed down in 5 sec fail
+                    logger.debug("Waiting on disable for plugin {} current status: {}", pluginID, status);
+                    Thread.sleep(500);
+                    count++;
+                }
+                if(count == 10) {
+                    status = 92; //timeout on disable verification
+                }
+            } catch (Exception ex) {
+                status = 91; //Exception on timeout verification to confirm down
+            }
         } else {
-            status = 90;
+            status = 90; //Exception on timeout shutdown
         }
     }
 

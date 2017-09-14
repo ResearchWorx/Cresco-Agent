@@ -455,12 +455,12 @@ public class AgentEngine {
                         pluginsLogger.error("[{}] - Shutdown error - [Exception: {}]", pluginID, e.getMessage());
                     }
                     int status = pluginMap.get(pluginID).getStatus();
-                    while(status != 8) {
-                        pluginsLogger.debug("Waiting on disable for plugin {} current status: {}", pluginID, status);
-                        Thread.sleep(500);
-                        status = pluginMap.get(pluginID).getStatus();
+
+                    if(status != 8) {
+                        pluginsLogger.error("[{}] unable to confirm disabled. [Name: {}, Version: {}]", pluginID, plugin.getName(), plugin.getVersion());
+                    } else {
+                        pluginsLogger.info("[{}] disabled. [Name: {}, Version: {}]", pluginID, plugin.getName(), plugin.getVersion());
                     }
-                    pluginsLogger.info("[{}] disabled. [Name: {}, Version: {}]", pluginID, plugin.getName(), plugin.getVersion());
                     pluginMap.remove(pluginID);
                     if (save)
                         pluginsconfig.setPluginStatus(pluginID, 0);
@@ -511,12 +511,32 @@ public class AgentEngine {
                     pluginsconfig.setPluginStatus(pluginID, 1);
 
                 int status = pluginMap.get(pluginID).getStatus();
-                while(status != 10) {
-                    pluginsLogger.debug("Waiting on enable for plugin {} current status: {}", pluginID, status);
-                    Thread.sleep(500);
-                    status = pluginMap.get(pluginID).getStatus();
+                if(status != 10) {
+                    pluginsLogger.error("[{}] unable to confirm enable. [Name: {}, Version: {}]", pluginID, plugin.getName(), plugin.getVersion());
+                } else {
+                    pluginsLogger.info("[{}] enabled. [Name: {}, Version: {}]", pluginID, plugin.getName(), plugin.getVersion());
+
                 }
-                pluginsLogger.info("[{}] enabled. [Name: {}, Version: {}]", pluginID, plugin.getName(), plugin.getVersion());
+                /*
+                if(isCommInit) { //let controller plugin come up without watchdog enable
+                    int count = 0;
+                    while((status != 10) && (count < 120)) {
+                        pluginsLogger.debug("Waiting on enable for plugin {} current status: {}", pluginID, status);
+                        Thread.sleep(500);
+                        status = pluginMap.get(pluginID).getStatus();
+                    }
+                    if(count == 120) {
+                        pluginsLogger.error("[{}] unable to confirm enable. [Name: {}, Version: {}]", pluginID, plugin.getName(), plugin.getVersion());
+                    } else {
+                        pluginsLogger.info("[{}] enabled. [Name: {}, Version: {}]", pluginID, plugin.getName(), plugin.getVersion());
+
+                    }
+                }
+                else {
+                    pluginsLogger.info("[{}] enabled. [Name: {}, Version: {}]", pluginID, plugin.getName(), plugin.getVersion());
+                }
+                */
+
                 return true;
 
             } catch (IOException e) {
@@ -673,93 +693,18 @@ public class AgentEngine {
     static void cleanup() throws ConfigurationException, IOException, InterruptedException {
         try {
             coreLogger.info("Shutdown initiated");
-            //wd.timer.cancel();
-
             phw.timer.cancel();
 
             wd.shutdown(true);
 
             List<String> pluginList = getActivePlugins();
-	   	    /*
-	        for(String plugin : pluginList) {
-	   		   if(((isController) && (plugin.equals(channelPluginSlot)))) {
-	   			   
-	   		    } else {
-	   			   //disablePlugin(plugin,false);
-	   		    }
-	   	    }
-	   	    */
-	        /*
-	   	    if(pluginMap != null) {
-	   		    Iterator it = pluginMap.entrySet().iterator();
-		    	while (it.hasNext()) {
-		        	Map.Entry pairs = (Map.Entry)it.next();
-		        	System.out.println(pairs.getKey() + " = " + pairs.getValue());
-		        	String plugin = pairs.getKey().toString();
-		        	disablePlugin(plugin,false);
-		        	it.remove(); // avoids a ConcurrentModificationException
-		    	}
-	   	    }
 
-            if (!isRegionalController) {
-                for (String plugin : pluginList) {
-                    if (!plugin.equals(channelPluginSlot)) {
-                        disablePlugin(plugin, false);
-                        Thread.sleep(2000);
-                    }
-                }
-                if (msgInQueue != null) {
-
-                    //disablePlugin(channelPluginSlot, false);
-
-                /*
-                MsgEvent de = clog.getLog("disabled");
-                de.setMsgType(MsgEvent.Type.CONFIG);
-                de.setMsgAgent(AgentEngine.agent); //route to this agent
-                de.setMsgPlugin(AgentEngine.channelPluginSlot); //route to controller plugin
-                de.setParam("src_region", region);
-                de.setParam("src_agent", agent);
-                de.setParam("dst_region", region);
-
-                //AgentEngine.commandExec.cmdExec(de);
-                AgentEngine.msgInQueue.add(de);
-                Thread.sleep(5000);
-                disablePlugin(channelPluginSlot, false);
-                */
-		    		/*
-		    		int time = 0;
-				    int timeout = 30; //give 30sec to timeout from RPC request
-				    
-				    
-			    	if(MsgInQueueThread != null)
-			    	{
-			    		//disablePlugin(controllerPluginSlot,false);
-			    		//disablePlugin(controllerPluginSlot,false);
-			   		 	disablePlugin(channelPluginSlot,false);
-			    		while((MsgInQueueThread.isAlive()) && (time < timeout))
-			    		{
-				    		try 
-				    		{
-								Thread.sleep(1000);
-							} 
-				    		catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-				    		time++;
-				    	}
-			    	}
-
-
-                }
-            } else {*/
-                //cleanup controller here
                 for (String plugin : pluginList) {
                     if (disablePlugin(plugin, false)) {
                         pluginsLogger.info("{} is shutdown", plugin);
                     }
                 }
-            //}
+            coreLogger.info("Shutdown Complete.");
         } catch (Exception ex) {
             ex.printStackTrace();
             System.out.println("Shutdown Error: " + ex.getMessage());
