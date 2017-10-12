@@ -155,7 +155,12 @@ public class CommandExec {
         //if((src_agent.equals(AgentEngine.agent) && src_region.equals(AgentEngine.region)) || !isCommInit) {
             //status = 10, plugin enabled
             AgentEngine.pluginMap.get(src_plugin).setStatus(10);
-            AgentEngine.pluginMap.get(src_plugin).setWatchDogTimer(Long.parseLong(ce.getParam("watchdogtimer")));
+            if(ce.getParam("watchdogtimer") != null) {
+                AgentEngine.pluginMap.get(src_plugin).setWatchDogTimer(Long.parseLong(ce.getParam("watchdogtimer")));
+            } else {
+                AgentEngine.pluginMap.get(src_plugin).setWatchDogTimer(5000);
+            }
+
             AgentEngine.pluginMap.get(src_plugin).setWatchDogTS(System.currentTimeMillis());
             logger.debug("Plugin {} status {}",src_plugin, AgentEngine.pluginMap.get(src_plugin).getStatus());
         //} else {
