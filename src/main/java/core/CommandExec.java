@@ -65,6 +65,8 @@ public class CommandExec {
                     case "disable":
                         disablePlugin(ce);
                         break;
+                    case "pluginadd":
+                        return pluginAdd(ce);
 
                     default:
                         logger.error("Unknown configtype found {} for {}:", ce.getParam("action"), ce.getMsgType().toString());
@@ -151,10 +153,7 @@ public class CommandExec {
 
     void enablePlugin(MsgEvent ce) {
 
-        logger.debug("Enable Plugin Called");
 
-        String src_agent = ce.getParam("src_agent");
-        String src_region = ce.getParam("src_region");
         String src_plugin = ce.getParam("src_plugin");
         //if((src_agent.equals(AgentEngine.agent) && src_region.equals(AgentEngine.region)) || !isCommInit) {
             //status = 10, plugin enabled
@@ -171,6 +170,34 @@ public class CommandExec {
         //    logger.error("Can't enable plugin: {} for remote host: {} {} on {} {}",src_plugin, src_region, src_agent, AgentEngine.region, AgentEngine.agent);
         //}
     }
+
+    MsgEvent pluginAdd(MsgEvent ce) {
+            MsgEvent re = null;
+
+            try {
+
+                Map<String, String> hm = pluginsconfig.getMapFromString(ce.getParam("configparams"), false);
+
+                String pluginName = hm.get("pluginname");
+                String jarFile = hm.get("jarfile");
+
+                    String plugin = pluginsconfig.addPlugin(hm);
+                    ce.setParam("plugin", plugin);
+                    boolean isEnabled = AgentEngine.enablePlugin(plugin, false);
+                    if (!isEnabled) {
+                        ce.setMsgBody("Failed to Add Plugin:" + plugin);
+                        pluginsconfig.removePlugin(plugin);
+                    } else {
+                        ce.setMsgBody("Added Plugin:" + plugin);
+                        ce.setParam("status_code", "10");
+                    }
+
+            } catch(Exception ex) {
+                logger.error("pluginadd Error: " + ex.getMessage());
+            }
+            return re;
+    }
+
 
     void disablePlugin(MsgEvent ce) {
         String src_agent = ce.getParam("src_agent");
