@@ -77,7 +77,12 @@ public class CommandExec {
 
         } catch (Exception ex) {
             System.out.println("AgentEngine : CommandExec Error : " + ex.getMessage());
-            ex.printStackTrace();
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            String sStackTrace = sw.toString(); // stack trace as a string
+            System.out.println(sStackTrace);
+            logger.error(sStackTrace);
         }
         return null;
     }
