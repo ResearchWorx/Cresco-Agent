@@ -149,6 +149,8 @@ public class CommandExec {
 
     void enablePlugin(MsgEvent ce) {
 
+        logger.debug("Enable Plugin Called");
+
         String src_agent = ce.getParam("src_agent");
         String src_region = ce.getParam("src_region");
         String src_plugin = ce.getParam("src_plugin");
