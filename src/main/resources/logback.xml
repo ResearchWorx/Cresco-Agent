@@ -85,7 +85,7 @@
 		</rollingPolicy>
 	</appender>
 
-	<logger name="Engine" level="trace" additivity="false">
+	<logger name="Engine" level="info" additivity="false">
 		<appender-ref ref="STDOUT" />
 		<appender-ref ref="FILE-ENGINE" />
 	</logger>

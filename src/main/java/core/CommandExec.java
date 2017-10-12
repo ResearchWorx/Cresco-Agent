@@ -34,6 +34,8 @@ public class CommandExec {
 
     public MsgEvent cmdExec(MsgEvent ce) throws IOException, ConfigurationException {
 
+        logger.info("COMMAND TO COMMANDEXEC " + ce.getParams());
+
         try {
             if(ce.getMsgType() == MsgEvent.Type.EXEC) {
 
