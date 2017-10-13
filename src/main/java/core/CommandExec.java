@@ -63,7 +63,7 @@ public class CommandExec {
                     case "disable":
                         disablePlugin(ce);
                         break;
-                    case "add":
+                    case "pluginadd":
                         return pluginAdd(ce);
 
                     default:
