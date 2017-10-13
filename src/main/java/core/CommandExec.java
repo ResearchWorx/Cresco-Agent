@@ -169,7 +169,7 @@ public class CommandExec {
 
         //forward to region
         ce.removeParam("dst_agent");
-        AgentEngine.msgIn(ce);
+        AgentEngine.pluginMap.get(AgentEngine.controllerPluginSlot).Message(ce);
     }
 
     MsgEvent pluginRemove(MsgEvent ce) {
