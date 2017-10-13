@@ -66,6 +66,9 @@ public class CommandExec {
                     case "pluginadd":
                         return pluginAdd(ce);
 
+                    case "pluginremove":
+                        return pluginRemove(ce);
+
                     default:
                         logger.error("Unknown configtype found {} for {}:", ce.getParam("action"), ce.getMsgType().toString());
                         break;
@@ -167,6 +170,21 @@ public class CommandExec {
         //} else {
         //    logger.error("Can't enable plugin: {} for remote host: {} {} on {} {}",src_plugin, src_region, src_agent, AgentEngine.region, AgentEngine.agent);
         //}
+    }
+
+    MsgEvent pluginRemove(MsgEvent ce) {
+        MsgEvent re = null;
+
+        try {
+
+            AgentEngine.disablePlugin(ce.getParam("plugin"), true);
+            pluginsconfig.removePlugin(ce.getParam("plugin"));
+
+
+        } catch(Exception ex) {
+            logger.error("pluginremove Error: " + ex.getMessage());
+        }
+        return re;
     }
 
     MsgEvent pluginAdd(MsgEvent ce) {
