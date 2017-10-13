@@ -27,7 +27,7 @@ public class MsgRoute implements Runnable {
                 return;
             }
 
-
+//come on
             int routePath = getRoutePath();
             //
             //logger.info("msgType: [" + rm.getMsgType().toString() + "] routepath: " + routePath + "[" + rm.getParams().toString() + "]");
