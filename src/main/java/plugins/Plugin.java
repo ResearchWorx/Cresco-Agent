@@ -32,6 +32,8 @@ public class Plugin {
     private long watchdog_ts = 0;
     private long watchdogtimer = 0;
     private long runtime = 0;
+    private String inode_id;
+    private String resource_id;
 
 
     public Plugin(String pluginID, String jarPath) throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException {
@@ -258,6 +260,18 @@ public class Plugin {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public String getInodeId() {return inode_id;}
+
+    public void setInodeId(String inode_id) {
+        this.inode_id = inode_id;
+    }
+
+    public String getResourceId() {return resource_id;}
+
+    public void setResourceId(String resource_id) {
+        this.resource_id = resource_id;
     }
 
     public void setActive(Boolean isActive) {

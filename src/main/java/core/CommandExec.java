@@ -198,14 +198,21 @@ public class CommandExec {
                 String jarFile = hm.get("jarfile");
 
                     String plugin = pluginsconfig.addPlugin(hm);
+                    boolean isEnabled = false;
+                    if((ce.getParam("inode_id") != null) && (ce.getParam("resource_id") != null)) {
+                        //add inode_id and resource_id to local DB
+                        isEnabled = AgentEngine.enablePlugin(plugin,ce.getParam("inode_id"),ce.getParam("resource_id"), false);
+                    } else {
+                        isEnabled = AgentEngine.enablePlugin(plugin, false);
+                    }
                     ce.setParam("plugin", plugin);
-                    boolean isEnabled = AgentEngine.enablePlugin(plugin, false);
                     if (!isEnabled) {
                         ce.setMsgBody("Failed to Add Plugin:" + plugin);
                         pluginsconfig.removePlugin(plugin);
                     } else {
                         ce.setMsgBody("Added Plugin:" + plugin);
                         ce.setParam("status_code", "10");
+
                     }
 
             } catch(Exception ex) {

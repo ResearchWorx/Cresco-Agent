@@ -481,6 +481,10 @@ public class AgentEngine {
     }
 
     public static boolean enablePlugin(String pluginID, boolean save) {
+        return enablePlugin(pluginID,null,null,save);
+    }
+
+    public static boolean enablePlugin(String pluginID, String inode_id, String resource_id, boolean save) {
         try {
             if (pluginMap.containsKey(pluginID)) {
                 Plugin plugin = pluginMap.get(pluginID);
@@ -496,6 +500,12 @@ public class AgentEngine {
                         boolean isLoaded = false;
                         pluginMap.put(pluginID, plugin);
                         try {
+
+                            if((inode_id != null) && (resource_id !=null)) {
+                                plugin.setInodeId(inode_id);
+                                plugin.setResourceId(resource_id);
+                            }
+
                             plugin.PreStart();
                             try {
                                 isLoaded = plugin.Start(msgInQueue, pluginsconfig.getPluginConfig(pluginID), region, agent, pluginID);
