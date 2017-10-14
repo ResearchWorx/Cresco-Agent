@@ -189,22 +189,14 @@ public class CommandExec {
 
     MsgEvent pluginAdd(MsgEvent ce) {
             MsgEvent re = null;
-
             try {
-
                 Map<String, String> hm = pluginsconfig.getMapFromString(ce.getParam("configparams"), false);
 
                 String pluginName = hm.get("pluginname");
                 String jarFile = hm.get("jarfile");
 
                     String plugin = pluginsconfig.addPlugin(hm);
-                    boolean isEnabled = false;
-                    if((ce.getParam("inode_id") != null) && (ce.getParam("resource_id") != null)) {
-                        //add inode_id and resource_id to local DB
-                        isEnabled = AgentEngine.enablePlugin(plugin,ce.getParam("inode_id"),ce.getParam("resource_id"), false);
-                    } else {
-                        isEnabled = AgentEngine.enablePlugin(plugin, false);
-                    }
+                    boolean isEnabled = AgentEngine.enablePlugin(plugin, false);
                     ce.setParam("plugin", plugin);
                     if (!isEnabled) {
                         ce.setMsgBody("Failed to Add Plugin:" + plugin);
@@ -212,7 +204,6 @@ public class CommandExec {
                     } else {
                         ce.setMsgBody("Added Plugin:" + plugin);
                         ce.setParam("status_code", "10");
-
                     }
 
             } catch(Exception ex) {
