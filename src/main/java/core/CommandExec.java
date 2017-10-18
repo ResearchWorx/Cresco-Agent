@@ -188,7 +188,6 @@ public class CommandExec {
     }
 
     MsgEvent pluginAdd(MsgEvent ce) {
-            MsgEvent re = null;
             try {
                 Map<String, String> hm = pluginsconfig.getMapFromString(ce.getParam("configparams"), false);
 
@@ -209,7 +208,7 @@ public class CommandExec {
             } catch(Exception ex) {
                 logger.error("pluginadd Error: " + ex.getMessage());
             }
-            return re;
+            return ce;
     }
 
 
