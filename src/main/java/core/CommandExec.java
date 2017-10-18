@@ -208,6 +208,9 @@ public class CommandExec {
             } catch(Exception ex) {
                 logger.error("pluginadd Error: " + ex.getMessage());
             }
+
+            logger.error("Agent: pluginAdd: Type:" + ce.getMsgType() + " params:[" + ce.getParams() +"]");
+
             return ce;
     }
 
