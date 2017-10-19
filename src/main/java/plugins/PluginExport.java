@@ -35,8 +35,8 @@ public class PluginExport {
                     configMap.put("configparams", gson.toJson(paramMap));
                     configMapList.add(configMap);
             }
-
-            exportString = DatatypeConverter.printBase64Binary(AgentEngine.stringCompress(gson.toJson(configMapList)));
+            String jsonString = gson.toJson(configMapList);
+            exportString = DatatypeConverter.printBase64Binary(AgentEngine.stringCompress(jsonString));
 
         } catch(Exception ex) {
             System.out.println("PluginExport.pluginExport() Error " + ex.getMessage());
