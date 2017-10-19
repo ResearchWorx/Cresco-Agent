@@ -88,6 +88,7 @@ public class CommandExec {
             String sStackTrace = sw.toString(); // stack trace as a string
             System.out.println(sStackTrace);
             logger.error(sStackTrace);
+            logger.error("Error Message: " + ce.getParams());
         }
         return null;
     }
