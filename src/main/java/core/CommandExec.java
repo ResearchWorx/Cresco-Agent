@@ -229,7 +229,7 @@ public class CommandExec {
                 ce.setParam("status_desc", "Plugin Could Not Be Added Exception");
             }
 
-            logger.error("Agent: pluginAdd: Type:" + ce.getMsgType() + " params:[" + ce.getParams() +"]");
+            //logger.error("Agent: pluginAdd: Type:" + ce.getMsgType() + " params:[" + ce.getParams() +"]");
 
             return ce;
     }
