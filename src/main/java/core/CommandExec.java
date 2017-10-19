@@ -170,7 +170,7 @@ public class CommandExec {
 
         //forward to region
         ce.removeParam("dst_agent");
-        AgentEngine.regionUpdate = true;
+        //AgentEngine.regionUpdate = true;
     }
 
     MsgEvent pluginRemove(MsgEvent ce) {
@@ -251,7 +251,7 @@ public class CommandExec {
         } else {
             logger.error("Can't enable plugin: {} for remote host: {} {} on {} {}",src_plugin, src_region, src_agent, AgentEngine.region, AgentEngine.agent);
         }
-        AgentEngine.regionUpdate = true;
+        //AgentEngine.regionUpdate = true;
     }
 
     void commInit(MsgEvent ce) {

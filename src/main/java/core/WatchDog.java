@@ -132,9 +132,10 @@ public class WatchDog {
 					le.setParam("pluginconfigs", AgentEngine.pluginexport.getPluginExport());
 					System.out.println("AgentEngine : Export Plugins ");
 				}
-				AgentEngine.regionUpdate = false;
+
 	  		    //AgentEngine.clog.log(le);
 				AgentEngine.msgInQueue.add(le);
+                AgentEngine.regionUpdate = false;
 	    	}
 	    }
 	  }
