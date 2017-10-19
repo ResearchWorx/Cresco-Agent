@@ -173,18 +173,29 @@ public class CommandExec {
     }
 
     MsgEvent pluginRemove(MsgEvent ce) {
-        MsgEvent re = null;
 
         try {
-
-            AgentEngine.disablePlugin(ce.getParam("plugin"), true);
-            pluginsconfig.removePlugin(ce.getParam("plugin"));
-
+            String plugin = ce.getParam("plugin");
+            boolean isDisabled = AgentEngine.disablePlugin(ce.getParam("plugin"), true);
+            if(isDisabled) {
+                pluginsconfig.removePlugin(ce.getParam("plugin"));
+                ce.setMsgBody("Removed Plugin:" + plugin);
+                ce.setParam("status_code", "7");
+                ce.setParam("status_desc", "Plugin Removed");
+            } else {
+                ce.setMsgBody("Failed to Remove Plugin:" + plugin);
+                ce.setParam("status_code", "9");
+                ce.setParam("status_desc", "Plugin Could Not Be Removed");
+            }
 
         } catch(Exception ex) {
             logger.error("pluginremove Error: " + ex.getMessage());
+            ce.setMsgBody("Failed to Remove Plugin Exception :" + ex.getMessage());
+            ce.setParam("status_code", "9");
+            ce.setParam("status_desc", "Plugin Could Not Be Removed Exception");
+
         }
-        return re;
+        return ce;
     }
 
     MsgEvent pluginAdd(MsgEvent ce) {
