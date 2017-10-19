@@ -131,6 +131,7 @@ public class WatchDog {
 	  		    if(AgentEngine.regionUpdate) {
 					le.setParam("pluginconfigs", AgentEngine.pluginexport.getPluginExport());
 				}
+				AgentEngine.regionUpdate = false;
 	  		    //AgentEngine.clog.log(le);
 				AgentEngine.msgInQueue.add(le);
 	    	}

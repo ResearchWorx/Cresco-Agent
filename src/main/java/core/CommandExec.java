@@ -169,7 +169,7 @@ public class CommandExec {
 
         //forward to region
         ce.removeParam("dst_agent");
-
+        AgentEngine.regionUpdate = true;
     }
 
     MsgEvent pluginRemove(MsgEvent ce) {
@@ -197,6 +197,7 @@ public class CommandExec {
             ce.setParam("status_desc", "Plugin Could Not Be Removed Exception");
 
         }
+        AgentEngine.regionUpdate = true;
         return ce;
     }
 
@@ -233,7 +234,7 @@ public class CommandExec {
             }
 
             //logger.error("Agent: pluginAdd: Type:" + ce.getMsgType() + " params:[" + ce.getParams() +"]");
-
+        AgentEngine.regionUpdate = true;
             return ce;
     }
 
@@ -249,6 +250,7 @@ public class CommandExec {
         } else {
             logger.error("Can't enable plugin: {} for remote host: {} {} on {} {}",src_plugin, src_region, src_agent, AgentEngine.region, AgentEngine.agent);
         }
+        AgentEngine.regionUpdate = true;
     }
 
     void commInit(MsgEvent ce) {
