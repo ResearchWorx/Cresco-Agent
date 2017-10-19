@@ -10,16 +10,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import plugins.*;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import javax.xml.bind.DatatypeConverter;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
+import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 public class AgentEngine {
@@ -747,6 +746,22 @@ public class AgentEngine {
             }
         }
         return pluginList;
+    }
+
+    public static String stringUncompress(String str) {
+        String uncompressedString = null;
+        try {
+
+            byte[] exportDataRawCompressed = DatatypeConverter.parseBase64Binary(str);
+            InputStream iss = new ByteArrayInputStream(exportDataRawCompressed);
+            //uncompress
+            InputStream is = new GZIPInputStream(iss);
+            uncompressedString = new Scanner(is,"UTF-8").useDelimiter("\\A").next();
+        }
+        catch(Exception ex) {
+            System.out.println("uncompressParam " + ex.getMessage());
+        }
+        return uncompressedString;
     }
 
     public static byte[] stringCompress(String str) {

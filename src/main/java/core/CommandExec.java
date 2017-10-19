@@ -202,7 +202,10 @@ public class CommandExec {
 
     MsgEvent pluginAdd(MsgEvent ce) {
             try {
-                Map<String, String> hm = pluginsconfig.getMapFromString(ce.getParam("configparams"), false);
+
+                String mapString = AgentEngine.stringUncompress(ce.getParam("configparams"));
+
+                Map<String, String> hm = pluginsconfig.getMapFromString(mapString, false);
 
                 String pluginName = hm.get("pluginname");
                 String jarFile = hm.get("jarfile");
