@@ -32,8 +32,6 @@ public class AgentEngine {
     public static boolean isGlobalController = false;
     public static PluginExport pluginexport;
 
-    public static boolean regionUpdate = false;
-
     public static String controllerPluginSlot;
 
     public static boolean isCommInit = false;

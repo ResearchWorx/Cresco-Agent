@@ -198,7 +198,6 @@ public class CommandExec {
             ce.setParam("status_desc", "Plugin Could Not Be Removed Exception");
 
         }
-        AgentEngine.regionUpdate = true;
         return ce;
     }
 
@@ -235,7 +234,6 @@ public class CommandExec {
             }
 
             //logger.error("Agent: pluginAdd: Type:" + ce.getMsgType() + " params:[" + ce.getParams() +"]");
-        AgentEngine.regionUpdate = true;
             return ce;
     }
 

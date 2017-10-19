@@ -15,6 +15,7 @@ public class WatchDog {
 	  private long startTS;
 	  private Map<String,String> wdMap;
 
+	  private String jsonExport = null;
 	  private String watchDogTimerString;
 	  
 	  public WatchDog() {
@@ -35,8 +36,11 @@ public class WatchDog {
 		  le.setParam("dst_region", AgentEngine.region);
 		  //le.setParam("is_active", Boolean.TRUE.toString());
 		  le.setParam("action", "enable");
-		  le.setParam("pluginconfigs", AgentEngine.pluginexport.getPluginExport());
 		  le.setParam("watchdogtimer",watchDogTimerString);
+
+          jsonExport = AgentEngine.pluginexport.getPluginExport();
+          le.setParam("pluginconfigs", jsonExport);
+
 
           String platform = System.getenv("CRESCO_PLATFORM");
           if(platform == null) {
@@ -128,14 +132,16 @@ public class WatchDog {
 	    		le.setParam("src_region", AgentEngine.region);
 	  		    le.setParam("src_agent", AgentEngine.agent);
 	  		    le.setParam("dst_region", AgentEngine.region);
-	  		    if(AgentEngine.regionUpdate) {
-					le.setParam("pluginconfigs", AgentEngine.pluginexport.getPluginExport());
-					System.out.println("AgentEngine : Export Plugins ");
-				}
+
+	  		    String tmpJsonExport = AgentEngine.pluginexport.getPluginExport();
+                if(!jsonExport.equals(tmpJsonExport)) {
+                    jsonExport = tmpJsonExport;
+                    le.setParam("pluginconfigs", jsonExport);
+                    System.out.println("AgentEngine : Export Plugins ");
+                }
 
 	  		    //AgentEngine.clog.log(le);
 				AgentEngine.msgInQueue.add(le);
-                AgentEngine.regionUpdate = false;
 	    	}
 	    }
 	  }
