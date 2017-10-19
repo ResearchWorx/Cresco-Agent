@@ -182,6 +182,8 @@ public class CommandExec {
                 ce.setMsgBody("Removed Plugin:" + plugin);
                 ce.setParam("status_code", "7");
                 ce.setParam("status_desc", "Plugin Removed");
+                ce.setParam("region",AgentEngine.region);
+                ce.setParam("agent",AgentEngine.agent);
             } else {
                 ce.setMsgBody("Failed to Remove Plugin:" + plugin);
                 ce.setParam("status_code", "9");
@@ -210,14 +212,21 @@ public class CommandExec {
                     ce.setParam("plugin", plugin);
                     if (!isEnabled) {
                         ce.setMsgBody("Failed to Add Plugin:" + plugin);
+                        ce.setParam("status_code", "9");
+                        ce.setParam("status_desc", "Plugin Could Not Be Added");
                         pluginsconfig.removePlugin(plugin);
                     } else {
                         ce.setMsgBody("Added Plugin:" + plugin);
                         ce.setParam("status_code", "10");
+                        ce.setParam("status_desc", "Plugin Added");
+                        ce.setParam("region",AgentEngine.region);
+                        ce.setParam("agent",AgentEngine.agent);
                     }
 
             } catch(Exception ex) {
                 logger.error("pluginadd Error: " + ex.getMessage());
+                ce.setParam("status_code", "9");
+                ce.setParam("status_desc", "Plugin Could Not Be Added Exception");
             }
 
             logger.error("Agent: pluginAdd: Type:" + ce.getMsgType() + " params:[" + ce.getParams() +"]");
