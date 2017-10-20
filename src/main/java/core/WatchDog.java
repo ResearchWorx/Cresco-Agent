@@ -136,13 +136,14 @@ public class WatchDog {
 	  		    le.setParam("dst_region", AgentEngine.region);
 
 	  		    String tmpJsonExport = AgentEngine.pluginexport.getPluginExport();
-	  		    System.out.println("JSON: " + jsonExport);
-	  		    System.out.println("NEW: " + tmpJsonExport);
-                if(!jsonExport.equals(tmpJsonExport)) {
+	  		    if(!jsonExport.equals(tmpJsonExport)) {
                     jsonExport = tmpJsonExport;
                     String compressedString = DatatypeConverter.printBase64Binary(AgentEngine.stringCompress(jsonExport));
                     le.setParam("pluginconfigs", compressedString);
-                    System.out.println("AgentEngine : Export Plugins ");
+                    //System.out.println("AgentEngine : Export Plugins ");
+                    System.out.println("JSON: " + jsonExport);
+                    System.out.println("NEW: " + tmpJsonExport);
+
                 }
 
 	  		    //AgentEngine.clog.log(le);
