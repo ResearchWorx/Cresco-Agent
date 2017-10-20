@@ -138,8 +138,6 @@ public class WatchDog {
 
 	  		    String tmpJsonExport = AgentEngine.pluginexport.getPluginExport();
 	  		    if(!jsonExport.equals(tmpJsonExport)) {
-                    System.out.println("JSON: " + jsonExport);
-                    System.out.println("NEW: " + tmpJsonExport);
 
                     jsonExport = tmpJsonExport;
                     String compressedString = DatatypeConverter.printBase64Binary(AgentEngine.stringCompress(jsonExport));
