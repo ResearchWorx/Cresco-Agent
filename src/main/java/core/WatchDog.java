@@ -123,7 +123,7 @@ public class WatchDog {
 	{
 	    public void run() 
 	    {
-	    	
+
 	    	if(AgentEngine.watchDogActive)
 	    	{
 	    		long runTime = System.currentTimeMillis() - startTS;
@@ -136,6 +136,8 @@ public class WatchDog {
 	  		    le.setParam("dst_region", AgentEngine.region);
 
 	  		    String tmpJsonExport = AgentEngine.pluginexport.getPluginExport();
+	  		    System.out.println("JSON: " + jsonExport);
+	  		    System.out.println("NEW: " + tmpJsonExport);
                 if(!jsonExport.equals(tmpJsonExport)) {
                     jsonExport = tmpJsonExport;
                     String compressedString = DatatypeConverter.printBase64Binary(AgentEngine.stringCompress(jsonExport));
