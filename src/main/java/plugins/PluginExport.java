@@ -23,7 +23,7 @@ public class PluginExport {
             for (Map.Entry<String, Plugin> entry : map.entrySet())
             {
                     String pluginId = entry.getKey();
-                    int status = entry.getValue().getStatus();
+                    int status = entry.getValue().getStatus_code();
                     boolean isActive = entry.getValue().getActive();
 
                     Map<String,String> configMap = new HashMap<>();

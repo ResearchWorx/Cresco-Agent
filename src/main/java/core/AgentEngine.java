@@ -451,9 +451,9 @@ public class AgentEngine {
                     } catch (Exception e) {
                         pluginsLogger.error("[{}] - Shutdown error - [Exception: {}]", pluginID, e.getMessage());
                     }
-                    int status = pluginMap.get(pluginID).getStatus();
+                    int status_code = pluginMap.get(pluginID).getStatus_code();
 
-                    if(status != 8) {
+                    if(status_code != 8) {
                         pluginsLogger.error("[{}] unable to confirm disabled. [Name: {}, Version: {}]", pluginID, plugin.getName(), plugin.getVersion());
                     } else {
                         pluginsLogger.info("[{}] disabled. [Name: {}, Version: {}]", pluginID, plugin.getName(), plugin.getVersion());
@@ -524,8 +524,8 @@ public class AgentEngine {
                 if (save)
                     pluginsconfig.setPluginStatus(pluginID, 1);
 
-                int status = pluginMap.get(pluginID).getStatus();
-                if(status != 10) {
+                int status_code = pluginMap.get(pluginID).getStatus_code();
+                if(status_code != 10) {
                     pluginsLogger.error("[{}] unable to confirm enable. [Name: {}, Version: {}]", pluginID, plugin.getName(), plugin.getVersion());
                 } else {
                     pluginsLogger.info("[{}] enabled. [Name: {}, Version: {}]", pluginID, plugin.getName(), plugin.getVersion());
@@ -601,8 +601,8 @@ public class AgentEngine {
                 if (save)
                     pluginsconfig.setPluginStatus(pluginID, 1);
 
-                int status = pluginMap.get(pluginID).getStatus();
-                if(status != 10) {
+                int status_code = pluginMap.get(pluginID).getStatus_code();
+                if(status_code != 10) {
                     pluginsLogger.error("[{}] unable to confirm enable. [Name: {}, Version: {}]", pluginID, plugin.getName(), plugin.getVersion());
                 } else {
                     pluginsLogger.info("[{}] enabled. [Name: {}, Version: {}]", pluginID, plugin.getName(), plugin.getVersion());
