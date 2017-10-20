@@ -1,5 +1,6 @@
 package core;
 
+import channels.RPCCall;
 import com.researchworx.cresco.library.messaging.MsgEvent;
 
 import javax.xml.bind.DatatypeConverter;
@@ -97,9 +98,9 @@ public class WatchDog {
           //public String[] aNodeIndexParams = {"platform","environment","location"};
 
 
-          AgentEngine.msgInQueue.add(le);
-		  //MsgEvent re = new RPCCall().call(le);
-		  //System.out.println("RPC ENABLE: " + re.getMsgBody() + " [" + re.getParams().toString() + "]");
+          //AgentEngine.msgInQueue.add(le);
+		  MsgEvent re = new RPCCall().call(le);
+		  System.out.println("RPC ENABLE: " + re.getMsgBody() + " [" + re.getParams().toString() + "]");
 		  AgentEngine.watchDogActive = true;
       }
 
