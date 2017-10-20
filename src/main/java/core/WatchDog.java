@@ -100,7 +100,10 @@ public class WatchDog {
           System.out.println("starting RPC");
           //AgentEngine.msgInQueue.add(le);
 		  MsgEvent re = new RPCCall().call(le);
-          System.out.println("end RPC");
+		  if(re !=null) {
+		      System.out.println("Whut : " + re.getParams());
+          }
+		  System.out.println("end RPC");
 
 
 		  //System.out.println("RPC ENABLE: " + re.getMsgBody() + " [" + re.getParams().toString() + "]");
