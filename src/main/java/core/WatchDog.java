@@ -97,14 +97,8 @@ public class WatchDog {
 
           //public String[] aNodeIndexParams = {"platform","environment","location"};
 
-          System.out.println("starting RPC");
           //AgentEngine.msgInQueue.add(le);
 		  MsgEvent re = new RPCCall().call(le);
-		  if(re !=null) {
-		      System.out.println("Whut : " + re.getParams());
-          }
-		  System.out.println("end RPC");
-
 
 		  //System.out.println("RPC ENABLE: " + re.getMsgBody() + " [" + re.getParams().toString() + "]");
 		  AgentEngine.watchDogActive = true;
