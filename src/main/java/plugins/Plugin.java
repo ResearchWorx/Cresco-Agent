@@ -29,7 +29,7 @@ public class Plugin {
     private Object instance;
     private boolean active = false;
     private int status_code = 3;
-    private String status_desc = null;
+    private String status_desc = "Plugin Configuration Created";
     private long watchdog_ts = 0;
     private long watchdogtimer = 0;
     private long runtime = 0;
