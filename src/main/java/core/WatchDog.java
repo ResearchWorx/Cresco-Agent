@@ -2,6 +2,7 @@ package core;
 
 import com.researchworx.cresco.library.messaging.MsgEvent;
 
+import javax.xml.bind.DatatypeConverter;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +40,8 @@ public class WatchDog {
 		  le.setParam("watchdogtimer",watchDogTimerString);
 
           jsonExport = AgentEngine.pluginexport.getPluginExport();
-          le.setParam("pluginconfigs", jsonExport);
+          String compressedString = DatatypeConverter.printBase64Binary(AgentEngine.stringCompress(jsonExport));
+          le.setParam("pluginconfigs", compressedString);
 
 
           String platform = System.getenv("CRESCO_PLATFORM");
@@ -136,7 +138,8 @@ public class WatchDog {
 	  		    String tmpJsonExport = AgentEngine.pluginexport.getPluginExport();
                 if(!jsonExport.equals(tmpJsonExport)) {
                     jsonExport = tmpJsonExport;
-                    le.setParam("pluginconfigs", jsonExport);
+                    String compressedString = DatatypeConverter.printBase64Binary(AgentEngine.stringCompress(jsonExport));
+                    le.setParam("pluginconfigs", compressedString);
                     System.out.println("AgentEngine : Export Plugins ");
                 }
 
