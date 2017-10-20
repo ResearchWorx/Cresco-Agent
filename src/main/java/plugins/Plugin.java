@@ -28,7 +28,8 @@ public class Plugin {
     private String version;
     private Object instance;
     private boolean active = false;
-    private int status = 3;
+    private int status_code = 3;
+    private String status_desc = null;
     private long watchdog_ts = 0;
     private long watchdogtimer = 0;
     private long runtime = 0;
@@ -78,17 +79,17 @@ public class Plugin {
                 active = (boolean) method.invoke(instance, msgQueue, config, region, agent, pluginID);
                 //status = 4;
                 if(!AgentEngine.isCommInit) {
-                    status = 10;
+                    status_code = 10;
                 } else {
                     try {
                         int count = 0;
-                        while ((status != 10) && (count < 120)) {
-                            logger.info("Waiting on enable for plugin {} current status: {}", pluginID, status);
+                        while ((status_code != 10) && (count < 120)) {
+                            logger.info("Waiting on enable for plugin {} current status_code: {}", pluginID, status_code);
                             Thread.sleep(500);
                             count++;
                         }
                     } catch(Exception ex) {
-                        status = 80; //failed to start
+                        status_code = 80; //failed to start
                     }
                 }
                 return active;
@@ -196,19 +197,19 @@ public class Plugin {
 
             try {
                 int count = 0;
-                while((status != 8) && (count < 10)) { //if plugin can't be confirmed down in 5 sec fail
-                    logger.debug("Waiting on disable for plugin {} current status: {}", pluginID, status);
+                while((status_code != 8) && (count < 10)) { //if plugin can't be confirmed down in 5 sec fail
+                    logger.debug("Waiting on disable for plugin {} current status_code: {}", pluginID, status_code);
                     Thread.sleep(500);
                     count++;
                 }
                 if(count == 10) {
-                    status = 92; //timeout on disable verification
+                    status_code = 92; //timeout on disable verification
                 }
             } catch (Exception ex) {
-                status = 91; //Exception on timeout verification to confirm down
+                status_code = 91; //Exception on timeout verification to confirm down
             }
         } else {
-            status = 90; //Exception on timeout shutdown
+            status_code = 90; //Exception on timeout shutdown
         }
     }
 
@@ -256,11 +257,18 @@ public class Plugin {
         this.runtime = runtime;
     }
 
-    public int getStatus() {return status;}
+    public int getStatus_code() {return status_code;}
 
-    public void setStatus(int status) {
-        this.status = status;
+    public void setStatus_code(int status_code) {
+        this.status_code = status_code;
     }
+
+    public void setStatus_desc(String status_desc) {
+        this.status_desc = status_desc;
+    }
+
+    public String getStatus_desc() {return status_desc;}
+
 
     /*
     public String getInodeId() {return inode_id;}
