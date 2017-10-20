@@ -145,7 +145,7 @@ public class CommandExec {
         if(src_agent.equals(AgentEngine.agent) && src_region.equals(AgentEngine.region)) {
             AgentEngine.pluginMap.get(src_plugin).setWatchDogTS(System.currentTimeMillis());
             AgentEngine.pluginMap.get(src_plugin).setRuntime(Long.parseLong(ce.getParam("runtime")));
-            logger.debug("Plugin {} status {}",src_plugin, AgentEngine.pluginMap.get(src_plugin).getStatus());
+            logger.debug("Plugin {} status {}",src_plugin, AgentEngine.pluginMap.get(src_plugin).getStatus_code());
         } else {
             if (AgentEngine.isCommInit) {
                 logger.error("Can't update watchdog plugin: {} for remote host: {} {} on {} {}", src_plugin, src_region, src_agent, AgentEngine.region, AgentEngine.agent);
@@ -157,7 +157,7 @@ public class CommandExec {
 
         String src_plugin = ce.getParam("src_plugin");
 
-        AgentEngine.pluginMap.get(src_plugin).setStatus(10);
+        AgentEngine.pluginMap.get(src_plugin).setStatus_code(10);
 
             if(ce.getParam("watchdogtimer") == null) {
                 ce.setParam("watchdogtimer","5000");
@@ -166,7 +166,7 @@ public class CommandExec {
         AgentEngine.pluginMap.get(src_plugin).setWatchDogTimer(Long.parseLong(ce.getParam("watchdogtimer")));
         AgentEngine.pluginMap.get(src_plugin).setWatchDogTS(System.currentTimeMillis());
 
-        logger.debug("Plugin {} status {}",src_plugin, AgentEngine.pluginMap.get(src_plugin).getStatus());
+        logger.debug("Plugin {} status {}",src_plugin, AgentEngine.pluginMap.get(src_plugin).getStatus_code());
 
         //forward to region
         ce.removeParam("dst_agent");
@@ -244,8 +244,8 @@ public class CommandExec {
         String src_plugin = ce.getParam("src_plugin");
         if(src_agent.equals(AgentEngine.agent) && src_region.equals(AgentEngine.region)) {
             //status = 10, plugin enabled
-            AgentEngine.pluginMap.get(src_plugin).setStatus(8);
-            logger.debug("Plugin {} status {}",src_plugin, AgentEngine.pluginMap.get(src_plugin).getStatus());
+            AgentEngine.pluginMap.get(src_plugin).setStatus_code(8);
+            logger.debug("Plugin {} status {}",src_plugin, AgentEngine.pluginMap.get(src_plugin).getStatus_code());
         } else {
             logger.error("Can't enable plugin: {} for remote host: {} {} on {} {}",src_plugin, src_region, src_agent, AgentEngine.region, AgentEngine.agent);
         }
