@@ -34,7 +34,7 @@ public class PluginHealthWatcher {
 
                     if(!isHealthy) {
                         //plugin has failed
-                        entry.getValue().setStatus(40);
+                        entry.getValue().setStatus_code(40);
                     }
                 }
 
