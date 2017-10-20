@@ -170,14 +170,14 @@ public class AgentEngine {
 
             enableStaticPlugins();
 
-            /*
+
             wd = new WatchDog();
 
             while(!watchDogActive)
             {
                 Thread.sleep(1000);
             }
-            */
+
 
             phw = new PluginHealthWatcher();
 
