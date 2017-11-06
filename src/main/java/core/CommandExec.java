@@ -1,12 +1,15 @@
 package core;
 
 import channels.RPCCall;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.researchworx.cresco.library.messaging.MsgEvent;
 import org.apache.commons.configuration.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.net.*;
 import java.nio.channels.Channels;
@@ -27,9 +30,9 @@ import static core.AgentEngine.pluginsconfig;
 public class CommandExec {
     private static final Logger logger = LoggerFactory.getLogger("Engine");
     private static final Logger logMessages = LoggerFactory.getLogger("Logging");
-
+    private Gson gson;
     public CommandExec() {
-
+        gson = new Gson();
     }
 
     public MsgEvent cmdExec(MsgEvent ce) throws IOException, ConfigurationException {
@@ -204,12 +207,13 @@ public class CommandExec {
     MsgEvent pluginAdd(MsgEvent ce) {
             try {
 
-                String mapString = AgentEngine.stringUncompress(ce.getParam("configparams"));
+                //String mapString = AgentEngine.stringUncompress(ce.getParam("configparams"));
+                //Map<String, String> hm = pluginsconfig.getMapFromString(mapString, false);
 
-                Map<String, String> hm = pluginsconfig.getMapFromString(mapString, false);
-
-                String pluginName = hm.get("pluginname");
-                String jarFile = hm.get("jarfile");
+                Type type = new TypeToken<Map<String, String>>(){}.getType();
+                Map<String, String> hm = gson.fromJson(ce.getCompressedParam("configparams"), type);
+                //String pluginName = hm.get("pluginname");
+                //String jarFile = hm.get("jarfile");
 
                     String plugin = pluginsconfig.addPlugin(hm);
                     boolean isEnabled = AgentEngine.enablePlugin(plugin, false);
@@ -225,6 +229,8 @@ public class CommandExec {
                         ce.setParam("status_desc", "Plugin Added");
                         ce.setParam("region",AgentEngine.region);
                         ce.setParam("agent",AgentEngine.agent);
+                        hm = pluginsconfig.getPluginConfigMap(plugin);
+                        ce.setCompressedParam("configparams", gson.toJson(hm));
                     }
 
             } catch(Exception ex) {
