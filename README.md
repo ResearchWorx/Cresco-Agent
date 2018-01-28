@@ -87,12 +87,7 @@ Cresco-Agent
 | environment variable | CRESCO_ENVIRONMENT|
 | desc  |  Node descriptor |
 
-
 ---
-
-
-
-
 
 
 ###License
