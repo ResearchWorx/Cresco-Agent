@@ -5,10 +5,7 @@ import com.researchworx.cresco.library.messaging.MsgEvent;
 
 import javax.xml.bind.DatatypeConverter;
 import java.net.InetAddress;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 
 public class WatchDog {
@@ -29,7 +26,7 @@ public class WatchDog {
           }
 
 
-	      timer.scheduleAtFixedRate(new WatchDogTask(), 500, Long.parseLong(watchDogTimerString));
+	      timer.scheduleAtFixedRate(new WatchDogTask(), Long.parseLong(watchDogTimerString), Long.parseLong(watchDogTimerString));
 	      wdMap = new HashMap<>(); //for sending future WD messages
 	      
 	      MsgEvent le = new MsgEvent(MsgEvent.Type.CONFIG,AgentEngine.region,null,null,"enabled");
@@ -39,6 +36,7 @@ public class WatchDog {
 		  //le.setParam("is_active", Boolean.TRUE.toString());
 		  le.setParam("action", "enable");
 		  le.setParam("watchdogtimer",watchDogTimerString);
+		  le.setParam("req-seq", UUID.randomUUID().toString());
 
           jsonExport = AgentEngine.pluginexport.getPluginExport();
           String compressedString = DatatypeConverter.printBase64Binary(AgentEngine.stringCompress(jsonExport));

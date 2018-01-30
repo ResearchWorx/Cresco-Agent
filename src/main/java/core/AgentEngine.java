@@ -171,7 +171,9 @@ public class AgentEngine {
             enableStaticPlugins();
 
 
-            wd = new WatchDog();
+            //wd = new WatchDog();
+
+            LoadWatchDog();
 
             while(!watchDogActive)
             {
@@ -509,7 +511,6 @@ public class AgentEngine {
                                 } catch (Exception e) {
                                     pluginsLogger.error("[{}] - PostStart error - [Exception: {}]", pluginID, e.getMessage());
                                     plugin.Stop();
-                                    plugin.PostStart();
                                 }
                             } catch (Exception e) {
                                 pluginsLogger.error("[{}] - Start error - [Exception: {}]", pluginID, e.getMessage());

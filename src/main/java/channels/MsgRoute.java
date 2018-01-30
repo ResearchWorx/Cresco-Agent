@@ -27,35 +27,8 @@ public class MsgRoute implements Runnable {
                 return;
             }
 
-//come on
             int routePath = getRoutePath();
-            //
-            //logger.info("msgType: [" + rm.getMsgType().toString() + "] routepath: " + routePath + "[" + rm.getParams().toString() + "]");
 
-/*
-            if(rm.getMsgType() == MsgEvent.Type.EXEC) {
-                logger.error("Agent msgType: [" + rm.getMsgType().toString() + "] routepath: " + routePath + "[" + rm.getParams().toString() + "]");
-            }
-*/
-
-            if (rm.getMsgType() != MsgEvent.Type.WATCHDOG && rm.getMsgType() != MsgEvent.Type.LOG && rm.getMsgType() != MsgEvent.Type.KPI && rm.getMsgType() != MsgEvent.Type.INFO) {
-                logger.trace("Routing: Path={}, Type={}, Src={}-{}:{}, Dst={}-{}:{}, Params={}", routePath,
-                        rm.getMsgType().name(),
-                        rm.getParam("src_region"), rm.getParam("src_agent"), rm.getParam("src_plugin"),
-                        rm.getParam("dst_region"), rm.getParam("dst_agent"), rm.getParam("dst_plugin"),
-                        rm.getParams());
-            }
-
-/*
-            if(rm.getMsgType() == MsgEvent.Type.EXEC) {
-                logger.error("Agent msgType: [" + rm.getMsgType().toString() + "] routepath: " + routePath + "[" + rm.getParams().toString() + "]");
-            }
-*/
-            /*
-            if (routePath < 56) {
-                sendToController();
-            } else {
-              */
                 MsgEvent re = null;
                 switch (routePath) {
                     case 0:
@@ -168,6 +141,10 @@ public class MsgRoute implements Runnable {
             logger.error("Agent : MsgRoute : Route Failed " + ex.toString());
         }
 
+    }
+
+    private MsgEvent getNull() {
+        return null;
     }
 
     private MsgEvent getCommandExec() {
@@ -288,6 +265,7 @@ public class MsgRoute implements Runnable {
 
     private boolean getTTL() {
         boolean isValid = true;
+
         try {
             if (rm.getParam("ttl") != null) //loop detection
             {
