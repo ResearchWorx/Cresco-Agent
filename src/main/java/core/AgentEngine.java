@@ -110,15 +110,6 @@ public class AgentEngine {
             rpcMap = new ConcurrentHashMap<>();
             rpcReceipts = new ConcurrentHashMap<>();
 
-            //rpcMap = Collections.synchronizedMap(new HashMap());
-            //todo there is still a problem with entries not being removed under load #memoryleak
-            /*
-            rpcMap = new MapMaker()
-                    //.concurrencyLevel(1)
-                    .weakValues()
-                    .weakKeys()
-                    .makeMap();
-            */
             //Cleanup on Shutdown
             Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
                 public void run() {
@@ -458,7 +449,7 @@ public class AgentEngine {
                     int status_code = pluginMap.get(pluginID).getStatus_code();
 
                     if(status_code != 8) {
-                        pluginsLogger.error("[{}] unable to confirm disabled. [Name: {}, Version: {}]", pluginID, plugin.getName(), plugin.getVersion());
+                        pluginsLogger.error("[{}] unable to confirm disabled. [Name: {}, Version: {} Status Code: {} Status Desc:]", pluginID, plugin.getName(), plugin.getVersion(), plugin.getStatus_code(), plugin.getStatus_desc());
                     } else {
                         pluginsLogger.info("[{}] disabled. [Name: {}, Version: {}]", pluginID, plugin.getName(), plugin.getVersion());
                     }

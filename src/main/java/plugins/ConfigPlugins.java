@@ -24,7 +24,6 @@ public class ConfigPlugins {
         try {
             iniConfObj.save();
         } catch (ConfigurationException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
