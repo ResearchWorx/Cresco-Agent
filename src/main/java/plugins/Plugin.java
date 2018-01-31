@@ -199,6 +199,8 @@ public class Plugin {
                 int count = 0;
                 while((status_code != 8) && (count < 10)) { //if plugin can't be confirmed down in 5 sec fail
                     logger.debug("Waiting on disable for plugin {} current status_code: {}", pluginID, status_code);
+                    logger.info("Waiting on disable for plugin {} current status_code: {}", pluginID, status_code);
+
                     Thread.sleep(500);
                     count++;
                 }

@@ -35,6 +35,7 @@ public class PluginHealthWatcher {
                     if(!isHealthy) {
                         //plugin has failed
                         entry.getValue().setStatus_code(40);
+                        AgentEngine.clog.error("Plugin {} has failed WATCHDOG check!", entry.getKey());
                     }
                 }
 

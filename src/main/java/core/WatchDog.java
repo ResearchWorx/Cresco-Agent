@@ -26,7 +26,7 @@ public class WatchDog {
           }
 
 
-	      timer.scheduleAtFixedRate(new WatchDogTask(), Long.parseLong(watchDogTimerString), Long.parseLong(watchDogTimerString));
+	      timer.scheduleAtFixedRate(new WatchDogTask(), 500, Long.parseLong(watchDogTimerString));
 	      wdMap = new HashMap<>(); //for sending future WD messages
 	      
 	      MsgEvent le = new MsgEvent(MsgEvent.Type.CONFIG,AgentEngine.region,null,null,"enabled");
