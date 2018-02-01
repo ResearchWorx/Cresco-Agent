@@ -173,7 +173,7 @@ public class CommandExec {
         logger.debug("Plugin {} status {}",src_plugin, AgentEngine.pluginMap.get(src_plugin).getStatus_code());
 
         //forward to region
-        ce.removeParam("dst_agent");
+        //ce.removeParam("dst_agent");
         //AgentEngine.regionUpdate = true;
     }
 

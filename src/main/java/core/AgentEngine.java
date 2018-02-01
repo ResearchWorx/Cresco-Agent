@@ -791,6 +791,11 @@ public class AgentEngine {
         return compressedData;
     }
 
+    public static String getControllerId() {
+        return "plugin/0";
+    }
+
+
     static void cleanup() throws ConfigurationException, IOException, InterruptedException {
         try {
             coreLogger.info("Shutdown initiated");

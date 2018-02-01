@@ -33,10 +33,17 @@ public class WatchDog {
 		  le.setParam("src_region", AgentEngine.region);
 		  le.setParam("src_agent", AgentEngine.agent);
 		  le.setParam("dst_region", AgentEngine.region);
+		  le.setParam("dst_agent", AgentEngine.agent);
+		  le.setParam("dst_plugin",AgentEngine.getControllerId());
+
 		  //le.setParam("is_active", Boolean.TRUE.toString());
-		  le.setParam("action", "enable");
+		  le.setParam("action", "agent_enable");
 		  le.setParam("watchdogtimer",watchDogTimerString);
 		  le.setParam("req-seq", UUID.randomUUID().toString());
+
+		  le.setParam("region_name",AgentEngine.region);
+		  le.setParam("agent_name",AgentEngine.agent);
+
 
           jsonExport = AgentEngine.pluginexport.getPluginExport();
           String compressedString = DatatypeConverter.printBase64Binary(AgentEngine.stringCompress(jsonExport));
@@ -107,9 +114,15 @@ public class WatchDog {
               MsgEvent le = new MsgEvent(MsgEvent.Type.CONFIG, AgentEngine.region, null, null, "disabled");
               le.setParam("src_region", AgentEngine.region);
               le.setParam("src_agent", AgentEngine.agent);
-              le.setParam("dst_region", AgentEngine.region);
-              //le.setParam("is_active", Boolean.FALSE.toString());
-			  le.setParam("action", "disable");
+			  le.setParam("dst_region", AgentEngine.region);
+			  le.setParam("dst_agent", AgentEngine.agent);
+			  le.setParam("dst_plugin",AgentEngine.getControllerId());
+
+			  le.setParam("region_name",AgentEngine.region);
+			  le.setParam("agent_name",AgentEngine.agent);
+
+
+			  le.setParam("action", "agent_disable");
               le.setParam("watchdogtimer", watchDogTimerString);
 			  AgentEngine.msgInQueue.add(le);
               //MsgEvent re = new RPCCall().call(le);
@@ -132,16 +145,21 @@ public class WatchDog {
 	    		MsgEvent le = new MsgEvent(MsgEvent.Type.WATCHDOG,AgentEngine.region,null,null,wdMap);
 	    		le.setParam("src_region", AgentEngine.region);
 	  		    le.setParam("src_agent", AgentEngine.agent);
-	  		    le.setParam("dst_region", AgentEngine.region);
+				le.setParam("dst_region", AgentEngine.region);
+				le.setParam("dst_agent", AgentEngine.agent);
+				le.setParam("dst_plugin",AgentEngine.getControllerId());
 
-	  		    String tmpJsonExport = AgentEngine.pluginexport.getPluginExport();
+				le.setParam("region_name",AgentEngine.region);
+				le.setParam("agent_name",AgentEngine.agent);
+
+
+				String tmpJsonExport = AgentEngine.pluginexport.getPluginExport();
 	  		    if(!jsonExport.equals(tmpJsonExport)) {
 
                     jsonExport = tmpJsonExport;
                     String compressedString = DatatypeConverter.printBase64Binary(AgentEngine.stringCompress(jsonExport));
                     le.setParam("pluginconfigs", compressedString);
                     //System.out.println("AgentEngine : Export Plugins ");
-
                 }
 
 	  		    //AgentEngine.clog.log(le);
