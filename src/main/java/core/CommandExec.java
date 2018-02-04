@@ -146,9 +146,11 @@ public class CommandExec {
         String src_region = ce.getParam("src_region");
         String src_plugin = ce.getParam("src_plugin");
         if(src_agent.equals(AgentEngine.agent) && src_region.equals(AgentEngine.region)) {
+
+            System.out.println("Pre Exception " + ce.getParams() + "]");
+
             AgentEngine.pluginMap.get(src_plugin).setWatchDogTS(System.currentTimeMillis());
             AgentEngine.pluginMap.get(src_plugin).setRuntime(Long.parseLong(ce.getParam("runtime")));
-            //TODO revert this to debug
             logger.debug("Plugin {} status {}",src_plugin, AgentEngine.pluginMap.get(src_plugin).getStatus_code());
         } else {
             if (AgentEngine.isCommInit) {

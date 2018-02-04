@@ -49,7 +49,13 @@ public class MsgRoute implements Runnable {
 
                     case 20:
                         logger.trace("Case 20: Inter-region, inter-agent");
+                        //TODO Confirm this is correct
+                        /*
                         re = getCommandExec();
+                        System.out.println("THIS IS ROUTED WRONG!! " + rm.getParams());
+                        System.exit(0);
+                        */
+                        sendToController();
                         break;
                     case 21:
                         logger.trace("Case 21: Inter-region, inter-agent");
