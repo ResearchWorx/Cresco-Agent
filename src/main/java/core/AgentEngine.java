@@ -65,7 +65,7 @@ public class AgentEngine {
     public static String region;
     public static String agent;
 
-    public static CLogger clog;
+    //public static CLogger clog;
 
     public static DelayedShutdown ds; //delayed shutdown command
 
@@ -564,83 +564,6 @@ public class AgentEngine {
         }
     }
 
-
-    public static boolean enablePlugin2(String pluginID, boolean save) {
-        try {
-            if (pluginMap.containsKey(pluginID)) {
-                Plugin plugin = pluginMap.get(pluginID);
-                pluginsLogger.error("Plugin is already loaded. [Name: {}, Version: {}]", plugin.getName(), plugin.getVersion());
-                return false;
-            }
-            try {
-                Plugin plugin = new Plugin(pluginID, pluginsconfig.getPluginJar(pluginID));
-                if (!pluginsconfig.getPluginName(pluginID).equals(plugin.getName())) {
-                    pluginsLogger.error("Configuration error - plugin name [{}] does not match configuration {}]", plugin.getName(), pluginsconfig.getPluginName(pluginID));
-                    return false;
-                }
-                try {
-                    plugin.PreStart();
-                } catch (Exception e) {
-                    pluginsLogger.error("[{}] - PreStart error - [Exception: {}]", pluginID, e.getMessage());
-                }
-                if (!plugin.Start(msgInQueue, pluginsconfig.getPluginConfig(pluginID), region, agent, pluginID)) {
-                    return false;
-                }
-                pluginMap.put(pluginID, plugin);
-                try {
-                    plugin.PostStart();
-                } catch (Exception e) {
-                    pluginsLogger.error("[{}] - PostStart error - [Exception: {}]", pluginID, e.getMessage());
-                }
-                if (save)
-                    pluginsconfig.setPluginStatus(pluginID, 1);
-
-                int status_code = pluginMap.get(pluginID).getStatus_code();
-                if(status_code != 10) {
-                    pluginsLogger.error("[{}] unable to confirm enable. [Name: {}, Version: {}]", pluginID, plugin.getName(), plugin.getVersion());
-                } else {
-                    pluginsLogger.info("[{}] enabled. [Name: {}, Version: {}]", pluginID, plugin.getName(), plugin.getVersion());
-
-                }
-                /*
-                if(isCommInit) { //let controller plugin come up without watchdog enable
-                    int count = 0;
-                    while((status != 10) && (count < 120)) {
-                        pluginsLogger.debug("Waiting on enable for plugin {} current status: {}", pluginID, status);
-                        Thread.sleep(500);
-                        status = pluginMap.get(pluginID).getStatus();
-                    }
-                    if(count == 120) {
-                        pluginsLogger.error("[{}] unable to confirm enable. [Name: {}, Version: {}]", pluginID, plugin.getName(), plugin.getVersion());
-                    } else {
-                        pluginsLogger.info("[{}] enabled. [Name: {}, Version: {}]", pluginID, plugin.getName(), plugin.getVersion());
-
-                    }
-                }
-                else {
-                    pluginsLogger.info("[{}] enabled. [Name: {}, Version: {}]", pluginID, plugin.getName(), plugin.getVersion());
-                }
-                */
-
-                return true;
-
-            } catch (IOException e) {
-                pluginsLogger.error("Loading failed - Could not read plugin jar file. [Jar: {}]", pluginsconfig.getPluginJar(pluginID));
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                pluginsLogger.error("Loading failed - Plugin class [{}] not found.", pluginsconfig.getCPluginClass(pluginID));
-            } catch (InstantiationException e) {
-                pluginsLogger.error("Loading failed - Failed to instantiate plugin class [{}].", pluginsconfig.getCPluginClass(pluginID));
-            } catch (IllegalAccessException e) {
-                pluginsLogger.error("Loading failed - Could not access plugin class [{}].", pluginsconfig.getCPluginClass(pluginID));
-            }
-            return false;
-        } catch (Exception e) {
-            pluginsLogger.error("Loading failed - Exception raised on [{}]: [{}]", pluginID, e.getMessage());
-            return false;
-        }
-    }
-
     public static String getVersion() {
         String version;
         try {
@@ -795,7 +718,6 @@ public class AgentEngine {
         return "plugin/0";
     }
 
-
     static void cleanup() throws ConfigurationException, IOException, InterruptedException {
         try {
             coreLogger.info("Shutdown initiated");
@@ -815,6 +737,14 @@ public class AgentEngine {
             ex.printStackTrace();
             System.out.println("Shutdown Error: " + ex.getMessage());
         }
+    }
+
+    public static Logger getCoreLogger() {
+        return coreLogger;
+    }
+
+    public static Logger getPluginLogger() {
+        return pluginsLogger;
     }
 }
 

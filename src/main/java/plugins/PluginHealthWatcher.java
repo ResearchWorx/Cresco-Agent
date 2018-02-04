@@ -11,7 +11,7 @@ public class PluginHealthWatcher {
 
     public PluginHealthWatcher() {
         timer = new Timer();
-        timer.scheduleAtFixedRate(new HealthWatcherTaskTask(), 0, wdTimer);
+        timer.scheduleAtFixedRate(new HealthWatcherTaskTask(), wdTimer, wdTimer);
     }
 
     private class HealthWatcherTaskTask extends TimerTask {
@@ -38,8 +38,12 @@ public class PluginHealthWatcher {
                     if(!isHealthy) {
                         //plugin has failed
                         AgentEngine.pluginMap.get(key).setStatus_code(40);
-                        AgentEngine.clog.error("Plugin {} has failed WATCHDOG check!", key);
+                        AgentEngine.getCoreLogger().error("Plugin {} has failed WATCHDOG check!", key);
+                    } /*else {
+                        AgentEngine.getCoreLogger().info("Agent Status: " + AgentEngine.isActive + " comminit:" + AgentEngine.isCommInit);
+                        AgentEngine.getCoreLogger().info("Plugin {} passed WATCHDOG check ", key);
                     }
+                    */
                 }
 
             }
