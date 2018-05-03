@@ -98,7 +98,14 @@ public class ConfigPlugins {
         Iterator it = sObj.getKeys();
         while (it.hasNext()) {
             Object key = it.next();
-            int value = Integer.parseInt(sObj.getString(key.toString()));
+            //todo check for ENV VAR
+            int value = 0;
+            String env = System.getenv("CRESCO_agent_enable_plugin/" + key.toString());
+            if(env != null) {
+                value = Integer.parseInt(env);
+            } else {
+                value = Integer.parseInt(sObj.getString(key.toString()));
+            }
             //result.put(key.toString(), value);
             if (value == isEnabled) {
                 enabledPlugins.add(key.toString());
