@@ -100,11 +100,14 @@ public class ConfigPlugins {
             Object key = it.next();
             //todo check for ENV VAR
             int value = 0;
-            String env = System.getenv("CRESCO_agent_enable_plugin/" + key.toString());
+            String envString = "CRESCO_agent_enable_" + key.toString();
+            String env = System.getenv(envString);
             if(env != null) {
                 value = Integer.parseInt(env);
+                //System.out.println("FOUND ENV : " + env + " value:" + value + " key:" + key);
             } else {
                 value = Integer.parseInt(sObj.getString(key.toString()));
+                //System.out.println("NO ENV String : " + envString  + " value:" + value + " key:" + key);
             }
             //result.put(key.toString(), value);
             if (value == isEnabled) {
