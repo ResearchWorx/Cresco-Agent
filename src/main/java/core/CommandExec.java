@@ -420,8 +420,6 @@ public class CommandExec {
         return version;
     }
 
-
-
     public List<String> getPluginInventory() {
         List<String> pluginFiles = null;
         try
@@ -556,14 +554,14 @@ public class CommandExec {
                                 pluginDirectory = pluginDirectory.substring(0, pluginDirectory.length() - 1);
                             }
 
-                            String downloadFile = pluginDirectory + "/" + jarFile + ".test";
+                            String downloadFileTmp = pluginDirectory + "/" + jarFile + ".test";
 
                             String urlStr = protocol + "://" + ip + ":" + port + path + "/" + jarFile;
                             logger.error("URL : " + urlStr);
 
                             URL website = new URL(urlStr);
 
-                            File pluginFileObject = new File(downloadFile);
+                            File pluginFileObject = new File(downloadFileTmp);
                             if (pluginFileObject.exists()) {
                                 pluginFileObject.delete();
                             } else {
@@ -572,7 +570,7 @@ public class CommandExec {
 
                             logger.error(website.toString());
                             java.io.BufferedInputStream in = new java.io.BufferedInputStream(website.openStream());
-                            java.io.FileOutputStream fos = new java.io.FileOutputStream(downloadFile);
+                            java.io.FileOutputStream fos = new java.io.FileOutputStream(downloadFileTmp);
                             java.io.BufferedOutputStream bout = new BufferedOutputStream(fos);
                             byte data[] = new byte[1024];
                             int read;
@@ -586,7 +584,15 @@ public class CommandExec {
                             String jarMD5 = getJarMD5(pluginFile);
 
                             if (pluginMD5.equals(jarMD5)) {
-                                return true;
+
+                                String downloadFile = pluginDirectory + "/" + jarFile;
+
+                                File pluginFileObjectJar = new File(downloadFile);
+                                if (pluginFileObjectJar.exists()) {
+                                    pluginFileObjectJar.delete();
+                                }
+
+                                return pluginFileObject.renameTo(pluginFileObjectJar);
                             }
                         } catch (Exception ex) {
                             ex.printStackTrace();
