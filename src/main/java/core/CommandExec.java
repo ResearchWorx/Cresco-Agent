@@ -26,6 +26,7 @@ import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 
 import static core.AgentEngine.isCommInit;
+import static core.AgentEngine.pluginexport;
 import static core.AgentEngine.pluginsconfig;
 
 public class CommandExec {
@@ -209,19 +210,16 @@ public class CommandExec {
     MsgEvent pluginAdd(MsgEvent ce) {
             try {
 
-                //String mapString = AgentEngine.stringUncompress(ce.getParam("configparams"));
-                //Map<String, String> hm = pluginsconfig.getMapFromString(mapString, false);
-
                 Type type = new TypeToken<Map<String, String>>(){}.getType();
                 Map<String, String> hm = gson.fromJson(ce.getCompressedParam("configparams"), type);
 
-                logger.error("Is Local: " + pluginIsLocal(hm));
-                //if(pluginIsLocal(hm)) {
-                    //pull down the plugin
+                if(!pluginIsLocal(hm)) {
+                    //try to download node
                     pNode node = gson.fromJson(ce.getCompressedParam("pnode"),pNode.class);
-                    logger.error(ce.getCompressedParam("pnode"));
-                //}
+                    getPlugin(node);
+                }
 
+                if(pluginIsLocal(hm)) {
 
                     String plugin = pluginsconfig.addPlugin(hm);
                     boolean isEnabled = AgentEngine.enablePlugin(plugin, false);
@@ -235,11 +233,16 @@ public class CommandExec {
                         ce.setMsgBody("Added Plugin:" + plugin);
                         ce.setParam("status_code", "10");
                         ce.setParam("status_desc", "Plugin Added");
-                        ce.setParam("region",AgentEngine.region);
-                        ce.setParam("agent",AgentEngine.agent);
+                        ce.setParam("region", AgentEngine.region);
+                        ce.setParam("agent", AgentEngine.agent);
                         hm = pluginsconfig.getPluginConfigMap(plugin);
                         ce.setCompressedParam("configparams", gson.toJson(hm));
                     }
+                } else {
+                    logger.error("pluginadd Error: Unable to download plugin");
+                    ce.setParam("status_code", "9");
+                    ce.setParam("status_desc", "Plugin Not Found and Could Not Be Downloaded");
+                }
 
             } catch(Exception ex) {
                 logger.error("pluginadd Error: " + ex.getMessage());
@@ -323,7 +326,6 @@ public class CommandExec {
 
         List<Map<String,String>> pluginList = getPluginInventory(AgentEngine.config.getPluginPath());
         for(Map<String,String> params : pluginList) {
-            logger.error("params : " + params);
             String pluginNameLocal = params.get("pluginname");
             String versionLocal = params.get("version");
 
@@ -417,6 +419,7 @@ public class CommandExec {
         }
         return version;
     }
+
 
 
     public List<String> getPluginInventory() {
@@ -516,7 +519,92 @@ public class CommandExec {
         return returnPluginfile;
     }
 
-    private boolean getPlugin(String hostAddressString, String pluginName, String jarFile, String pluginMD5) {
+    private boolean getPlugin(pNode node) {
+        boolean isFound = false;
+        try {
+
+            String pluginName = node.name;
+            String pluginMD5 = node.md5;
+            String jarFile = node.jarfile;
+
+
+
+            String pluginFile = verifyPlugin(pluginName);
+            if(pluginFile != null) {
+                String jarMD5 = getJarMD5(pluginFile);
+
+                if(pluginMD5.equals(jarMD5)) {
+                    isFound = true;
+                }
+            }
+
+
+            if(!isFound) {
+
+                for(Map<String,String> repoMap : node.repoServers) {
+
+                    String protocol = repoMap.get("protocol");
+                    String ip = repoMap.get("ip");
+                    String port = repoMap.get("port");
+                    String path = repoMap.get("path");
+
+                    if (serverListening(ip,port)) {
+                        try {
+
+                            String pluginDirectory = AgentEngine.config.getPluginPath();
+                            if (pluginDirectory.endsWith("/")) {
+                                pluginDirectory = pluginDirectory.substring(0, pluginDirectory.length() - 1);
+                            }
+
+                            String downloadFile = pluginDirectory + "/" + jarFile + ".test";
+
+                            String urlStr = protocol + "://" + ip + ":" + port + path + "/" + jarFile;
+                            logger.error("URL : " + urlStr);
+
+                            URL website = new URL(urlStr);
+
+                            File pluginFileObject = new File(downloadFile);
+                            if (pluginFileObject.exists()) {
+                                pluginFileObject.delete();
+                            } else {
+                                pluginFileObject.createNewFile();
+                            }
+
+                            logger.error(website.toString());
+                            java.io.BufferedInputStream in = new java.io.BufferedInputStream(website.openStream());
+                            java.io.FileOutputStream fos = new java.io.FileOutputStream(downloadFile);
+                            java.io.BufferedOutputStream bout = new BufferedOutputStream(fos);
+                            byte data[] = new byte[1024];
+                            int read;
+                            while((read = in.read(data,0,1024))>=0)
+                            {
+                                bout.write(data, 0, read);
+                            }
+                            bout.close();
+                            in.close();
+
+                            String jarMD5 = getJarMD5(pluginFile);
+
+                            if (pluginMD5.equals(jarMD5)) {
+                                return true;
+                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+
+            }
+
+        }
+        catch(Exception ex) {
+            //System.out.println("getPlugin " + ex.getMessage());
+            ex.printStackTrace();
+        }
+        return isFound;
+    }
+
+    private boolean getPluginOld(String hostAddressString, String pluginName, String jarFile, String pluginMD5) {
         boolean isFound = false;
         try {
             String pluginFile = verifyPlugin(pluginName);
@@ -538,7 +626,7 @@ public class CommandExec {
                 }
 
                 for(String hostAddress : hostAddresses) {
-                    if (serverListening(hostAddress)) {
+                    if (serverListening(hostAddress,"3445")) {
                         try {
 
                             String pluginDirectory = AgentEngine.config.getPluginPath();
@@ -627,15 +715,15 @@ public class CommandExec {
         return isFound;
     }
 
-    public static boolean serverListening(String hosturl) {
+    public static boolean serverListening(String host, String portString) {
         Socket s = null;
         //http://address:port
         try
         {
-
-            String[] tmphosturl = hosturl.split(":");
-            int port = Integer.parseInt(tmphosturl[2].substring(0,tmphosturl[2].indexOf("/")));
-            String host = tmphosturl[1].substring(tmphosturl[1].lastIndexOf("/") + 1,tmphosturl[1].length());
+            int port = Integer.parseInt(portString);
+            //String[] tmphosturl = hosturl.split(":");
+            //int port = Integer.parseInt(tmphosturl[2].substring(0,tmphosturl[2].indexOf("/")));
+            //String host = tmphosturl[1].substring(tmphosturl[1].lastIndexOf("/") + 1,tmphosturl[1].length());
             s = new Socket();
             s.connect(new InetSocketAddress(host,port),2000);
             //s = new Socket(host, port);
