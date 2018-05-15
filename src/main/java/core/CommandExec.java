@@ -7,6 +7,7 @@ import com.researchworx.cresco.library.messaging.MsgEvent;
 import org.apache.commons.configuration.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import plugins.pNode;
 
 import java.io.*;
 import java.lang.reflect.Type;
@@ -213,8 +214,14 @@ public class CommandExec {
 
                 Type type = new TypeToken<Map<String, String>>(){}.getType();
                 Map<String, String> hm = gson.fromJson(ce.getCompressedParam("configparams"), type);
-                //String pluginName = hm.get("pluginname");
-                //String jarFile = hm.get("jarfile");
+
+                logger.error("Is Local: " + pluginIsLocal(hm));
+                //if(pluginIsLocal(hm)) {
+                    //pull down the plugin
+                    pNode node = gson.fromJson(ce.getCompressedParam("pnode"),pNode.class);
+                    logger.error(ce.getCompressedParam("pnode"));
+                //}
+
 
                     String plugin = pluginsconfig.addPlugin(hm);
                     boolean isEnabled = AgentEngine.enablePlugin(plugin, false);
@@ -243,7 +250,6 @@ public class CommandExec {
             //logger.error("Agent: pluginAdd: Type:" + ce.getMsgType() + " params:[" + ce.getParams() +"]");
             return ce;
     }
-
 
     void disablePlugin(MsgEvent ce) {
         String src_agent = ce.getParam("src_agent");
@@ -308,6 +314,110 @@ public class CommandExec {
                 break;
         }
     }
+
+    private boolean pluginIsLocal(Map<String,String> hm) {
+        boolean isLocal = false;
+
+        String pluginName = hm.get("pluginname");
+        String version = hm.get("version");
+
+        List<Map<String,String>> pluginList = getPluginInventory(AgentEngine.config.getPluginPath());
+        for(Map<String,String> params : pluginList) {
+            logger.error("params : " + params);
+            String pluginNameLocal = params.get("pluginname");
+            String versionLocal = params.get("version");
+
+            if((pluginName != null) && (version != null)) {
+
+                if((pluginName.equals(pluginNameLocal)) && (version.equals(versionLocal))) {
+                    isLocal = true;
+                }
+
+            } else {
+                if(pluginName.equals(pluginNameLocal)) {
+                    isLocal = true;
+                }
+            }
+        }
+        return isLocal;
+    }
+
+    private List<Map<String,String>> getPluginInventory(String repoPath) {
+        List<Map<String,String>> pluginFiles = null;
+        try
+        {
+            File folder = new File(repoPath);
+            if(folder.exists())
+            {
+                pluginFiles = new ArrayList<>();
+                File[] listOfFiles = folder.listFiles();
+
+                for (int i = 0; i < listOfFiles.length; i++)
+                {
+                    if (listOfFiles[i].isFile())
+                    {
+                        try{
+                            String jarPath = listOfFiles[i].getAbsolutePath();
+                            String jarFileName = listOfFiles[i].getName();
+                            String pluginName = getPluginName(jarPath);
+                            String pluginMD5 = getJarMD5(jarPath);
+                            String pluginVersion = getPluginVersion(jarPath);
+                            //System.out.println(pluginName + " " + jarFileName + " " + pluginVersion + " " + pluginMD5);
+                            //pluginFiles.add(listOfFiles[i].getAbsolutePath());
+                            Map<String,String> pluginMap = new HashMap<>();
+                            pluginMap.put("pluginname",pluginName);
+                            pluginMap.put("jarfile",jarFileName);
+                            pluginMap.put("md5",pluginMD5);
+                            pluginMap.put("version",pluginVersion);
+                            pluginFiles.add(pluginMap);
+                        } catch(Exception ex) {
+
+                        }
+
+                    }
+
+                }
+                if(pluginFiles.isEmpty())
+                {
+                    pluginFiles = null;
+                }
+            }
+        }
+        catch(Exception ex)
+        {
+            pluginFiles = null;
+        }
+        return pluginFiles;
+    }
+
+    private String getPluginVersion(String jarFile) {
+        String version = null;
+        try{
+            //String jarFile = AgentEngine.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+            //logger.debug("JARFILE:" + jarFile);
+            //File file = new File(jarFile.substring(5, (jarFile.length() )));
+            File file = new File(jarFile);
+
+            boolean calcHash = true;
+            BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+            long fileTime = attr.creationTime().toMillis();
+
+            FileInputStream fis = new FileInputStream(file);
+            @SuppressWarnings("resource")
+            JarInputStream jarStream = new JarInputStream(fis);
+            Manifest mf = jarStream.getManifest();
+
+            Attributes mainAttribs = mf.getMainAttributes();
+            version = mainAttribs.getValue("Implementation-Version");
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+
+        }
+        return version;
+    }
+
 
     public List<String> getPluginInventory() {
         List<String> pluginFiles = null;
@@ -529,7 +639,7 @@ public class CommandExec {
             s = new Socket();
             s.connect(new InetSocketAddress(host,port),2000);
             //s = new Socket(host, port);
-
+            s.close();
             return true;
         }
         catch (Exception e)
