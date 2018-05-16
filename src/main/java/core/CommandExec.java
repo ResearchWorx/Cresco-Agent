@@ -528,6 +528,7 @@ public class CommandExec {
 
 
             String pluginFile = verifyPlugin(pluginName);
+
             if(pluginFile != null) {
                 String jarMD5 = getJarMD5(pluginFile);
 
@@ -557,7 +558,6 @@ public class CommandExec {
                             String downloadFileTmp = pluginDirectory + "/" + jarFile + ".test";
 
                             String urlStr = protocol + "://" + ip + ":" + port + path + "/" + jarFile;
-                            logger.error("URL : " + urlStr);
 
                             URL website = new URL(urlStr);
 
@@ -568,7 +568,6 @@ public class CommandExec {
                                 pluginFileObject.createNewFile();
                             }
 
-                            logger.error(website.toString());
                             java.io.BufferedInputStream in = new java.io.BufferedInputStream(website.openStream());
                             java.io.FileOutputStream fos = new java.io.FileOutputStream(downloadFileTmp);
                             java.io.BufferedOutputStream bout = new BufferedOutputStream(fos);
@@ -581,7 +580,7 @@ public class CommandExec {
                             bout.close();
                             in.close();
 
-                            String jarMD5 = getJarMD5(pluginFile);
+                            String jarMD5 = getJarMD5(pluginFileObject.getAbsolutePath());
 
                             if (pluginMD5.equals(jarMD5)) {
 
