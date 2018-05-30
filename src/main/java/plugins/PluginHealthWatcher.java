@@ -38,8 +38,15 @@ public class PluginHealthWatcher {
                     if(!isHealthy) {
                         //plugin has failed
                         AgentEngine.pluginMap.get(key).setStatus_code(40);
-                        AgentEngine.getCoreLogger().error("Plugin {} has failed WATCHDOG check!", key);
-                    } /*else {
+                        AgentEngine.getCoreLogger().error("Plugin {} has failed WATCHDOG check! Status Code {}", key, AgentEngine.pluginMap.get(key).getStatus_code());
+                    } else {
+                        //recover from timeout
+                        if(AgentEngine.pluginMap.get(key).getStatus_code() == 40) {
+                            AgentEngine.pluginMap.get(key).setStatus_code(10);
+                        }
+                    }
+
+                    /*else {
                         AgentEngine.getCoreLogger().info("Agent Status: " + AgentEngine.isActive + " comminit:" + AgentEngine.isCommInit);
                         AgentEngine.getCoreLogger().info("Plugin {} passed WATCHDOG check ", key);
                     }
