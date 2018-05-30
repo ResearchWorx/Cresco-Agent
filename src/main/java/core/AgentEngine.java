@@ -550,6 +550,11 @@ public class AgentEngine {
             } catch (IOException e) {
                 pluginsLogger.error("Loading failed - Could not read plugin jar file. [Jar: {}]", pluginsconfig.getPluginJar(pluginID));
                 e.printStackTrace();
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
+                pluginsLogger.error("Loading failed - Could not read plugin jar file. [Jar: {}]", sw.toString());
+
             } catch (ClassNotFoundException e) {
                 pluginsLogger.error("Loading failed - Plugin class [{}] not found.", pluginsconfig.getCPluginClass(pluginID));
             } catch (InstantiationException e) {
@@ -559,7 +564,14 @@ public class AgentEngine {
             }
             return false;
         } catch (Exception e) {
+            e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+
             pluginsLogger.error("Loading failed - Exception raised on [{}]: [{}]", pluginID, e.getMessage());
+            pluginsLogger.error("Loading failed - Exception raised on [{}]: [{}]", pluginID, sw.toString());
+
             return false;
         }
     }
