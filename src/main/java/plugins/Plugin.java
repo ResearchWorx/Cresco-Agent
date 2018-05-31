@@ -36,6 +36,17 @@ public class Plugin {
     //private String inode_id;
     //private String resource_id;
 
+    /*
+    status_code = 3; //plugin init
+    status_code = 8; //plugin disabled
+    status_code = 10; //started and working
+    status_code = 40; //WATCHDOG check failed with agent
+    status_code = 80; //failed to start
+    status_code = 90; //Exception on timeout shutdown
+    status_code = 91; //Exception on timeout verification to confirm down
+    status_code = 92; //timeout on disable verification
+     */
+
 
     public Plugin(String pluginID, String jarPath) throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException {
         this.pluginID = pluginID;
