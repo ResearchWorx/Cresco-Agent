@@ -436,23 +436,26 @@ public class AgentEngine {
             if (pluginMap.containsKey(pluginID)) {
                 Plugin plugin = pluginMap.get(pluginID);
                 //if (plugin.Stop()) {
-                    try {
-                        plugin.PreStop();
-                    } catch (Exception e) {
-                        pluginsLogger.error("[{}] - PreShutdown error - [Exception: {}]", pluginID, e.getMessage());
-                    }
-                    try {
-                        plugin.Stop();
-                    } catch (Exception e) {
-                        pluginsLogger.error("[{}] - Shutdown error - [Exception: {}]", pluginID, e.getMessage());
-                    }
-                    int status_code = pluginMap.get(pluginID).getStatus_code();
+                    if(plugin != null) {
+                        try {
+                            plugin.PreStop();
+                        } catch (Exception e) {
+                            pluginsLogger.error("[{}] - PreShutdown error - [Exception: {}]", pluginID, e.getMessage());
+                        }
+                        try {
+                            plugin.Stop();
+                        } catch (Exception e) {
+                            pluginsLogger.error("[{}] - Shutdown error - [Exception: {}]", pluginID, e.getMessage());
+                        }
+                        int status_code = pluginMap.get(pluginID).getStatus_code();
 
-                    if(status_code != 8) {
-                        pluginsLogger.error("[{}] unable to confirm disabled. [Name: {}, Version: {} Status Code: {} Status Desc:]", pluginID, plugin.getName(), plugin.getVersion(), plugin.getStatus_code(), plugin.getStatus_desc());
-                    } else {
-                        pluginsLogger.info("[{}] disabled. [Name: {}, Version: {}]", pluginID, plugin.getName(), plugin.getVersion());
+                        if (status_code != 8) {
+                            pluginsLogger.error("[{}] unable to confirm disabled. [Name: {}, Version: {} Status Code: {} Status Desc:]", pluginID, plugin.getName(), plugin.getVersion(), plugin.getStatus_code(), plugin.getStatus_desc());
+                        } else {
+                            pluginsLogger.info("[{}] disabled. [Name: {}, Version: {}]", pluginID, plugin.getName(), plugin.getVersion());
+                        }
                     }
+
                     pluginMap.remove(pluginID);
                     if (save)
                         pluginsconfig.setPluginStatus(pluginID, 0);
@@ -468,6 +471,10 @@ public class AgentEngine {
             }
         } catch (Exception e) {
             pluginsLogger.error("[{}] failed to stop. [Exception: {}]", pluginID, e.getMessage());
+            StringWriter errors = new StringWriter();
+            e.printStackTrace(new PrintWriter(errors));
+            pluginsLogger.error("[{}] failed to stop. [Trace: {}]", pluginID, errors.toString());
+
             return false;
         }
     }
