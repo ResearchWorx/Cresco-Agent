@@ -69,16 +69,16 @@ public class Plugin {
             try {
                 method.invoke(instance);
             } catch (IllegalArgumentException e) {
-                logger.error("Plugin [{}] Illegal Argument Exception: [{}] method invoked using illegal arguments [{}]", pluginID, methodName, e.getMessage());
+                logger.error("Plugin [{}] Illegal Argument Exception: [{}] method invoked using illegal arguments:\n{}", pluginID, methodName, ExceptionUtils.getStackTrace(e));
             } catch (IllegalAccessException e) {
-                logger.error("Plugin [{}] Illegal Access Exception: [{}] method invoked without access [{}]", pluginID, methodName, e.getMessage());
+                logger.error("Plugin [{}] Illegal Access Exception: [{}] method invoked without access:\n{}", pluginID, methodName, ExceptionUtils.getStackTrace(e));
             } catch (InvocationTargetException e) {
-                logger.error("Plugin [{}] Invocation Exception: [{}] method invoked on incorrect target [{}]", pluginID, methodName, e.getMessage());
+                logger.error("Plugin [{}] Invocation Exception: [{}] method invoked on incorrect target:\n{}", pluginID, methodName, ExceptionUtils.getStackTrace(e));
             }
         } catch (SecurityException e) {
-            logger.error("Plugin [{}] Method Exception: [{}] method security level exceeded [{}]", pluginID, methodName, e.getMessage());
+            logger.error("Plugin [{}] Method Exception: [{}] method security level exceeded:\n{}", pluginID, methodName, ExceptionUtils.getStackTrace(e));
         } catch (NoSuchMethodException e) {
-            logger.error("Plugin [{}] Method Exception: [{}] method not found [{}]", pluginID, methodName, e.getMessage());
+            logger.error("Plugin [{}] Method Exception: [{}] method not found:\n{}", pluginID, methodName, ExceptionUtils.getStackTrace(e));
         }
     }
 
@@ -105,20 +105,20 @@ public class Plugin {
                 }
                 return active;
             } catch (IllegalArgumentException e) {
-                logger.error("Plugin [{}] Illegal Argument Exception: [{}] method invoked using illegal arguments [{}]", pluginID, methodName, e.getMessage());
+                logger.error("Plugin [{}] Illegal Argument Exception: [{}] method invoked using illegal arguments:\n{}", pluginID, methodName, ExceptionUtils.getStackTrace(e));
                 return false;
             } catch (IllegalAccessException e) {
-                logger.error("Plugin [{}] Illegal Access Exception: [{}] method invoked without access [{}]", pluginID, methodName, e.getMessage());
+                logger.error("Plugin [{}] Illegal Access Exception: [{}] method invoked without access:\n{}", pluginID, methodName, ExceptionUtils.getStackTrace(e));
                 return false;
             } catch (InvocationTargetException e) {
-                logger.error("Plugin [{}] Invocation Exception: [{}] method invoked on incorrect target\n{}", pluginID, methodName, ExceptionUtils.getStackTrace(e));
+                logger.error("Plugin [{}] Invocation Exception: [{}] method invoked on incorrect target:\n{}", pluginID, methodName, ExceptionUtils.getStackTrace(e));
                 return false;
             }
         } catch (SecurityException e) {
-            logger.error("Plugin [{}] Method Exception: [{}] method security level exceeded [{}]", pluginID, methodName, e.getMessage());
+            logger.error("Plugin [{}] Method Exception: [{}] method security level exceeded:\n{}", pluginID, methodName, ExceptionUtils.getStackTrace(e));
             return false;
         } catch (NoSuchMethodException e) {
-            logger.error("Plugin [{}] Method Exception: [{}] method not found [{}]", pluginID, methodName, e.getMessage());
+            logger.error("Plugin [{}] Method Exception: [{}] method not found:\n{}", pluginID, methodName, ExceptionUtils.getStackTrace(e));
             return false;
         }
     }
@@ -130,16 +130,16 @@ public class Plugin {
             try {
                 method.invoke(instance);
             } catch (IllegalArgumentException e) {
-                logger.error("Plugin [{}] Illegal Argument Exception: [{}] method invoked using illegal arguments [{}]", pluginID, methodName, e.getMessage());
+                logger.error("Plugin [{}] Illegal Argument Exception: [{}] method invoked using illegal arguments:\n{}", pluginID, methodName, ExceptionUtils.getStackTrace(e));
             } catch (IllegalAccessException e) {
-                logger.error("Plugin [{}] Illegal Access Exception: [{}] method invoked without access [{}]", pluginID, methodName, e.getMessage());
+                logger.error("Plugin [{}] Illegal Access Exception: [{}] method invoked without access:\n{}", pluginID, methodName, ExceptionUtils.getStackTrace(e));
             } catch (InvocationTargetException e) {
-                logger.error("Plugin [{}] Invocation Exception: [{}] method invoked on incorrect target [{}]", pluginID, methodName, e.getMessage());
+                logger.error("Plugin [{}] Invocation Exception: [{}] method invoked on incorrect target:\n{}", pluginID, methodName, ExceptionUtils.getStackTrace(e));
             }
         } catch (SecurityException e) {
-            logger.error("Plugin [{}] Method Exception: [{}] method security level exceeded [{}]", pluginID, methodName, e.getMessage());
+            logger.error("Plugin [{}] Method Exception: [{}] method security level exceeded:\n{}", pluginID, methodName, ExceptionUtils.getStackTrace(e));
         } catch (NoSuchMethodException e) {
-            logger.error("Plugin [{}] Method Exception: [{}] method not found [{}]", pluginID, methodName, e.getMessage());
+            logger.error("Plugin [{}] Method Exception: [{}] method not found:\n{}", pluginID, methodName, ExceptionUtils.getStackTrace(e));
         }
     }
 
@@ -150,16 +150,16 @@ public class Plugin {
             try {
                 method.invoke(instance, msg);
             } catch (IllegalArgumentException e) {
-                logger.error("Plugin [{}] Illegal Argument Exception: [{}] method invoked using illegal arguments [{}]", pluginID, methodName, e.getMessage());
+                logger.error("Plugin [{}] Illegal Argument Exception: [{}] method invoked using illegal arguments:\n{}", pluginID, methodName, ExceptionUtils.getStackTrace(e));
             } catch (IllegalAccessException e) {
-                logger.error("Plugin [{}] Illegal Access Exception: [{}] method invoked without access [{}]", pluginID, methodName, e.getMessage());
+                logger.error("Plugin [{}] Illegal Access Exception: [{}] method invoked without access:\n{}", pluginID, methodName, ExceptionUtils.getStackTrace(e));
             } catch (InvocationTargetException e) {
-                logger.error("Plugin [{}] Invocation Exception: [{}] method invoked on incorrect target [{}]", pluginID, methodName, e.getMessage());
+                logger.error("Plugin [{}] Invocation Exception: [{}] method invoked on incorrect target:\n{}", pluginID, methodName, ExceptionUtils.getStackTrace(e));
             }
         } catch (SecurityException e) {
-            logger.error("Plugin [{}] Method Exception: [{}] method security level exceeded [{}]", pluginID, methodName, e.getMessage());
+            logger.error("Plugin [{}] Method Exception: [{}] method security level exceeded:\n{}", pluginID, methodName, ExceptionUtils.getStackTrace(e));
         } catch (NoSuchMethodException e) {
-            logger.error("Plugin [{}] Method Exception: [{}] method not found [{}]", pluginID, methodName, e.getMessage());
+            logger.error("Plugin [{}] Method Exception: [{}] method not found:\n{}", pluginID, methodName, ExceptionUtils.getStackTrace(e));
         }
     }
 
@@ -170,16 +170,16 @@ public class Plugin {
             try {
                 method.invoke(instance);
             } catch (IllegalArgumentException e) {
-                logger.error("Plugin [{}] Illegal Argument Exception: [{}] method invoked using illegal arguments [{}]", pluginID, methodName, e.getMessage());
+                logger.error("Plugin [{}] Illegal Argument Exception: [{}] method invoked using illegal arguments:\n{}", pluginID, methodName, ExceptionUtils.getStackTrace(e));
             } catch (IllegalAccessException e) {
-                logger.error("Plugin [{}] Illegal Access Exception: [{}] method invoked without access [{}]", pluginID, methodName, e.getMessage());
+                logger.error("Plugin [{}] Illegal Access Exception: [{}] method invoked without access:\n{}", pluginID, methodName, ExceptionUtils.getStackTrace(e));
             } catch (InvocationTargetException e) {
-                logger.error("Plugin [{}] Invocation Exception: [{}] method invoked on incorrect target [{}]", pluginID, methodName, e.getMessage());
+                logger.error("Plugin [{}] Invocation Exception: [{}] method invoked on incorrect target:\n{}", pluginID, methodName, ExceptionUtils.getStackTrace(e));
             }
         } catch (SecurityException e) {
-            logger.error("Plugin [{}] Method Exception: [{}] method security level exceeded [{}]", pluginID, methodName, e.getMessage());
+            logger.error("Plugin [{}] Method Exception: [{}] method security level exceeded:\n{}", pluginID, methodName, ExceptionUtils.getStackTrace(e));
         } catch (NoSuchMethodException e) {
-            logger.error("Plugin [{}] Method Exception: [{}] method not found [{}]", pluginID, methodName, e.getMessage());
+            logger.error("Plugin [{}] Method Exception: [{}] method not found:\n{}", pluginID, methodName, ExceptionUtils.getStackTrace(e));
         }
     }
 
@@ -192,20 +192,18 @@ public class Plugin {
                 method.invoke(instance);
                 isStopped = true;
             } catch (IllegalArgumentException e) {
-                logger.error("Plugin [{}] Illegal Argument Exception: [{}] method invoked using illegal arguments [{}]", pluginID, methodName, e.getMessage());
+                logger.error("Plugin [{}] Illegal Argument Exception: [{}] method invoked using illegal arguments:\n{}", pluginID, methodName, ExceptionUtils.getStackTrace(e));
             } catch (IllegalAccessException e) {
-                logger.error("Plugin [{}] Illegal Access Exception: [{}] method invoked without access [{}]", pluginID, methodName, e.getMessage());
+                logger.error("Plugin [{}] Illegal Access Exception: [{}] method invoked without access:\n{}", pluginID, methodName, ExceptionUtils.getStackTrace(e));
             } catch (InvocationTargetException e) {
-                logger.error("Plugin [{}] Invocation Exception: [{}] method invoked on incorrect target [{}]", pluginID, methodName, e.getMessage());
+                logger.error("Plugin [{}] Invocation Exception: [{}] method invoked on incorrect target:\n{}", pluginID, methodName, ExceptionUtils.getStackTrace(e));
             }
         } catch (SecurityException e) {
-            logger.error("Plugin [{}] Method Exception: [{}] method security level exceeded [{}]", pluginID, methodName, e.getMessage());
+            logger.error("Plugin [{}] Method Exception: [{}] method security level exceeded:\n{}", pluginID, methodName, ExceptionUtils.getStackTrace(e));
         } catch (NoSuchMethodException e) {
-            logger.error("Plugin [{}] Method Exception: [{}] method not found [{}]", pluginID, methodName, e.getMessage());
+            logger.error("Plugin [{}] Method Exception: [{}] method not found:\n{}", pluginID, methodName, ExceptionUtils.getStackTrace(e));
         }
-
         if(isStopped) {
-
             try {
                 int count = 0;
                 while((status_code != 8) && (count < 10)) { //if plugin can't be confirmed down in 5 sec fail
