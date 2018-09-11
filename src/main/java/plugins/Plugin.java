@@ -4,6 +4,7 @@ import com.researchworx.cresco.library.messaging.MsgEvent;
 import com.researchworx.cresco.library.plugin.core.CPlugin;
 import core.AgentEngine;
 import org.apache.commons.configuration.SubnodeConfiguration;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +16,6 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
@@ -111,7 +111,7 @@ public class Plugin {
                 logger.error("Plugin [{}] Illegal Access Exception: [{}] method invoked without access [{}]", pluginID, methodName, e.getMessage());
                 return false;
             } catch (InvocationTargetException e) {
-                logger.error("Plugin [{}] Invocation Exception: [{}] method invoked on incorrect target [{}]", pluginID, methodName, e.getMessage());
+                logger.error("Plugin [{}] Invocation Exception: [{}] method invoked on incorrect target\n{}", pluginID, methodName, ExceptionUtils.getStackTrace(e));
                 return false;
             }
         } catch (SecurityException e) {

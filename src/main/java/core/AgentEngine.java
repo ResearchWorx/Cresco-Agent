@@ -4,7 +4,6 @@ import channels.MsgInQueue;
 import channels.MsgRoute;
 import channels.RPCCall;
 import com.researchworx.cresco.library.messaging.MsgEvent;
-import com.researchworx.cresco.library.utilities.CLogger;
 import org.apache.commons.configuration.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -745,12 +744,15 @@ public class AgentEngine {
             wd.shutdown(true);
 
             List<String> pluginList = getActivePlugins();
-
-                for (String plugin : pluginList) {
-                    if (disablePlugin(plugin, false)) {
-                        pluginsLogger.info("{} is shutdown", plugin);
-                    }
+            for (String plugin : pluginList) {
+                if (plugin.equals(getControllerId()))
+                    continue;
+                if (disablePlugin(plugin, false)) {
+                    pluginsLogger.info("{} is shutdown", plugin);
                 }
+            }
+            if (disablePlugin(getControllerId(), false))
+                pluginsLogger.info("Controller is shutdown");
             coreLogger.info("Shutdown Complete.");
         } catch (Exception ex) {
             ex.printStackTrace();
