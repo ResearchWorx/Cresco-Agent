@@ -152,12 +152,12 @@ public class CommandExec {
         String logs = "";
         String error = null;
         int lineCnt = 10;
-        String lineCntStr = msg.getParam("linecount");
+        String lineCntStr = msg.getParam("count");
         if (lineCntStr != null) {
             try {
                 lineCnt = Integer.parseInt(lineCntStr);
             } catch (NumberFormatException e) {
-                //Ignore and use default
+                logger.error("Failed to parse line count from [{}]", lineCntStr);
             }
         }
         String logPathStr = AgentEngine.config.getLogPath();
@@ -176,7 +176,7 @@ public class CommandExec {
                             lines[count % lines.length] = line;
                             count++;
                         }
-                        int start = count - 10;
+                        int start = count - lineCnt;
                         if (start < 0) {
                             start = 0;
                         }
