@@ -12,21 +12,23 @@ import plugins.pNode;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.math.BigInteger;
-import java.net.*;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.security.MessageDigest;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
+import java.util.stream.Stream;
 
-import static core.AgentEngine.isCommInit;
-import static core.AgentEngine.pluginexport;
 import static core.AgentEngine.pluginsconfig;
 
 public class CommandExec {
@@ -46,6 +48,9 @@ public class CommandExec {
 
                     case "ping":
                         return pingReply(ce);
+
+                    case "logtail":
+                        return tailLogFile(ce);
 
                     default:
                         logger.error("Unknown configtype found {} for {}:", ce.getParam("action"), ce.getMsgType().toString());
@@ -140,6 +145,59 @@ public class CommandExec {
         logger.debug("ping message type found");
         msg.setParam("remote_ts", String.valueOf(System.currentTimeMillis()));
         msg.setParam("type", "agent");
+        return msg;
+    }
+
+    private MsgEvent tailLogFile(MsgEvent msg) {
+        String logs = "";
+        String error = null;
+        int lineCnt = 10;
+        String lineCntStr = msg.getParam("linecount");
+        if (lineCntStr != null) {
+            try {
+                lineCnt = Integer.parseInt(lineCntStr);
+            } catch (NumberFormatException e) {
+                //Ignore and use default
+            }
+        }
+        String logPathStr = AgentEngine.config.getLogPath();
+        if (logPathStr != null) {
+            Path logDir = Paths.get(logPathStr);
+            if (Files.exists(logDir)) {
+                String logType = msg.getParam("logtype");
+                if (logType == null)
+                    logType = "log-messages";
+                Path logFile = logDir.resolve(String.format("%s.log", logType));
+                if (Files.exists(logFile)) {
+                    try (Stream<String> logLines = Files.lines(logFile)) {
+                        String[] lines = new String[lineCnt];
+                        int count = 0;
+                        for (String line : (Iterable<String>)logLines::iterator) {
+                            lines[count % lines.length] = line;
+                            count++;
+                        }
+                        int start = count - 10;
+                        if (start < 0) {
+                            start = 0;
+                        }
+                        StringBuilder sb = new StringBuilder();
+                        for (int i = start; i < count; i++) {
+                            sb.append(String.format("%s%n", lines[i % lines.length]));
+                        }
+                        sb.deleteCharAt(sb.lastIndexOf(String.format("%n")));
+                        logs = sb.toString();
+                    } catch (IOException e) {
+                        logger.error("Failed to read log file [{}]", logFile);
+                        error = String.format("Failed to read log file [%s]", logFile);
+                    }
+                } else
+                    error = String.format("Log file [%s] does not exist", logFile);
+            } else
+                error = String.format("Log directory [%s] does not exist", logDir);
+        }
+        msg.setCompressedParam("logs", logs);
+        if (error != null)
+            msg.setParam("error", error);
         return msg;
     }
 
@@ -292,7 +350,7 @@ public class CommandExec {
 
     private void logMessage(MsgEvent log) {
         String className = log.getParam("full_class");
-        String logMessage = "[" + log.getParam("src_plugin") + ": " + pluginsconfig.getPluginName(log.getParam("src_plugin")) + "]";
+        String logMessage = "[" + log.getParam("src_plugin") + ":" + pluginsconfig.getPluginName(log.getParam("src_plugin")) + "]";
         if (className != null)
             logMessage = logMessage + "[" + formatClassName(className) + "]";
         logMessage = logMessage + " " + log.getMsgBody();
