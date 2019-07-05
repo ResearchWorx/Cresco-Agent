@@ -1,8 +1,10 @@
-[[ NOTICE ]]
+<aside class="notice">
 # This Project Has *Moved* !
 
 Please see [https://github.com/CrescoEdge/quickstart](https://github.com/CrescoEdge/quickstart) for new Cresco repositories.
+</aside>
 
+---
 
 
 Cresco-Agent
