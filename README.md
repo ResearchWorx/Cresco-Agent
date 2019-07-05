@@ -1,3 +1,10 @@
+[[ NOTICE ]]
+# This Project Has *Moved* !
+
+Please see [https://github.com/CrescoEdge/quickstart](https://github.com/CrescoEdge/quickstart) for new Cresco repositories.
+
+
+
 Cresco-Agent
 =========================
 
